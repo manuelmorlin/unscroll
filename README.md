@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 Unscroll
 
-## Getting Started
+> End the endless scrolling. Let fate decide what you watch next.
 
-First, run the development server:
+A modern, minimalist web application that solves "decision paralysis" when choosing what to watch. Built as a portfolio project showcasing full-stack development skills with **Next.js 15**, **Supabase**, and **OpenAI**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+![Unscroll Demo](./demo.gif)
+
+## ✨ Features
+
+- **🎰 Slot Machine Picker** - Random selection from your watchlist with elegant animations
+- **🤖 AI Autofill** - Enter a title, click "✨ Autofill" and let AI populate all metadata
+- **💬 Persuasive AI** - Get a compelling reason to watch your selection
+- **🔄 Real-time Sync** - Changes sync instantly across all connected devices
+- **🎭 Demo Mode** - Try the app instantly without registration (perfect for recruiters!)
+- **🌙 Dark Mode** - Elegant, minimalist dark UI with focus on typography
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Frontend** | Next.js 15 (App Router), TypeScript (Strict), React 19 |
+| **Styling** | Tailwind CSS 4, Framer Motion |
+| **Backend** | Supabase (PostgreSQL, Auth, Realtime) |
+| **AI** | OpenAI API (gpt-4o-mini) |
+| **Validation** | Zod |
+| **Icons** | Lucide React |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm/yarn/pnpm
+- Supabase account (free tier works)
+- OpenAI API key
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/unscroll.git
+   cd unscroll
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Fill in your credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   OPENAI_API_KEY=sk-your-openai-key
+   DEMO_USER_EMAIL=demo@unscroll.app
+   DEMO_USER_PASSWORD=secure-demo-password
+   ```
+
+4. **Set up Supabase**
+   - Create a new Supabase project
+   - Run the SQL schema from `supabase-schema.sql` in the SQL Editor
+   - Enable Realtime for `media_items` table (Database > Replication)
+   - Create a demo user in Authentication > Users
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open [http://localhost:3000](http://localhost:3000)**
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── auth/              # Authentication page
+│   ├── app/               # Main application (protected)
+│   └── layout.tsx         # Root layout
+├── components/            # React components
+│   ├── auth/              # Authentication components
+│   ├── media/             # Media list & forms
+│   ├── slot-machine/      # Slot machine picker
+│   └── ui/                # Reusable UI components
+├── hooks/                 # Custom React hooks
+│   ├── useMediaItems.ts   # Media + Realtime subscription
+│   └── useAuth.ts         # Auth state management
+├── lib/                   # Utilities & server code
+│   ├── actions/           # Server Actions
+│   ├── supabase/          # Supabase clients
+│   └── openai/            # OpenAI configuration
+├── types/                 # TypeScript types
+└── middleware.ts          # Auth middleware
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔐 Authentication Flow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Standard Auth**: Email/password registration & login via Supabase Auth
+2. **Demo Mode**: Click "Try Demo" for instant access to a sandbox account
+3. **Protected Routes**: Middleware redirects unauthenticated users to `/auth`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔄 Realtime Architecture
 
-## Learn More
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Device A  │     │  Supabase   │     │   Device B  │
+│             │────▶│  Realtime   │────▶│             │
+│  Add Movie  │     │  Broadcast  │     │  Auto-sync  │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
 
-To learn more about Next.js, take a look at the following resources:
+The `useMediaItems` hook subscribes to Postgres changes and updates the UI instantly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤖 AI Integration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Autofill (`actionAutofill`)
+- Input: Movie/series title
+- Output: Genre, plot, cast, duration, format, year
+- Model: gpt-4o-mini with JSON mode
 
-## Deploy on Vercel
+### Persuade (`actionPersuade`)
+- Input: Title, genre, plot
+- Output: Compelling reason to watch + mood
+- Temperature: 0.8 (creative)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📸 Screenshots
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Auth Screen | Slot Machine | Watchlist |
+|-------------|--------------|-----------|
+| ![Auth](./screenshots/auth.png) | ![Slot](./screenshots/slot.png) | ![List](./screenshots/list.png) |
+
+## 🚧 Roadmap
+
+- [ ] Streaming platforms integration
+- [ ] Collaborative watchlists
+- [ ] Watch history analytics
+- [ ] Mobile app (React Native)
+- [ ] Browser extension
+
+## 📄 License
+
+MIT © [Your Name](https://github.com/yourusername)
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ for recruiters in Zurich</strong><br>
+  <a href="https://linkedin.com/in/yourprofile">LinkedIn</a> • 
+  <a href="https://github.com/yourusername">GitHub</a>
+</p>
