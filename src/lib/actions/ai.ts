@@ -15,6 +15,7 @@ const autofillResponseSchema = z.object({
   duration: z.string(),
   format: z.literal('movie'),
   year: z.number(),
+  found: z.boolean().optional(),
 });
 
 const persuadeResponseSchema = z.object({
@@ -77,10 +78,11 @@ Return ONLY a JSON object with these exact fields:
   "cast": ["string array - top 3-4 main actors/actresses"],
   "duration": "string - runtime (e.g., '2h 15m')",
   "format": "movie",
-  "year": number - release year
+  "year": number - release year,
+  "found": boolean - true if you know this film, false if you don't recognize it
 }
 
-Always set format to "movie". Be accurate and factual.`,
+If you don't recognize the film or it's too recent (after your knowledge cutoff), set "found" to false and fill in reasonable placeholder values. Always set format to "movie".`,
         },
         {
           role: 'user',
@@ -101,6 +103,14 @@ Always set format to "movie". Be accurate and factual.`,
 
     const parsedResponse = JSON.parse(responseContent);
     const validatedResponse = autofillResponseSchema.parse(parsedResponse);
+
+    // Check if AI recognized the film
+    if (validatedResponse.found === false) {
+      return {
+        success: false,
+        error: 'Film not found in AI database. This might be a very recent release. Please fill in the details manually.',
+      };
+    }
 
     return {
       success: true,

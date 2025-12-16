@@ -2,15 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, X, Loader2, Film, Search } from 'lucide-react';
+import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
 import { searchMovies, type TMDBMovie } from '@/lib/actions/tmdb';
-import type { MediaFormat, MediaItemInsert } from '@/types/database';
-
-const FORMAT_OPTIONS: { value: MediaFormat; label: string; icon: typeof Film }[] = [
-  { value: 'movie', label: 'Film', icon: Film },
-];
+import type { MediaItemInsert } from '@/types/database';
 
 interface AddMediaFormProps {
   onSuccess?: () => void;
@@ -28,7 +24,6 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [plot, setPlot] = useState('');
   const [cast, setCast] = useState('');
   const [duration, setDuration] = useState('');
-  const [format, setFormat] = useState<MediaFormat>('movie');
   const [year, setYear] = useState('');
 
   // Autocomplete state
@@ -37,6 +32,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Reset form
   const resetForm = useCallback(() => {
@@ -45,11 +41,27 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setPlot('');
     setCast('');
     setDuration('');
-    setFormat('movie');
     setYear('');
     setError(null);
     setSuggestions([]);
     setShowSuggestions(false);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Search movies when title changes
@@ -84,9 +96,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   // Handle selecting a suggestion
   const handleSelectSuggestion = (movie: TMDBMovie) => {
     setTitle(movie.title);
-    if (movie.release_date) {
-      setYear(movie.release_date.split('-')[0]);
-    }
+    // Don't set year here - let AI fill it for accuracy
     setSuggestions([]);
     setShowSuggestions(false);
   };
@@ -109,7 +119,6 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       setPlot(result.data.plot);
       setCast(result.data.cast.join(', '));
       setDuration(result.data.duration);
-      setFormat(result.data.format);
       setYear(result.data.year.toString());
     } else {
       setError(result.error || 'Autofill failed');
@@ -137,7 +146,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         plot: plot || null,
         cast: cast ? cast.split(',').map((c) => c.trim()) : null,
         duration: duration || null,
-        format,
+        format: 'movie',
         year: year ? parseInt(year) : null,
       };
 
@@ -220,7 +229,6 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         placeholder="e.g., Inception"
                         className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                       />
@@ -234,6 +242,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       <AnimatePresence>
                         {showSuggestions && suggestions.length > 0 && (
                           <motion.div
+                            ref={dropdownRef}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
@@ -243,7 +252,10 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                               <button
                                 key={movie.id}
                                 type="button"
-                                onClick={() => handleSelectSuggestion(movie)}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  handleSelectSuggestion(movie);
+                                }}
                                 className="w-full px-4 py-3 flex items-center gap-3 hover:bg-zinc-700 transition-colors text-left"
                               >
                                 {movie.poster_path ? (
@@ -284,28 +296,6 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       )}
                       <span className="hidden sm:inline">Autofill</span>
                     </motion.button>
-                  </div>
-                </div>
-
-                {/* Format */}
-                <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">Format</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {FORMAT_OPTIONS.map(({ value, label, icon: Icon }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setFormat(value)}
-                        className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
-                          format === value
-                            ? 'bg-amber-500/10 border-amber-500/50 text-amber-400'
-                            : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span className="text-xs">{label}</span>
-                      </button>
-                    ))}
                   </div>
                 </div>
 

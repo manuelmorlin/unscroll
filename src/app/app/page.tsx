@@ -2,16 +2,19 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, List, LogOut, User } from 'lucide-react';
+import { Sparkles, List, LogOut, User, Film, Eye, Check } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
 import { AddMediaForm, MediaList } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
+import type { MediaStatus } from '@/types/database';
 
 type Tab = 'decide' | 'list';
+type ListFilter = 'all' | MediaStatus;
 
 export default function AppPage() {
   const [activeTab, setActiveTab] = useState<Tab>('decide');
+  const [listFilter, setListFilter] = useState<ListFilter>('all');
   const { user, isDemo } = useAuth();
 
   return (
@@ -36,7 +39,7 @@ export default function AppPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-zinc-400">
               <User className="w-4 h-4" />
-              <span className="hidden sm:inline">{user?.email}</span>
+              <span className="hidden sm:inline">{user?.displayName || user?.email}</span>
             </div>
             <form action={async () => { await logoutAction(); }}>
               <button
@@ -120,7 +123,36 @@ export default function AppPage() {
               <AddMediaForm />
             </div>
 
-            <MediaList />
+            {/* Filter Tabs */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                { id: 'all' as ListFilter, label: 'All', icon: Film, color: 'text-zinc-400 hover:text-white' },
+                { id: 'unwatched' as ListFilter, label: 'To Watch', icon: Film, color: 'text-red-400 hover:text-red-300' },
+                { id: 'watching' as ListFilter, label: 'Watching', icon: Eye, color: 'text-yellow-400 hover:text-yellow-300' },
+                { id: 'watched' as ListFilter, label: 'Watched', icon: Check, color: 'text-green-400 hover:text-green-300' },
+              ].map(({ id, label, icon: Icon, color }) => (
+                <button
+                  key={id}
+                  onClick={() => setListFilter(id)}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                    listFilter === id
+                      ? id === 'all'
+                        ? 'bg-zinc-700 text-white'
+                        : id === 'unwatched'
+                        ? 'bg-red-500/20 text-red-400'
+                        : id === 'watching'
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-green-500/20 text-green-400'
+                      : `bg-zinc-800/50 ${color}`
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+
+            <MediaList filter={listFilter} />
           </motion.div>
         )}
       </main>

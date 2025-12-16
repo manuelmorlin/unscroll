@@ -8,6 +8,7 @@ export interface AutofillResponse {
   duration: string;
   format: 'movie';
   year: number;
+  found?: boolean;
 }
 
 export interface PersuadeResponse {

@@ -11,9 +11,9 @@ const formatIcons = {
 };
 
 const statusColors = {
-  unwatched: 'bg-zinc-700',
-  watching: 'bg-amber-500',
-  watched: 'bg-emerald-500',
+  unwatched: 'bg-red-500',
+  watching: 'bg-yellow-500',
+  watched: 'bg-green-500',
 };
 
 interface MediaCardProps {
