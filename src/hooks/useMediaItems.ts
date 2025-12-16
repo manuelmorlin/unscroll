@@ -79,7 +79,6 @@ export function useMediaItems(): UseMediaItemsReturn {
 
         setMediaItems(items);
         setIsLoading(false);
-        console.log('🔴 Firestore: Real-time update received', items.length, 'items');
       },
       (err) => {
         console.error('Firestore subscription error:', err);
@@ -89,7 +88,6 @@ export function useMediaItems(): UseMediaItemsReturn {
     );
 
     return () => {
-      console.log('🔴 Firestore: Disconnecting...');
       unsubscribe();
     };
   }, [userId, refreshKey]);
