@@ -44,7 +44,15 @@ export async function searchMovies(query: string): Promise<SearchMoviesResult> {
 
     const data = await response.json();
 
-    const movies: TMDBMovie[] = data.results.slice(0, 8).map((movie: any) => ({
+    interface TMDBApiMovie {
+      id: number;
+      title: string;
+      release_date?: string;
+      poster_path: string | null;
+      overview?: string;
+    }
+
+    const movies: TMDBMovie[] = data.results.slice(0, 8).map((movie: TMDBApiMovie) => ({
       id: movie.id,
       title: movie.title,
       release_date: movie.release_date || '',
