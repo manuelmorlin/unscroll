@@ -32,5 +32,4 @@ const adminApp = getApps().length > 0
 
 export const adminAuth = getAuth(adminApp);
 export const adminDb = getFirestore(adminApp);
-export default adminApp;;
 export default adminApp;
