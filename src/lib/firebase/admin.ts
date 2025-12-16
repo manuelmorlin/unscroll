@@ -7,10 +7,20 @@ import { initializeApp, getApps, cert, type ServiceAccount } from 'firebase-admi
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// Handle private key - Vercel stores it with literal \n or actual newlines
+const getPrivateKey = () => {
+  const key = process.env.FIREBASE_PRIVATE_KEY;
+  if (!key) return undefined;
+  
+  // If key contains literal \n, replace with actual newlines
+  // If key already has actual newlines (from Vercel), use as-is
+  return key.includes('\\n') ? key.replace(/\\n/g, '\n') : key;
+};
+
 const serviceAccount: ServiceAccount = {
   projectId: process.env.FIREBASE_PROJECT_ID,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  privateKey: getPrivateKey(),
 };
 
 // Initialize Firebase Admin (singleton pattern)
