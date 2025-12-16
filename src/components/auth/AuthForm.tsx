@@ -14,8 +14,12 @@ import { useRouter } from 'next/navigation';
 
 type AuthMode = 'login' | 'register';
 
-export function AuthForm() {
-  const [mode, setMode] = useState<AuthMode>('login');
+interface AuthFormProps {
+  initialMode?: AuthMode;
+}
+
+export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -23,13 +23,13 @@ export default async function HomePage() {
           </div>
           <div className="flex items-center gap-4">
             <Link 
-              href="/auth"
+              href="/auth?mode=login"
               className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
             >
               Sign In
             </Link>
             <Link 
-              href="/auth"
+              href="/auth?mode=register"
               className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all"
             >
               Get Started
@@ -62,14 +62,14 @@ export default async function HomePage() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
-              href="/auth"
+              href="/auth?mode=register"
               className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all text-lg"
             >
               <span>Start for Free</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link 
-              href="/auth"
+              href="/auth?mode=login"
               className="flex items-center gap-2 px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-full transition-all text-lg"
             >
               <span>Try Demo</span>
@@ -187,7 +187,7 @@ export default async function HomePage() {
             Join now and let fate decide your next movie night.
           </p>
           <Link 
-            href="/auth"
+            href="/auth?mode=register"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all text-lg"
           >
             <span>Get Started Free</span>
