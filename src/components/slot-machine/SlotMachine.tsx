@@ -52,16 +52,23 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [selectedGenre, setSelectedGenre] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
 
-  // Load genres on mount
-  useEffect(() => {
-    async function loadGenres() {
-      const result = await getAllGenres();
-      if (result.success && result.data) {
-        setGenres(result.data as string[]);
+  // Load genres function
+  const loadGenres = useCallback(async () => {
+    const result = await getAllGenres();
+    if (result.success && result.data) {
+      setGenres(result.data as string[]);
+      // Reset selected genre if it's no longer available
+      const newGenres = result.data as string[];
+      if (selectedGenre && !newGenres.includes(selectedGenre)) {
+        setSelectedGenre('');
       }
     }
+  }, [selectedGenre]);
+
+  // Load genres on mount
+  useEffect(() => {
     loadGenres();
-  }, []);
+  }, [loadGenres]);
 
   // Animate through loading phrases
   const animatePhrases = useCallback(async () => {
@@ -125,9 +132,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setSelectedMedia(null);
       setPersuasivePhrase(null);
       setSpinCount(0); // Reset spin count after watching
+      setSelectedGenre(''); // Reset genre filter
+      await loadGenres(); // Reload genres to reflect updated watchlist
       onWatched?.();
     }
-  }, [selectedMedia, onWatched]);
+  }, [selectedMedia, onWatched, loadGenres]);
 
   // Get format icon
   const FormatIcon = selectedMedia
