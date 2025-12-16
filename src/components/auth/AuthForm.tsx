@@ -70,11 +70,12 @@ export function AuthForm() {
 
       router.push('/app');
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Auth error:', err);
       
       // Handle Firebase errors
-      const errorCode = err?.code || '';
+      const firebaseError = err as { code?: string; message?: string };
+      const errorCode = firebaseError?.code || '';
       if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
         setError('Invalid email or password');
       } else if (errorCode === 'auth/email-already-in-use') {
@@ -84,7 +85,7 @@ export function AuthForm() {
       } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address');
       } else {
-        setError(err?.message || 'Authentication failed. Please try again.');
+        setError(firebaseError?.message || 'Authentication failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -105,9 +106,10 @@ export function AuthForm() {
       try {
         // Try to sign in
         userCredential = await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
-      } catch (signInError: any) {
+      } catch (signInError: unknown) {
         // If user doesn't exist, create it
-        if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+        const fbError = signInError as { code?: string };
+        if (fbError.code === 'auth/user-not-found' || fbError.code === 'auth/invalid-credential') {
           userCredential = await createUserWithEmailAndPassword(auth, demoEmail, demoPassword);
         } else {
           throw signInError;
@@ -120,7 +122,7 @@ export function AuthForm() {
 
       router.push('/app');
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Demo login error:', err);
       setError('Demo mode is currently unavailable. Please try again.');
     } finally {
