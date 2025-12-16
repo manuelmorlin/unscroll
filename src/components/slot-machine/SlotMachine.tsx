@@ -234,7 +234,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   )}
 
                   {/* Cast */}
-                  {selectedMedia.cast && selectedMedia.cast.length > 0 && (
+                  {selectedMedia.cast && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -242,7 +242,9 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       className="text-xs text-zinc-500"
                     >
                       <span className="text-zinc-600">Starring: </span>
-                      {selectedMedia.cast.join(', ')}
+                      {Array.isArray(selectedMedia.cast) 
+                        ? selectedMedia.cast.join(', ')
+                        : selectedMedia.cast}
                     </motion.div>
                   )}
                 </motion.div>
