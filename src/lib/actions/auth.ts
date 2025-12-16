@@ -83,10 +83,7 @@ export async function getCurrentUser() {
       isDemo: decodedToken.email === process.env.DEMO_USER_EMAIL,
     };
   } catch {
-    // Token expired or invalid - clear cookies
-    const cookieStore = await cookies();
-    cookieStore.delete('session');
-    cookieStore.delete('userId');
+    // Token expired or invalid - return null (don't try to modify cookies here)
     return null;
   }
 }
