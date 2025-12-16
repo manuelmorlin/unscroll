@@ -87,7 +87,7 @@ Always set format to "movie". Be accurate and factual.`,
           content: `Provide information for the film: "${title}"`,
         },
       ],
-      max_completion_tokens: 500,
+      max_completion_tokens: 4000,
     });
 
     console.log('OpenAI response:', JSON.stringify(completion, null, 2));
