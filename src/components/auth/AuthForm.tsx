@@ -19,6 +19,7 @@ export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
 
   // Handle form submission
@@ -26,6 +27,7 @@ export function AuthForm() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setSuccessMessage(null);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
@@ -43,16 +45,10 @@ export function AuthForm() {
         await updateProfile(userCredential.user, {
           displayName: username,
         });
-      } else {
-        // Sign in existing user
-        userCredential = await signInWithEmailAndPassword(auth, email, password);
-      }
-
-      // Get ID token and create server session
-      const idToken = await userCredential.user.getIdToken();
-      
-      // For registration, include extra data
-      if (mode === 'register') {
+        
+        // Get ID token
+        const idToken = await userCredential.user.getIdToken();
+        
         // The server action will create the user document
         const response = await fetch('/api/auth/register', {
           method: 'POST',
@@ -63,10 +59,23 @@ export function AuthForm() {
         if (!response.ok) {
           throw new Error('Failed to complete registration');
         }
+        
+        // Sign out after registration (user needs to login)
+        await auth.signOut();
+        
+        // Show success message and switch to login mode
+        setSuccessMessage('Account created successfully! Please sign in.');
+        setMode('login');
+        setIsLoading(false);
+        return;
       } else {
-        // Just set the session for login
-        await setSessionAction(idToken);
+        // Sign in existing user
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
+
+      // Get ID token and create server session (only for login)
+      const idToken = await userCredential.user.getIdToken();
+      await setSessionAction(idToken);
 
       router.push('/app');
       router.refresh();
@@ -195,6 +204,20 @@ export function AuthForm() {
           </button>
         ))}
       </div>
+
+      {/* Success Message */}
+      <AnimatePresence>
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg"
+          >
+            <p className="text-green-400 text-sm">{successMessage}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Error Message */}
       <AnimatePresence>
