@@ -79,8 +79,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       return;
     }
 
-    // Clear TMDB ID when user types manually
+    // Clear TMDB ID and other fields when user types manually
     setSelectedTmdbId(null);
+    setGenre('');
+    setPlot('');
+    setCast('');
+    setDuration('');
+    setYear('');
 
     if (title.trim().length < 2) {
       setSuggestions([]);
