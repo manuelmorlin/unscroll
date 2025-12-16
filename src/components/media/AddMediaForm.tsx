@@ -162,7 +162,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
       setIsSubmitting(false);
     },
-    [title, genre, plot, cast, duration, format, year, resetForm, onSuccess]
+    [title, genre, plot, cast, duration, year, resetForm, onSuccess]
   );
 
   return (
