@@ -125,9 +125,20 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setError(null);
     setShowSuggestions(false);
 
-    // If we have a TMDB ID, use TMDB for details (always up-to-date)
-    if (selectedTmdbId) {
-      const tmdbResult = await getMovieDetails(selectedTmdbId);
+    let tmdbId = selectedTmdbId;
+
+    // If no TMDB ID, search for the movie first
+    if (!tmdbId) {
+      const searchResult = await searchMovies(title);
+      if (searchResult.success && searchResult.movies && searchResult.movies.length > 0) {
+        // Use the first (best) match
+        tmdbId = searchResult.movies[0].id;
+      }
+    }
+
+    // If we have a TMDB ID (either selected or found), use TMDB for details
+    if (tmdbId) {
+      const tmdbResult = await getMovieDetails(tmdbId);
       
       if (tmdbResult.success && tmdbResult.data) {
         setGenre(tmdbResult.data.genre);
@@ -140,7 +151,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       }
     }
 
-    // Fallback to AI for manually typed titles
+    // Fallback to AI only if TMDB didn't find anything
     const result = await actionAutofill(title);
 
     if (result.success && result.data) {
