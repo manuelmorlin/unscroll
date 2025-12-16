@@ -13,7 +13,7 @@ const autofillResponseSchema = z.object({
   plot: z.string(),
   cast: z.array(z.string()),
   duration: z.string(),
-  format: z.enum(['movie', 'series', 'documentary', 'anime']),
+  format: z.literal('movie'),
   year: z.number(),
 });
 
@@ -68,23 +68,23 @@ export async function actionAutofill(title: string): Promise<AutofillActionResul
       messages: [
         {
           role: 'system',
-          content: `You are a movie and TV show database expert. Given a title, return accurate information about it in JSON format.
+          content: `You are a movie database expert. Given a film title, return accurate information about it in JSON format.
 
 Return ONLY a JSON object with these exact fields:
 {
   "genre": "string - main genres separated by comma",
   "plot": "string - brief 1-2 sentence plot summary without spoilers",
   "cast": ["string array - top 3-4 main actors/actresses"],
-  "duration": "string - runtime for movies (e.g., '2h 15m') or number of seasons for series (e.g., '5 Seasons')",
-  "format": "movie" | "series" | "documentary" | "anime",
+  "duration": "string - runtime (e.g., '2h 15m')",
+  "format": "movie",
   "year": number - release year
 }
 
-Be accurate and factual. If unsure about details, make reasonable estimates based on similar content.`,
+Always set format to "movie". Be accurate and factual.`,
         },
         {
           role: 'user',
-          content: `Provide information for: "${title}"`,
+          content: `Provide information for the film: "${title}"`,
         },
       ],
       temperature: 0.3,

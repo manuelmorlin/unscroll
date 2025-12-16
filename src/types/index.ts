@@ -6,7 +6,7 @@ export interface AutofillResponse {
   plot: string;
   cast: string[];
   duration: string;
-  format: 'movie' | 'series' | 'documentary' | 'anime';
+  format: 'movie';
   year: number;
 }
 
