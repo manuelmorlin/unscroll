@@ -11,6 +11,32 @@ export interface TMDBMovie {
   overview: string;
 }
 
+export interface TMDBMovieDetails {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string | null;
+  overview: string;
+  runtime: number | null;
+  genres: { id: number; name: string }[];
+}
+
+export interface TMDBCredits {
+  cast: { id: number; name: string; character: string; order: number }[];
+}
+
+export interface MovieDetailsResult {
+  success: boolean;
+  data?: {
+    genre: string;
+    plot: string;
+    cast: string[];
+    duration: string;
+    year: number;
+  };
+  error?: string;
+}
+
 export interface SearchMoviesResult {
   success: boolean;
   movies?: TMDBMovie[];
@@ -66,6 +92,77 @@ export async function searchMovies(query: string): Promise<SearchMoviesResult> {
     return {
       success: false,
       error: 'Failed to search movies',
+    };
+  }
+}
+
+/**
+ * Get full movie details from TMDB by ID
+ */
+export async function getMovieDetails(movieId: number): Promise<MovieDetailsResult> {
+  if (!TMDB_API_KEY) {
+    return {
+      success: false,
+      error: 'TMDB API key not configured',
+    };
+  }
+
+  try {
+    // Fetch movie details and credits in parallel
+    const [detailsRes, creditsRes] = await Promise.all([
+      fetch(
+        `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`,
+        { next: { revalidate: 86400 } } // Cache for 24 hours
+      ),
+      fetch(
+        `${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`,
+        { next: { revalidate: 86400 } }
+      ),
+    ]);
+
+    if (!detailsRes.ok || !creditsRes.ok) {
+      throw new Error('TMDB API error');
+    }
+
+    const details: TMDBMovieDetails = await detailsRes.json();
+    const credits: TMDBCredits = await creditsRes.json();
+
+    // Format duration
+    const hours = details.runtime ? Math.floor(details.runtime / 60) : 0;
+    const minutes = details.runtime ? details.runtime % 60 : 0;
+    const duration = details.runtime 
+      ? (hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`)
+      : '';
+
+    // Get top 4 cast members
+    const cast = credits.cast
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 4)
+      .map(actor => actor.name);
+
+    // Get genres
+    const genre = details.genres.map(g => g.name).join(', ');
+
+    // Get year from release date
+    const year = details.release_date 
+      ? parseInt(details.release_date.split('-')[0], 10)
+      : new Date().getFullYear();
+
+    return {
+      success: true,
+      data: {
+        genre,
+        plot: details.overview || '',
+        cast,
+        duration,
+        year,
+      },
+    };
+  } catch (error) {
+    console.error('TMDB details error:', error);
+    return {
+      success: false,
+      error: 'Failed to get movie details',
     };
   }
 }

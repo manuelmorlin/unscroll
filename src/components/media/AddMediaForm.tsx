@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
-import { searchMovies, type TMDBMovie } from '@/lib/actions/tmdb';
+import { searchMovies, getMovieDetails, type TMDBMovie } from '@/lib/actions/tmdb';
 import type { MediaItemInsert } from '@/types/database';
 
 interface AddMediaFormProps {
@@ -25,6 +25,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [cast, setCast] = useState('');
   const [duration, setDuration] = useState('');
   const [year, setYear] = useState('');
+  const [selectedTmdbId, setSelectedTmdbId] = useState<number | null>(null);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<TMDBMovie[]>([]);
@@ -46,6 +47,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setError(null);
     setSuggestions([]);
     setShowSuggestions(false);
+    setSelectedTmdbId(null);
   }, []);
 
   // Close dropdown when clicking outside
@@ -77,6 +79,9 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       return;
     }
 
+    // Clear TMDB ID when user types manually
+    setSelectedTmdbId(null);
+
     if (title.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -104,12 +109,12 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const handleSelectSuggestion = (movie: TMDBMovie) => {
     justSelectedRef.current = true;
     setTitle(movie.title);
-    // Don't set year here - let AI fill it for accuracy
+    setSelectedTmdbId(movie.id);
     setSuggestions([]);
     setShowSuggestions(false);
   };
 
-  // Handle autofill
+  // Handle autofill - use TMDB if available, otherwise AI
   const handleAutofill = useCallback(async () => {
     if (!title.trim()) {
       setError('Enter a title first');
@@ -120,6 +125,22 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setError(null);
     setShowSuggestions(false);
 
+    // If we have a TMDB ID, use TMDB for details (always up-to-date)
+    if (selectedTmdbId) {
+      const tmdbResult = await getMovieDetails(selectedTmdbId);
+      
+      if (tmdbResult.success && tmdbResult.data) {
+        setGenre(tmdbResult.data.genre);
+        setPlot(tmdbResult.data.plot);
+        setCast(tmdbResult.data.cast.join(', '));
+        setDuration(tmdbResult.data.duration);
+        setYear(tmdbResult.data.year.toString());
+        setIsAutofilling(false);
+        return;
+      }
+    }
+
+    // Fallback to AI for manually typed titles
     const result = await actionAutofill(title);
 
     if (result.success && result.data) {
@@ -133,7 +154,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     }
 
     setIsAutofilling(false);
-  }, [title]);
+  }, [title, selectedTmdbId]);
 
   // Handle submit
   const handleSubmit = useCallback(
