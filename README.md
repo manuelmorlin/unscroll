@@ -2,44 +2,46 @@
 
 > End the endless scrolling. Let fate decide what you watch next.
 
-A modern, minimalist web application that solves "decision paralysis" when choosing what to watch. Built as a portfolio project showcasing full-stack development skills with **Next.js 15**, **Supabase**, and **OpenAI**.
+A modern, minimalist web application that solves "decision paralysis" when choosing what to watch. Built with **Next.js 16**, **Firebase**, and **OpenAI**.
 
-![Unscroll Demo](./demo.gif)
+🔗 **Live Demo:** [unscroll-app.vercel.app](https://unscroll-app.vercel.app)
 
 ## ✨ Features
 
 - **🎰 Slot Machine Picker** - Random selection from your watchlist with elegant animations
+- **🔍 Movie Autocomplete** - Search movies as you type with TMDB integration
 - **🤖 AI Autofill** - Enter a title, click "✨ Autofill" and let AI populate all metadata
 - **💬 Persuasive AI** - Get a compelling reason to watch your selection
 - **🔄 Real-time Sync** - Changes sync instantly across all connected devices
-- **🎭 Demo Mode** - Try the app instantly without registration (perfect for recruiters!)
-- **🌙 Dark Mode** - Elegant, minimalist dark UI with focus on typography
+- **🎭 Demo Mode** - Try the app instantly without registration
+- **🌙 Dark Mode** - Elegant, minimalist dark UI
 
 ## 🛠️ Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| **Frontend** | Next.js 15 (App Router), TypeScript (Strict), React 19 |
+| **Frontend** | Next.js 16 (App Router), TypeScript, React 19 |
 | **Styling** | Tailwind CSS 4, Framer Motion |
-| **Backend** | Supabase (PostgreSQL, Auth, Realtime) |
-| **AI** | OpenAI API (gpt-4o-mini) |
+| **Backend** | Firebase (Auth, Firestore) |
+| **AI** | OpenAI API (GPT-5-mini) |
+| **Movie Data** | TMDB API |
 | **Validation** | Zod |
-| **Icons** | Lucide React |
+| **Hosting** | Vercel |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- npm/yarn/pnpm
-- Supabase account (free tier works)
-- OpenAI API key
+- Firebase account (free tier works)
+- OpenAI API key (optional, for AI features)
+- TMDB API key (optional, for movie autocomplete)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/unscroll.git
+   git clone https://github.com/manuelmorlin/unscroll.git
    cd unscroll
    ```
 
@@ -48,24 +50,35 @@ A modern, minimalist web application that solves "decision paralysis" when choos
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up Firebase**
+   - Create a new project at [Firebase Console](https://console.firebase.google.com)
+   - Enable **Authentication** → Email/Password
+   - Enable **Firestore Database**
+   - Go to Project Settings → Service Accounts → Generate new private key
+   - Add your domain to Authentication → Settings → Authorized domains
+
+4. **Set up environment variables**
    ```bash
    cp .env.example .env.local
    ```
    Fill in your credentials:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   OPENAI_API_KEY=sk-your-openai-key
-   DEMO_USER_EMAIL=demo@unscroll.app
-   DEMO_USER_PASSWORD=secure-demo-password
-   ```
+   # Firebase (Client)
+   NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 
-4. **Set up Supabase**
-   - Create a new Supabase project
-   - Run the SQL schema from `supabase-schema.sql` in the SQL Editor
-   - Enable Realtime for `media_items` table (Database > Replication)
-   - Create a demo user in Authentication > Users
+   # Firebase (Server - from service account JSON)
+   FIREBASE_PROJECT_ID=your-project-id
+   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+
+   # OpenAI (optional)
+   OPENAI_API_KEY=sk-your-openai-key
+
+   # TMDB (optional)
+   TMDB_API_KEY=your-tmdb-api-key
+   ```
 
 5. **Run the development server**
    ```bash
@@ -81,75 +94,31 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── auth/              # Authentication page
 │   ├── app/               # Main application (protected)
-│   └── layout.tsx         # Root layout
+│   └── api/               # API routes
 ├── components/            # React components
 │   ├── auth/              # Authentication components
 │   ├── media/             # Media list & forms
 │   ├── slot-machine/      # Slot machine picker
 │   └── ui/                # Reusable UI components
 ├── hooks/                 # Custom React hooks
-│   ├── useMediaItems.ts   # Media + Realtime subscription
+│   ├── useMediaItems.ts   # Firestore realtime subscription
 │   └── useAuth.ts         # Auth state management
 ├── lib/                   # Utilities & server code
 │   ├── actions/           # Server Actions
-│   ├── supabase/          # Supabase clients
+│   ├── firebase/          # Firebase configuration
 │   └── openai/            # OpenAI configuration
-├── types/                 # TypeScript types
-└── middleware.ts          # Auth middleware
+└── types/                 # TypeScript types
 ```
 
-## 🔐 Authentication Flow
+## 🔐 Firestore Security Rules
 
-1. **Standard Auth**: Email/password registration & login via Supabase Auth
-2. **Demo Mode**: Click "Try Demo" for instant access to a sandbox account
-3. **Protected Routes**: Middleware redirects unauthenticated users to `/auth`
-
-## 🔄 Realtime Architecture
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Device A  │     │  Supabase   │     │   Device B  │
-│             │────▶│  Realtime   │────▶│             │
-│  Add Movie  │     │  Broadcast  │     │  Auto-sync  │
-└─────────────┘     └─────────────┘     └─────────────┘
-```
-
-The `useMediaItems` hook subscribes to Postgres changes and updates the UI instantly.
-
-## 🤖 AI Integration
-
-### Autofill (`actionAutofill`)
-- Input: Movie/series title
-- Output: Genre, plot, cast, duration, format, year
-- Model: gpt-4o-mini with JSON mode
-
-### Persuade (`actionPersuade`)
-- Input: Title, genre, plot
-- Output: Compelling reason to watch + mood
-- Temperature: 0.8 (creative)
-
-## 📸 Screenshots
-
-| Auth Screen | Slot Machine | Watchlist |
-|-------------|--------------|-----------|
-| ![Auth](./screenshots/auth.png) | ![Slot](./screenshots/slot.png) | ![List](./screenshots/list.png) |
-
-## 🚧 Roadmap
-
-- [ ] Streaming platforms integration
-- [ ] Collaborative watchlists
-- [ ] Watch history analytics
-- [ ] Mobile app (React Native)
-- [ ] Browser extension
+Copy the contents of `firestore.rules` to your Firebase Console → Firestore → Rules.
 
 ## 📄 License
 
-MIT © [Your Name](https://github.com/yourusername)
+MIT License - feel free to use this project for learning or as a starting point for your own projects.
 
----
+## 👤 Author
 
-<p align="center">
-  <strong>Built with ❤️ for recruiters in Zurich</strong><br>
-  <a href="https://linkedin.com/in/yourprofile">LinkedIn</a> • 
-  <a href="https://github.com/yourusername">GitHub</a>
-</p>
+**Manuel Morlin**
+- GitHub: [@manuelmorlin](https://github.com/manuelmorlin)
