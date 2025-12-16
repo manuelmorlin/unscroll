@@ -34,12 +34,25 @@ export interface AuthActionResult {
 // ==============================================
 
 async function createSessionCookie(idToken: string) {
-  const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-  const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+  // Verify the ID token first
+  const decodedToken = await adminAuth.verifyIdToken(idToken);
   
+  // Store token info in a simple cookie (not a Firebase session cookie)
+  // This is simpler and doesn't require special project setup
   const cookieStore = await cookies();
-  cookieStore.set('session', sessionCookie, {
-    maxAge: expiresIn / 1000,
+  const expiresIn = 60 * 60 * 24 * 5; // 5 days in seconds
+  
+  cookieStore.set('session', idToken, {
+    maxAge: expiresIn,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    sameSite: 'lax',
+  });
+  
+  // Store user ID separately for quick access
+  cookieStore.set('userId', decodedToken.uid, {
+    maxAge: expiresIn,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
@@ -53,21 +66,27 @@ async function createSessionCookie(idToken: string) {
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('session')?.value;
+  const sessionToken = cookieStore.get('session')?.value;
+  const userId = cookieStore.get('userId')?.value;
 
-  if (!sessionCookie) {
+  if (!sessionToken || !userId) {
     return null;
   }
 
   try {
-    const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
+    // Verify the token is still valid
+    const decodedToken = await adminAuth.verifyIdToken(sessionToken);
     return {
-      id: decodedClaims.uid,
-      email: decodedClaims.email,
-      username: decodedClaims.name || decodedClaims.email?.split('@')[0],
-      isDemo: decodedClaims.email === process.env.DEMO_USER_EMAIL,
+      id: decodedToken.uid,
+      email: decodedToken.email,
+      username: decodedToken.name || decodedToken.email?.split('@')[0],
+      isDemo: decodedToken.email === process.env.DEMO_USER_EMAIL,
     };
   } catch {
+    // Token expired or invalid - clear cookies
+    const cookieStore = await cookies();
+    cookieStore.delete('session');
+    cookieStore.delete('userId');
     return null;
   }
 }
