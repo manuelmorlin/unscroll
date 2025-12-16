@@ -117,15 +117,6 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
     setIsAutofilling(false);
   }, [title]);
-      setDuration(result.data.duration);
-      setFormat(result.data.format);
-      setYear(result.data.year.toString());
-    } else {
-      setError(result.error || 'Autofill failed');
-    }
-
-    setIsAutofilling(false);
-  }, [title]);
 
   // Handle submit
   const handleSubmit = useCallback(
