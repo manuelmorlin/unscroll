@@ -90,9 +90,12 @@ Always set format to "movie". Be accurate and factual.`,
       max_completion_tokens: 500,
     });
 
+    console.log('OpenAI response:', JSON.stringify(completion, null, 2));
+
     const responseContent = completion.choices[0]?.message?.content;
 
     if (!responseContent) {
+      console.error('No content in response. Full response:', completion);
       return {
         success: false,
         error: 'No response received from AI',
