@@ -192,7 +192,7 @@ export async function deleteMediaItem(id: string): Promise<MediaActionResult> {
 // GET RANDOM UNWATCHED
 // ==============================================
 
-export async function getRandomUnwatched(): Promise<MediaActionResult> {
+export async function getRandomUnwatched(genre?: string): Promise<MediaActionResult> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -216,7 +216,23 @@ export async function getRandomUnwatched(): Promise<MediaActionResult> {
       };
     }
 
-    const docs = snapshot.docs;
+    let docs = snapshot.docs;
+
+    // Filter by genre if specified
+    if (genre) {
+      docs = docs.filter(doc => {
+        const data = doc.data();
+        return data.genre?.toLowerCase().includes(genre.toLowerCase());
+      });
+
+      if (docs.length === 0) {
+        return {
+          success: false,
+          error: `No unwatched ${genre} movies found. Try another genre!`,
+        };
+      }
+    }
+
     const randomIndex = Math.floor(Math.random() * docs.length);
     const randomDoc = docs[randomIndex];
 
@@ -229,6 +245,53 @@ export async function getRandomUnwatched(): Promise<MediaActionResult> {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get random media',
+    };
+  }
+}
+
+// ==============================================
+// GET ALL GENRES
+// ==============================================
+
+export async function getAllGenres(): Promise<MediaActionResult> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'You must be logged in',
+    };
+  }
+
+  try {
+    const snapshot = await adminDb
+      .collection('media_items')
+      .where('user_id', '==', user.id)
+      .where('status', '==', 'unwatched')
+      .get();
+
+    const genresSet = new Set<string>();
+
+    snapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.genre) {
+        // Split by comma and add each genre
+        const genres = data.genre.split(',').map((g: string) => g.trim());
+        genres.forEach((g: string) => genresSet.add(g));
+      }
+    });
+
+    const genres = Array.from(genresSet).sort();
+
+    return {
+      success: true,
+      data: genres,
+    };
+  } catch (error) {
+    console.error('Get all genres error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get genres',
     };
   }
 }

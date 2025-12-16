@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film } from 'lucide-react';
-import { getRandomUnwatched, markAsWatched } from '@/lib/actions/media';
+import { Sparkles, RotateCcw, Check, Film, ChevronDown } from 'lucide-react';
+import { getRandomUnwatched, markAsWatched, getAllGenres } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
 import type { MediaItem } from '@/types/database';
 
@@ -46,6 +46,19 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [persuasivePhrase, setPersuasivePhrase] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<string>('');
+
+  // Load genres on mount
+  useEffect(() => {
+    async function loadGenres() {
+      const result = await getAllGenres();
+      if (result.success && result.data) {
+        setGenres(result.data as string[]);
+      }
+    }
+    loadGenres();
+  }, []);
 
   // Animate through loading phrases
   const animatePhrases = useCallback(async () => {
@@ -67,8 +80,8 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     // Start phrase animation
     const phraseAnimation = animatePhrases();
 
-    // Fetch random media
-    const result = await getRandomUnwatched();
+    // Fetch random media with optional genre filter
+    const result = await getRandomUnwatched(selectedGenre || undefined);
 
     // Wait for animation to complete
     await phraseAnimation;
@@ -276,7 +289,30 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-4 mt-8">
+          <div className="flex flex-col items-center gap-4 mt-8">
+            {/* Genre Filter - only show when no result */}
+            {!selectedMedia && genres.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-zinc-500">Genre:</span>
+                <div className="relative">
+                  <select
+                    value={selectedGenre}
+                    onChange={(e) => setSelectedGenre(e.target.value)}
+                    className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer"
+                  >
+                    <option value="">All genres</option>
+                    {genres.map((genre) => (
+                      <option key={genre} value={genre}>
+                        {genre}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-center gap-4">
             {selectedMedia ? (
               <>
                 {/* Spin Again */}
@@ -323,6 +359,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 />
               </motion.button>
             )}
+            </div>
           </div>
         </div>
       </div>

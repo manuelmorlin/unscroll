@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Film, Check, Eye, Trash2 } from 'lucide-react';
+import { Film, Check, Eye, Trash2, RotateCcw } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem } from '@/lib/actions/media';
 import type { MediaItem, MediaStatus } from '@/types/database';
@@ -72,6 +72,15 @@ function MediaCard({ media, onStatusChange, onDelete }: MediaCardProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {media.status !== 'unwatched' && (
+            <button
+              onClick={() => onStatusChange(media.id, 'unwatched')}
+              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+              title="Move to To Watch"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
           {media.status !== 'watching' && (
             <button
               onClick={() => onStatusChange(media.id, 'watching')}
