@@ -33,6 +33,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const justSelectedRef = useRef(false);
 
   // Reset form
   const resetForm = useCallback(() => {
@@ -70,6 +71,12 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       clearTimeout(searchTimeoutRef.current);
     }
 
+    // Skip search if we just selected a suggestion
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false;
+      return;
+    }
+
     if (title.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -95,6 +102,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
   // Handle selecting a suggestion
   const handleSelectSuggestion = (movie: TMDBMovie) => {
+    justSelectedRef.current = true;
     setTitle(movie.title);
     // Don't set year here - let AI fill it for accuracy
     setSuggestions([]);
