@@ -39,7 +39,9 @@ export default function AppPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-zinc-400">
               <User className="w-4 h-4" />
-              <span className="hidden sm:inline">{user?.displayName || user?.email}</span>
+              <span className="hidden sm:inline">
+                {user?.displayName || user?.email?.split('@')[0]}
+              </span>
             </div>
             <form action={async () => { await logoutAction(); }}>
               <button
