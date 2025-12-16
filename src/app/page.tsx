@@ -76,10 +76,6 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {/* Social Proof */}
-          <p className="mt-8 text-zinc-500 text-sm">
-            No credit card required • Free forever
-          </p>
         </div>
       </section>
 
