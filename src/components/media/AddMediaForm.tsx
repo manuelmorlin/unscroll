@@ -243,7 +243,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                     type="text"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    placeholder="e.g., 2h 28m or 5 Seasons"
+                    placeholder="e.g., 2h 28m"
                     className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                   />
                 </div>
