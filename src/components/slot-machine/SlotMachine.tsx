@@ -40,6 +40,8 @@ interface SlotMachineProps {
   onWatched?: () => void;
 }
 
+const MAX_SPINS = 3;
+
 export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState('');
@@ -48,6 +50,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
+  const [spinCount, setSpinCount] = useState(0);
 
   // Load genres on mount
   useEffect(() => {
@@ -72,10 +75,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
   // Handle spin
   const handleSpin = useCallback(async () => {
+    if (spinCount >= MAX_SPINS) return;
+    
     setIsSpinning(true);
     setError(null);
     setSelectedMedia(null);
     setPersuasivePhrase(null);
+    setSpinCount(prev => prev + 1);
 
     // Start phrase animation
     const phraseAnimation = animatePhrases();
@@ -107,7 +113,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     }
 
     setIsSpinning(false);
-  }, [animatePhrases, selectedGenre]);
+  }, [animatePhrases, selectedGenre, spinCount]);
 
   // Handle mark as watched
   const handleMarkWatched = useCallback(async () => {
@@ -118,6 +124,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     if (result.success) {
       setSelectedMedia(null);
       setPersuasivePhrase(null);
+      setSpinCount(0); // Reset spin count after watching
       onWatched?.();
     }
   }, [selectedMedia, onWatched]);
@@ -290,15 +297,23 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-col items-center gap-4 mt-8">
-            {/* Genre Filter - only show when no result */}
-            {!selectedMedia && genres.length > 0 && (
+            {/* Spin Counter */}
+            {spinCount > 0 && spinCount < MAX_SPINS && (
+              <div className="text-sm text-zinc-500">
+                {MAX_SPINS - spinCount} spin{MAX_SPINS - spinCount !== 1 ? 's' : ''} remaining
+              </div>
+            )}
+
+            {/* Genre Filter - always visible when spins available */}
+            {genres.length > 0 && spinCount < MAX_SPINS && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-zinc-500">Genre:</span>
                 <div className="relative">
                   <select
                     value={selectedGenre}
                     onChange={(e) => setSelectedGenre(e.target.value)}
-                    className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer"
+                    disabled={isSpinning}
+                    className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer disabled:opacity-50"
                   >
                     <option value="">All genres</option>
                     {genres.map((genre) => (
@@ -313,7 +328,21 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
             )}
 
             <div className="flex items-center justify-center gap-4">
-            {selectedMedia ? (
+            {spinCount >= MAX_SPINS && selectedMedia ? (
+              <>
+                {/* No more spins - only show Mark as Watched */}
+                <div className="text-sm text-zinc-500 mr-2">No more spins!</div>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleMarkWatched}
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-colors"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Mark as Watched</span>
+                </motion.button>
+              </>
+            ) : selectedMedia ? (
               <>
                 {/* Spin Again */}
                 <motion.button
