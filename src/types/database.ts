@@ -12,7 +12,7 @@ export interface MediaItem {
   title: string;
   genre: string | null;
   plot: string | null;
-  cast: string[] | null;
+  cast: string | string[] | null;
   duration: string | null;
   format: MediaFormat;
   status: MediaStatus;
@@ -27,7 +27,7 @@ export interface MediaItemInsert {
   title: string;
   genre?: string | null;
   plot?: string | null;
-  cast?: string[] | null;
+  cast?: string | string[] | null;
   duration?: string | null;
   format?: MediaFormat;
   status?: MediaStatus;
@@ -40,7 +40,7 @@ export interface MediaItemUpdate {
   title?: string;
   genre?: string | null;
   plot?: string | null;
-  cast?: string[] | null;
+  cast?: string | string[] | null;
   duration?: string | null;
   format?: MediaFormat;
   status?: MediaStatus;
