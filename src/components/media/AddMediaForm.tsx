@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
+import { Plus, Sparkles, X, Loader2, Film, Search } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
+import { searchMovies, type TMDBMovie } from '@/lib/actions/tmdb';
 import type { MediaFormat, MediaItemInsert } from '@/types/database';
 
 const FORMAT_OPTIONS: { value: MediaFormat; label: string; icon: typeof Film }[] = [
@@ -30,6 +31,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [format, setFormat] = useState<MediaFormat>('movie');
   const [year, setYear] = useState('');
 
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<TMDBMovie[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Reset form
   const resetForm = useCallback(() => {
     setTitle('');
@@ -40,7 +48,48 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setFormat('movie');
     setYear('');
     setError(null);
+    setSuggestions([]);
+    setShowSuggestions(false);
   }, []);
+
+  // Search movies when title changes
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (title.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsSearching(true);
+    searchTimeoutRef.current = setTimeout(async () => {
+      const result = await searchMovies(title);
+      if (result.success && result.movies) {
+        setSuggestions(result.movies);
+        setShowSuggestions(result.movies.length > 0);
+      }
+      setIsSearching(false);
+    }, 300); // Debounce 300ms
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [title]);
+
+  // Handle selecting a suggestion
+  const handleSelectSuggestion = (movie: TMDBMovie) => {
+    setTitle(movie.title);
+    if (movie.release_date) {
+      setYear(movie.release_date.split('-')[0]);
+    }
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   // Handle autofill
   const handleAutofill = useCallback(async () => {
@@ -51,6 +100,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
     setIsAutofilling(true);
     setError(null);
+    setShowSuggestions(false);
 
     const result = await actionAutofill(title);
 
@@ -58,6 +108,15 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       setGenre(result.data.genre);
       setPlot(result.data.plot);
       setCast(result.data.cast.join(', '));
+      setDuration(result.data.duration);
+      setFormat(result.data.format);
+      setYear(result.data.year.toString());
+    } else {
+      setError(result.error || 'Autofill failed');
+    }
+
+    setIsAutofilling(false);
+  }, [title]);
       setDuration(result.data.duration);
       setFormat(result.data.format);
       setYear(result.data.year.toString());
@@ -163,13 +222,62 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                 <div className="space-y-2">
                   <label className="text-sm text-zinc-400">Title *</label>
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g., Inception"
-                      className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-                    />
+                    <div className="relative flex-1">
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                        placeholder="e.g., Inception"
+                        className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      />
+                      {isSearching && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
+                        </div>
+                      )}
+                      
+                      {/* Suggestions Dropdown */}
+                      <AnimatePresence>
+                        {showSuggestions && suggestions.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto"
+                          >
+                            {suggestions.map((movie) => (
+                              <button
+                                key={movie.id}
+                                type="button"
+                                onClick={() => handleSelectSuggestion(movie)}
+                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-zinc-700 transition-colors text-left"
+                              >
+                                {movie.poster_path ? (
+                                  <img
+                                    src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                                    alt={movie.title}
+                                    className="w-10 h-14 object-cover rounded"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-14 bg-zinc-700 rounded flex items-center justify-center">
+                                    <Film className="w-5 h-5 text-zinc-500" />
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white font-medium truncate">{movie.title}</p>
+                                  <p className="text-sm text-zinc-400">
+                                    {movie.release_date ? movie.release_date.split('-')[0] : 'Unknown year'}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                     <motion.button
                       type="button"
                       whileHover={{ scale: 1.02 }}
