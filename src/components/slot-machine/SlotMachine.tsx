@@ -107,7 +107,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     }
 
     setIsSpinning(false);
-  }, [animatePhrases]);
+  }, [animatePhrases, selectedGenre]);
 
   // Handle mark as watched
   const handleMarkWatched = useCallback(async () => {
