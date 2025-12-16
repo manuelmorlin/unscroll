@@ -6,6 +6,7 @@ import { Mail, Lock, User, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { setSessionAction } from '@/lib/actions/auth';
@@ -37,6 +38,11 @@ export function AuthForm() {
       if (mode === 'register') {
         // Create new user
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Update the user's display name on the client side
+        await updateProfile(userCredential.user, {
+          displayName: username,
+        });
       } else {
         // Sign in existing user
         userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -47,12 +53,6 @@ export function AuthForm() {
       
       // For registration, include extra data
       if (mode === 'register') {
-        const registerFormData = new FormData();
-        registerFormData.append('email', email);
-        registerFormData.append('password', password);
-        registerFormData.append('username', username);
-        registerFormData.append('idToken', idToken);
-        
         // The server action will create the user document
         const response = await fetch('/api/auth/register', {
           method: 'POST',
