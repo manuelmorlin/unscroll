@@ -88,7 +88,7 @@ export async function loginAction(
   if (!validationResult.success) {
     return {
       success: false,
-      error: validationResult.error.errors[0].message,
+      error: validationResult.error.issues[0].message,
     };
   }
 
@@ -132,7 +132,7 @@ export async function registerAction(
   if (!validationResult.success) {
     return {
       success: false,
-      error: validationResult.error.errors[0].message,
+      error: validationResult.error.issues[0].message,
     };
   }
 
