@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   collection,
   query,
@@ -31,6 +31,7 @@ export function useMediaItems(): UseMediaItemsReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const isFirstLoad = useRef(true);
 
   // Track auth state
   useEffect(() => {
@@ -48,18 +49,15 @@ export function useMediaItems(): UseMediaItemsReturn {
   // Refetch function (triggers re-subscription)
   const [refreshKey, setRefreshKey] = useState(0);
   const refetch = useCallback(() => {
+    isFirstLoad.current = true;
     setRefreshKey((k) => k + 1);
   }, []);
 
   // Subscribe to Firestore realtime updates
   useEffect(() => {
     if (!userId) {
-      setIsLoading(false);
       return;
     }
-
-    setIsLoading(true);
-    setError(null);
 
     const mediaQuery = query(
       collection(db, 'media_items'),
@@ -78,7 +76,11 @@ export function useMediaItems(): UseMediaItemsReturn {
         );
 
         setMediaItems(items);
-        setIsLoading(false);
+        if (isFirstLoad.current) {
+          setIsLoading(false);
+          isFirstLoad.current = false;
+        }
+        setError(null);
       },
       (err) => {
         console.error('Firestore subscription error:', err);
