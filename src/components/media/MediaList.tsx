@@ -1,9 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Film, Check, Eye, Trash2, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
-import { updateMediaStatus, deleteMediaItem } from '@/lib/actions/media';
+import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
 const formatIcons = {
@@ -16,13 +17,177 @@ const statusColors = {
   watched: 'bg-green-500',
 };
 
+// ==============================================
+// EDIT MODAL
+// ==============================================
+
+interface EditModalProps {
+  media: MediaItem;
+  onClose: () => void;
+  onSave: (id: string, updates: Partial<MediaItem>) => Promise<void>;
+}
+
+function EditModal({ media, onClose, onSave }: EditModalProps) {
+  const [title, setTitle] = useState(media.title);
+  const [year, setYear] = useState(media.year?.toString() || '');
+  const [genre, setGenre] = useState(media.genre || '');
+  const [duration, setDuration] = useState(media.duration || '');
+  const [plot, setPlot] = useState(media.plot || '');
+  const [cast, setCast] = useState(
+    Array.isArray(media.cast) ? media.cast.join(', ') : media.cast || ''
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    
+    await onSave(media.id, {
+      title,
+      year: year ? parseInt(year) : undefined,
+      genre,
+      duration,
+      plot,
+      cast,
+    });
+    
+    setIsSaving(false);
+    onClose();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-white">Edit Movie</h2>
+          <button
+            onClick={onClose}
+            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Title */}
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1">Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              required
+            />
+          </div>
+
+          {/* Year & Duration */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1">Year</label>
+              <input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                placeholder="2024"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1">Duration</label>
+              <input
+                type="text"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                placeholder="2h 30m"
+              />
+            </div>
+          </div>
+
+          {/* Genre */}
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1">Genre</label>
+            <input
+              type="text"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              placeholder="Drama, Thriller"
+            />
+          </div>
+
+          {/* Cast */}
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1">Cast</label>
+            <input
+              type="text"
+              value={cast}
+              onChange={(e) => setCast(e.target.value)}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              placeholder="Actor 1, Actor 2, Actor 3"
+            />
+          </div>
+
+          {/* Plot */}
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1">Plot</label>
+            <textarea
+              value={plot}
+              onChange={(e) => setPlot(e.target.value)}
+              rows={3}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500 resize-none"
+              placeholder="Brief plot description..."
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-2 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ==============================================
+// MEDIA CARD
+// ==============================================
+
 interface MediaCardProps {
   media: MediaItem;
   onStatusChange: (id: string, status: MediaStatus) => void;
   onDelete: (id: string) => void;
+  onEdit: (media: MediaItem) => void;
 }
 
-function MediaCard({ media, onStatusChange, onDelete }: MediaCardProps) {
+function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) {
   const FormatIcon = formatIcons[media.format] || Film;
 
   return (
@@ -72,6 +237,13 @@ function MediaCard({ media, onStatusChange, onDelete }: MediaCardProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => onEdit(media)}
+            className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-zinc-800 rounded-lg transition-colors"
+            title="Edit"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
           {media.status !== 'unwatched' && (
             <button
               onClick={() => onStatusChange(media.id, 'unwatched')}
@@ -119,6 +291,7 @@ interface MediaListProps {
 export function MediaList({ filter = 'all' }: MediaListProps) {
   const { mediaItems, isLoading, error, unwatchedCount, watchedCount } =
     useMediaItems();
+  const [editingMedia, setEditingMedia] = useState<MediaItem | null>(null);
 
   const filteredItems =
     filter === 'all'
@@ -131,6 +304,14 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   const handleDelete = async (id: string) => {
     await deleteMediaItem(id);
+  };
+
+  const handleEdit = (media: MediaItem) => {
+    setEditingMedia(media);
+  };
+
+  const handleSaveEdit = async (id: string, updates: Partial<MediaItem>) => {
+    await updateMediaItem(id, updates);
   };
 
   if (isLoading) {
@@ -172,6 +353,17 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   return (
     <div>
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingMedia && (
+          <EditModal
+            media={editingMedia}
+            onClose={() => setEditingMedia(null)}
+            onSave={handleSaveEdit}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Stats */}
       <div className="flex items-center gap-4 mb-4 text-sm text-zinc-500">
         <span>{filteredItems.length} items</span>
@@ -189,6 +381,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
             media={media}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         ))}
       </div>
