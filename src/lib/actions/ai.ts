@@ -87,8 +87,7 @@ Always set format to "movie". Be accurate and factual.`,
           content: `Provide information for the film: "${title}"`,
         },
       ],
-      temperature: 0.3,
-      max_tokens: 500,
+      max_completion_tokens: 500,
     });
 
     const responseContent = completion.choices[0]?.message?.content;
