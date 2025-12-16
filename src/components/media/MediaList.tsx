@@ -1,16 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Film, Tv, Video, Clapperboard, Check, Eye, Trash2 } from 'lucide-react';
+import { Film, Check, Eye, Trash2 } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem } from '@/lib/actions/media';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
 const formatIcons = {
   movie: Film,
-  series: Tv,
-  documentary: Video,
-  anime: Clapperboard,
 };
 
 const statusColors = {
@@ -155,10 +152,10 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         <p className="text-zinc-400 mb-2">
           {filter === 'all'
             ? "Your watchlist is empty"
-            : `No ${filter} items`}
+            : `No ${filter} films`}
         </p>
         <p className="text-zinc-500 text-sm">
-          Add some movies or series to get started
+          Add some films to get started
         </p>
       </div>
     );

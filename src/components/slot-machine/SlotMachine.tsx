@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, Tv, Video, Clapperboard } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
 import type { MediaItem } from '@/types/database';
@@ -30,9 +30,6 @@ const LOADING_PHRASES = [
 
 const formatIcons = {
   movie: Film,
-  series: Tv,
-  documentary: Video,
-  anime: Clapperboard,
 };
 
 // ==============================================

@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 
 // ==============================================
@@ -29,6 +30,49 @@ export interface AuthActionResult {
 }
 
 // ==============================================
+// HELPER: Create session cookie
+// ==============================================
+
+async function createSessionCookie(idToken: string) {
+  const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
+  const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+  
+  const cookieStore = await cookies();
+  cookieStore.set('session', sessionCookie, {
+    maxAge: expiresIn / 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    sameSite: 'lax',
+  });
+}
+
+// ==============================================
+// GET CURRENT USER (Server-side)
+// ==============================================
+
+export async function getCurrentUser() {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('session')?.value;
+
+  if (!sessionCookie) {
+    return null;
+  }
+
+  try {
+    const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
+    return {
+      id: decodedClaims.uid,
+      email: decodedClaims.email,
+      username: decodedClaims.name || decodedClaims.email?.split('@')[0],
+      isDemo: decodedClaims.email === process.env.DEMO_USER_EMAIL,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ==============================================
 // LOGIN ACTION
 // ==============================================
 
@@ -36,8 +80,6 @@ export async function loginAction(
   prevState: AuthActionResult | null,
   formData: FormData
 ): Promise<AuthActionResult> {
-  const supabase = await createClient();
-
   const validationResult = authSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -50,17 +92,22 @@ export async function loginAction(
     };
   }
 
-  const { email, password } = validationResult.data;
+  const idToken = formData.get('idToken') as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
+  if (!idToken) {
     return {
       success: false,
-      error: error.message,
+      error: 'Authentication failed. Please try again.',
+    };
+  }
+
+  try {
+    await createSessionCookie(idToken);
+  } catch (error) {
+    console.error('Login error:', error);
+    return {
+      success: false,
+      error: 'Failed to create session. Please try again.',
     };
   }
 
@@ -76,8 +123,6 @@ export async function registerAction(
   prevState: AuthActionResult | null,
   formData: FormData
 ): Promise<AuthActionResult> {
-  const supabase = await createClient();
-
   const validationResult = registerSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -91,23 +136,39 @@ export async function registerAction(
     };
   }
 
-  const { email, password, username } = validationResult.data;
+  const { email, username } = validationResult.data;
+  const idToken = formData.get('idToken') as string;
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        username,
-        is_demo: false,
-      },
-    },
-  });
-
-  if (error) {
+  if (!idToken) {
     return {
       success: false,
-      error: error.message,
+      error: 'Authentication failed. Please try again.',
+    };
+  }
+
+  try {
+    // Verify the token and get the user
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    
+    // Update user profile with username
+    await adminAuth.updateUser(decodedToken.uid, {
+      displayName: username,
+    });
+
+    // Create user document in Firestore
+    await adminDb.collection('users').doc(decodedToken.uid).set({
+      email,
+      username,
+      isDemo: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    await createSessionCookie(idToken);
+  } catch (error) {
+    console.error('Register error:', error);
+    return {
+      success: false,
+      error: 'Failed to complete registration. Please try again.',
     };
   }
 
@@ -120,8 +181,6 @@ export async function registerAction(
 // ==============================================
 
 export async function demoLoginAction(): Promise<AuthActionResult> {
-  const supabase = await createClient();
-
   const demoEmail = process.env.DEMO_USER_EMAIL;
   const demoPassword = process.env.DEMO_USER_PASSWORD;
 
@@ -132,54 +191,12 @@ export async function demoLoginAction(): Promise<AuthActionResult> {
     };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: demoEmail,
-    password: demoPassword,
-  });
-
-  if (error) {
-    // If demo user doesn't exist, try to create it
-    if (error.message.includes('Invalid login credentials')) {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: demoEmail,
-        password: demoPassword,
-        options: {
-          data: {
-            username: 'Demo User',
-            is_demo: true,
-          },
-        },
-      });
-
-      if (signUpError) {
-        return {
-          success: false,
-          error: 'Failed to initialize demo account. Please try again.',
-        };
-      }
-
-      // Try to login again
-      const { error: retryError } = await supabase.auth.signInWithPassword({
-        email: demoEmail,
-        password: demoPassword,
-      });
-
-      if (retryError) {
-        return {
-          success: false,
-          error: retryError.message,
-        };
-      }
-    } else {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-  }
-
-  revalidatePath('/', 'layout');
-  redirect('/app');
+  // Demo login is handled client-side, this is just a placeholder
+  // The actual Firebase auth happens in the client component
+  return {
+    success: true,
+    message: 'Demo login initiated',
+  };
 }
 
 // ==============================================
@@ -187,17 +204,28 @@ export async function demoLoginAction(): Promise<AuthActionResult> {
 // ==============================================
 
 export async function logoutAction(): Promise<AuthActionResult> {
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    return {
-      success: false,
-      error: error.message,
-    };
-  }
+  const cookieStore = await cookies();
+  
+  // Clear the session cookie
+  cookieStore.delete('session');
 
   revalidatePath('/', 'layout');
   redirect('/auth');
+}
+
+// ==============================================
+// SET SESSION (called from client after Firebase auth)
+// ==============================================
+
+export async function setSessionAction(idToken: string): Promise<AuthActionResult> {
+  try {
+    await createSessionCookie(idToken);
+    return { success: true };
+  } catch (error) {
+    console.error('Set session error:', error);
+    return {
+      success: false,
+      error: 'Failed to create session',
+    };
+  }
 }

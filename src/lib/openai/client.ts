@@ -5,13 +5,10 @@ import OpenAI from 'openai';
  * Server-side only - never expose to client
  */
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('Missing OPENAI_API_KEY environment variable');
-}
-
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Make OpenAI optional - AI features won't work without the key
+export const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 // Model configuration - using gpt-4o-mini as gpt-5.1-mini doesn't exist yet
 // Change to 'gpt-5.1-mini' when available

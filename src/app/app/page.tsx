@@ -38,7 +38,7 @@ export default function AppPage() {
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">{user?.email}</span>
             </div>
-            <form action={logoutAction}>
+            <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
                 className="p-2 text-zinc-400 hover:text-white transition-colors"
@@ -129,9 +129,9 @@ export default function AppPage() {
       <footer className="border-t border-zinc-800 mt-auto">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-zinc-500">
           <p>
-            Built with Next.js, Supabase & OpenAI •{' '}
+            Built with Next.js, Firebase & OpenAI •{' '}
             <a
-              href="https://github.com/yourusername/unscroll"
+              href="https://github.com/manuelmorlin/unscroll"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-500 hover:underline"

@@ -1,10 +1,8 @@
 /**
- * Supabase Database Types
- * Auto-generate with: npx supabase gen types typescript --project-id YOUR_PROJECT_ID
- * For now, we define them manually for type safety
+ * Database Types for Firestore
  */
 
-export type MediaFormat = 'movie' | 'series' | 'documentary' | 'anime';
+export type MediaFormat = 'movie';
 
 export type MediaStatus = 'unwatched' | 'watching' | 'watched';
 
@@ -52,38 +50,18 @@ export interface MediaItemUpdate {
   updated_at?: string;
 }
 
-export interface Database {
-  public: {
-    Tables: {
-      media_items: {
-        Row: MediaItem;
-        Insert: MediaItemInsert & { user_id: string };
-        Update: MediaItemUpdate;
-      };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: {
-      media_format: MediaFormat;
-      media_status: MediaStatus;
-    };
-  };
-}
-
-// Auth types for demo mode
+// Auth types
 export interface UserProfile {
   id: string;
   email: string;
-  is_demo: boolean;
-  created_at: string;
+  username: string;
+  isDemo: boolean;
+  createdAt: string;
 }
 
-// Realtime payload types
-export interface RealtimePayload<T> {
-  commit_timestamp: string;
+// Realtime payload type (for compatibility)
+export interface RealtimePayload {
   eventType: 'INSERT' | 'UPDATE' | 'DELETE';
-  new: T;
-  old: T | null;
-  schema: string;
-  table: string;
+  new: MediaItem | null;
+  old: MediaItem | null;
 }

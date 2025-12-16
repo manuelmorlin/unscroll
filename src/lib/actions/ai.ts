@@ -54,6 +54,13 @@ export async function actionAutofill(title: string): Promise<AutofillActionResul
     };
   }
 
+  if (!openai) {
+    return {
+      success: false,
+      error: 'AI features are not configured. Please add OPENAI_API_KEY to enable autofill.',
+    };
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -143,6 +150,17 @@ export async function actionPersuade(
     return {
       success: false,
       error: 'Title is required',
+    };
+  }
+
+  if (!openai) {
+    // Return a fallback phrase if AI is not configured
+    return {
+      success: true,
+      data: {
+        phrase: "Fate has chosen. Time to watch!",
+        mood: 'excited',
+      },
     };
   }
 

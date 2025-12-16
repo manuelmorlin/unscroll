@@ -1,41 +1,131 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import {
-  loginAction,
-  registerAction,
-  demoLoginAction,
-  type AuthActionResult,
-} from '@/lib/actions/auth';
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
+import { setSessionAction } from '@/lib/actions/auth';
+import { useRouter } from 'next/navigation';
 
 type AuthMode = 'login' | 'register';
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  // Form actions
-  const [loginState, loginFormAction, isLoginPending] = useActionState<
-    AuthActionResult | null,
-    FormData
-  >(loginAction, null);
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-  const [registerState, registerFormAction, isRegisterPending] = useActionState<
-    AuthActionResult | null,
-    FormData
-  >(registerAction, null);
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const username = formData.get('username') as string;
 
-  const isPending = isLoginPending || isRegisterPending;
-  const state = mode === 'login' ? loginState : registerState;
-  const formAction = mode === 'login' ? loginFormAction : registerFormAction;
+    try {
+      let userCredential;
+
+      if (mode === 'register') {
+        // Create new user
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        // Sign in existing user
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      }
+
+      // Get ID token and create server session
+      const idToken = await userCredential.user.getIdToken();
+      
+      // For registration, include extra data
+      if (mode === 'register') {
+        const registerFormData = new FormData();
+        registerFormData.append('email', email);
+        registerFormData.append('password', password);
+        registerFormData.append('username', username);
+        registerFormData.append('idToken', idToken);
+        
+        // The server action will create the user document
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ email, username, idToken }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to complete registration');
+        }
+      } else {
+        // Just set the session for login
+        await setSessionAction(idToken);
+      }
+
+      router.push('/app');
+      router.refresh();
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      
+      // Handle Firebase errors
+      const errorCode = err?.code || '';
+      if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
+        setError('Invalid email or password');
+      } else if (errorCode === 'auth/email-already-in-use') {
+        setError('An account with this email already exists');
+      } else if (errorCode === 'auth/weak-password') {
+        setError('Password must be at least 6 characters');
+      } else if (errorCode === 'auth/invalid-email') {
+        setError('Please enter a valid email address');
+      } else {
+        setError(err?.message || 'Authentication failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Handle demo login
   const handleDemoLogin = async () => {
     setIsDemoLoading(true);
-    await demoLoginAction();
-    setIsDemoLoading(false);
+    setError(null);
+
+    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@unscroll.app';
+    const demoPassword = 'demo-password-123';
+
+    try {
+      let userCredential;
+
+      try {
+        // Try to sign in
+        userCredential = await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+      } catch (signInError: any) {
+        // If user doesn't exist, create it
+        if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+          userCredential = await createUserWithEmailAndPassword(auth, demoEmail, demoPassword);
+        } else {
+          throw signInError;
+        }
+      }
+
+      // Get ID token and create server session
+      const idToken = await userCredential.user.getIdToken();
+      await setSessionAction(idToken);
+
+      router.push('/app');
+      router.refresh();
+    } catch (err: any) {
+      console.error('Demo login error:', err);
+      setError('Demo mode is currently unavailable. Please try again.');
+    } finally {
+      setIsDemoLoading(false);
+    }
   };
 
   return (
@@ -106,20 +196,20 @@ export function AuthForm() {
 
       {/* Error Message */}
       <AnimatePresence>
-        {state?.error && (
+        {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
           >
-            <p className="text-red-400 text-sm">{state.error}</p>
+            <p className="text-red-400 text-sm">{error}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Form */}
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <AnimatePresence mode="wait">
           {mode === 'register' && (
             <motion.div
@@ -169,10 +259,10 @@ export function AuthForm() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           type="submit"
-          disabled={isPending}
+          disabled={isLoading}
           className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {isPending ? (
+          {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>

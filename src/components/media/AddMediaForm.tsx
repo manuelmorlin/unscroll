@@ -2,16 +2,13 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, X, Loader2, Film, Tv, Video, Clapperboard } from 'lucide-react';
+import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
 import type { MediaFormat, MediaItemInsert } from '@/types/database';
 
 const FORMAT_OPTIONS: { value: MediaFormat; label: string; icon: typeof Film }[] = [
-  { value: 'movie', label: 'Movie', icon: Film },
-  { value: 'series', label: 'Series', icon: Tv },
-  { value: 'documentary', label: 'Documentary', icon: Video },
-  { value: 'anime', label: 'Anime', icon: Clapperboard },
+  { value: 'movie', label: 'Film', icon: Film },
 ];
 
 interface AddMediaFormProps {

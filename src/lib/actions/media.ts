@@ -1,7 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { adminDb } from '@/lib/firebase/admin';
+import { getCurrentUser } from './auth';
 import type { MediaItemInsert, MediaItemUpdate, MediaStatus } from '@/types/database';
 
 // ==============================================
@@ -21,43 +22,44 @@ export interface MediaActionResult {
 export async function addMediaItem(
   mediaData: MediaItemInsert
 ): Promise<MediaActionResult> {
-  const supabase = await createClient();
+  const user = await getCurrentUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     return {
       success: false,
       error: 'You must be logged in to add media',
     };
   }
 
-  const { data, error } = await supabase
-    .from('media_items')
-    .insert({
-      ...mediaData,
-      user_id: user.id,
-    })
-    .select()
-    .single();
+  try {
+    const docRef = adminDb.collection('media_items').doc();
+    const now = new Date().toISOString();
 
-  if (error) {
+    const mediaItem = {
+      ...mediaData,
+      id: docRef.id,
+      user_id: user.id,
+      status: mediaData.status || 'unwatched',
+      format: mediaData.format || 'movie',
+      created_at: now,
+      updated_at: now,
+    };
+
+    await docRef.set(mediaItem);
+
+    revalidatePath('/app');
+
+    return {
+      success: true,
+      data: mediaItem,
+    };
+  } catch (error) {
     console.error('Add media error:', error);
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Failed to add media',
     };
   }
-
-  revalidatePath('/app');
-
-  return {
-    success: true,
-    data,
-  };
 }
 
 // ==============================================
@@ -68,42 +70,54 @@ export async function updateMediaItem(
   id: string,
   updates: MediaItemUpdate
 ): Promise<MediaActionResult> {
-  const supabase = await createClient();
+  const user = await getCurrentUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     return {
       success: false,
       error: 'You must be logged in to update media',
     };
   }
 
-  const { data, error } = await supabase
-    .from('media_items')
-    .update(updates)
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .select()
-    .single();
+  try {
+    const docRef = adminDb.collection('media_items').doc(id);
+    const doc = await docRef.get();
 
-  if (error) {
+    if (!doc.exists) {
+      return {
+        success: false,
+        error: 'Media item not found',
+      };
+    }
+
+    const docData = doc.data();
+    if (docData?.user_id !== user.id) {
+      return {
+        success: false,
+        error: 'You do not have permission to update this item',
+      };
+    }
+
+    await docRef.update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    });
+
+    const updatedDoc = await docRef.get();
+
+    revalidatePath('/app');
+
+    return {
+      success: true,
+      data: { id: updatedDoc.id, ...updatedDoc.data() },
+    };
+  } catch (error) {
     console.error('Update media error:', error);
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Failed to update media',
     };
   }
-
-  revalidatePath('/app');
-
-  return {
-    success: true,
-    data,
-  };
 }
 
 // ==============================================
@@ -130,39 +144,48 @@ export async function updateMediaStatus(
 // ==============================================
 
 export async function deleteMediaItem(id: string): Promise<MediaActionResult> {
-  const supabase = await createClient();
+  const user = await getCurrentUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     return {
       success: false,
       error: 'You must be logged in to delete media',
     };
   }
 
-  const { error } = await supabase
-    .from('media_items')
-    .delete()
-    .eq('id', id)
-    .eq('user_id', user.id);
+  try {
+    const docRef = adminDb.collection('media_items').doc(id);
+    const doc = await docRef.get();
 
-  if (error) {
+    if (!doc.exists) {
+      return {
+        success: false,
+        error: 'Media item not found',
+      };
+    }
+
+    const docData = doc.data();
+    if (docData?.user_id !== user.id) {
+      return {
+        success: false,
+        error: 'You do not have permission to delete this item',
+      };
+    }
+
+    await docRef.delete();
+
+    revalidatePath('/app');
+
+    return {
+      success: true,
+    };
+  } catch (error) {
     console.error('Delete media error:', error);
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Failed to delete media',
     };
   }
-
-  revalidatePath('/app');
-
-  return {
-    success: true,
-  };
 }
 
 // ==============================================
@@ -170,56 +193,81 @@ export async function deleteMediaItem(id: string): Promise<MediaActionResult> {
 // ==============================================
 
 export async function getRandomUnwatched(): Promise<MediaActionResult> {
-  const supabase = await createClient();
+  const user = await getCurrentUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     return {
       success: false,
       error: 'You must be logged in',
     };
   }
 
-  // Using the database function for true randomness
-  const { data, error } = await supabase
-    .rpc('get_random_unwatched_media', { p_user_id: user.id })
-    .single();
+  try {
+    const snapshot = await adminDb
+      .collection('media_items')
+      .where('user_id', '==', user.id)
+      .where('status', '==', 'unwatched')
+      .get();
 
-  if (error) {
-    // Fallback to client-side random if function doesn't exist
-    const { data: fallbackData, error: fallbackError } = await supabase
-      .from('media_items')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('status', 'unwatched');
-
-    if (fallbackError || !fallbackData || fallbackData.length === 0) {
+    if (snapshot.empty) {
       return {
         success: false,
         error: 'No unwatched media found. Add something to your list!',
       };
     }
 
-    const randomIndex = Math.floor(Math.random() * fallbackData.length);
+    const docs = snapshot.docs;
+    const randomIndex = Math.floor(Math.random() * docs.length);
+    const randomDoc = docs[randomIndex];
+
     return {
       success: true,
-      data: fallbackData[randomIndex],
+      data: { id: randomDoc.id, ...randomDoc.data() },
     };
-  }
-
-  if (!data) {
+  } catch (error) {
+    console.error('Get random unwatched error:', error);
     return {
       success: false,
-      error: 'No unwatched media found. Add something to your list!',
+      error: error instanceof Error ? error.message : 'Failed to get random media',
+    };
+  }
+}
+
+// ==============================================
+// GET ALL MEDIA ITEMS (for server components)
+// ==============================================
+
+export async function getMediaItems(): Promise<MediaActionResult> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'You must be logged in',
     };
   }
 
-  return {
-    success: true,
-    data,
-  };
+  try {
+    const snapshot = await adminDb
+      .collection('media_items')
+      .where('user_id', '==', user.id)
+      .orderBy('created_at', 'desc')
+      .get();
+
+    const items = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return {
+      success: true,
+      data: items,
+    };
+  } catch (error) {
+    console.error('Get media items error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get media items',
+    };
+  }
 }
