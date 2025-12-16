@@ -11,6 +11,8 @@ import {
 import { auth } from '@/lib/firebase/config';
 import { setSessionAction } from '@/lib/actions/auth';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 type AuthMode = 'login' | 'register';
 
@@ -145,6 +147,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Back to Home */}
+      <Link 
+        href="/"
+        className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Home</span>
+      </Link>
+
       {/* Logo & Title */}
       <div className="text-center mb-10">
         <motion.div
