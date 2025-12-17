@@ -334,14 +334,14 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       whileTap={{ scale: 0.98 }}
                       onClick={handleAutofill}
                       disabled={isAutofilling || !title.trim()}
-                      className="px-4 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-medium rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
+                      className="px-3 sm:px-4 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-medium rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
                     >
                       {isAutofilling ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Sparkles className="w-4 h-4" />
                       )}
-                      <span className="hidden sm:inline">Autofill</span>
+                      <span className="text-sm sm:text-base">Autofill</span>
                     </motion.button>
                   </div>
                 </div>
