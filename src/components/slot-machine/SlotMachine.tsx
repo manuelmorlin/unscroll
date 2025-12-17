@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, ChevronDown, Clock, Heart } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film, ChevronDown, Clock } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
@@ -37,21 +37,6 @@ const DURATION_OPTIONS = [
 ];
 
 // ==============================================
-// MOOD OPTIONS
-// ==============================================
-
-const MOOD_OPTIONS = [
-  { value: '', label: 'Any mood' },
-  { value: 'christmas', label: '🎄 Christmas' },
-  { value: 'romantic', label: '💕 Romantic' },
-  { value: 'action', label: '💥 Action' },
-  { value: 'funny', label: '😂 Funny' },
-  { value: 'scary', label: '👻 Scary' },
-  { value: 'family', label: '👨‍👩‍👧‍👦 Family' },
-  { value: 'thoughtful', label: '🤔 Thoughtful' },
-];
-
-// ==============================================
 // FORMAT ICONS
 // ==============================================
 
@@ -79,7 +64,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
-  const [selectedMood, setSelectedMood] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
   const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
 
@@ -128,7 +112,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     const filters: SpinFilters = {};
     if (selectedGenre) filters.genre = selectedGenre;
     if (selectedDuration) filters.maxDuration = parseInt(selectedDuration);
-    if (selectedMood) filters.mood = selectedMood;
     if (shownFilmIds.length > 0) filters.excludeIds = shownFilmIds; // Exclude already shown films
 
     // Fetch random media with filters
@@ -160,7 +143,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     }
 
     setIsSpinning(false);
-  }, [animatePhrases, selectedGenre, selectedDuration, selectedMood, spinCount]);
+  }, [animatePhrases, selectedGenre, selectedDuration, spinCount, shownFilmIds]);
 
   // Handle mark as watched
   const handleMarkWatched = useCallback(async () => {
@@ -176,7 +159,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setShownFilmIds([]); // Reset shown films
       setSelectedGenre(''); // Reset genre filter
       setSelectedDuration(''); // Reset duration filter
-      setSelectedMood(''); // Reset mood filter
       await loadGenres(); // Reload genres to reflect updated watchlist
       onWatched?.();
     }
@@ -405,26 +387,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       className="appearance-none bg-zinc-900 border border-red-900/50 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-yellow-500 cursor-pointer disabled:opacity-50"
                     >
                       {DURATION_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Mood Filter */}
-                <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-red-400" />
-                  <div className="relative">
-                    <select
-                      value={selectedMood}
-                      onChange={(e) => setSelectedMood(e.target.value)}
-                      disabled={isSpinning}
-                      className="appearance-none bg-zinc-900 border border-red-900/50 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-yellow-500 cursor-pointer disabled:opacity-50"
-                    >
-                      {MOOD_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
