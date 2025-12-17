@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// Firebase REST API for password reset
-const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+import { adminAuth } from '@/lib/firebase/admin';
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +12,27 @@ export async function POST(request: Request) {
       );
     }
 
+    // First, check if user exists using Admin SDK
+    try {
+      await adminAuth.getUserByEmail(email);
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        return NextResponse.json(
+          { error: 'No account found with this email address' },
+          { status: 404 }
+        );
+      }
+      throw error;
+    }
+
+    // User exists, generate password reset link
+    const resetLink = await adminAuth.generatePasswordResetLink(email);
+
+    // For now, we use Firebase's built-in email sending
+    // The generatePasswordResetLink confirms the user exists
+    // but we need to use the REST API to actually send the email
+    
+    const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!FIREBASE_API_KEY) {
       return NextResponse.json(
         { error: 'Firebase not configured' },
@@ -21,7 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send password reset email using Firebase REST API
     const response = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${FIREBASE_API_KEY}`,
       {
@@ -37,13 +55,6 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (data.error) {
-      // Check specific error codes
-      if (data.error.message === 'EMAIL_NOT_FOUND') {
-        return NextResponse.json(
-          { error: 'No account found with this email address' },
-          { status: 404 }
-        );
-      }
       console.log('Password reset error:', data.error.message);
       return NextResponse.json(
         { error: 'Failed to send reset email. Please try again.' },
