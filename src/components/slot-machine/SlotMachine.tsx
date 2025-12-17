@@ -2,8 +2,9 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, ChevronDown } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film, ChevronDown, Clock, Heart } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres } from '@/lib/actions/media';
+import type { SpinFilters } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
 import type { MediaItem } from '@/types/database';
 
@@ -22,6 +23,32 @@ const LOADING_PHRASES = [
   "Summoning entertainment...",
   "Calculating vibes...",
   "The oracle speaks...",
+];
+
+// ==============================================
+// DURATION OPTIONS
+// ==============================================
+
+const DURATION_OPTIONS = [
+  { value: '', label: 'Any length' },
+  { value: '90', label: '≤ 1h 30m' },
+  { value: '120', label: '≤ 2h' },
+  { value: '150', label: '≤ 2h 30m' },
+];
+
+// ==============================================
+// MOOD OPTIONS
+// ==============================================
+
+const MOOD_OPTIONS = [
+  { value: '', label: 'Any mood' },
+  { value: 'christmas', label: '🎄 Christmas' },
+  { value: 'romantic', label: '💕 Romantic' },
+  { value: 'action', label: '💥 Action' },
+  { value: 'funny', label: '😂 Funny' },
+  { value: 'scary', label: '👻 Scary' },
+  { value: 'family', label: '👨‍👩‍👧‍👦 Family' },
+  { value: 'thoughtful', label: '🤔 Thoughtful' },
 ];
 
 // ==============================================
@@ -50,6 +77,8 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
+  const [selectedDuration, setSelectedDuration] = useState<string>('');
+  const [selectedMood, setSelectedMood] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
 
   // Load genres function
@@ -93,8 +122,14 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     // Start phrase animation
     const phraseAnimation = animatePhrases();
 
-    // Fetch random media with optional genre filter
-    const result = await getRandomUnwatched(selectedGenre || undefined);
+    // Build filters object
+    const filters: SpinFilters = {};
+    if (selectedGenre) filters.genre = selectedGenre;
+    if (selectedDuration) filters.maxDuration = parseInt(selectedDuration);
+    if (selectedMood) filters.mood = selectedMood;
+
+    // Fetch random media with filters
+    const result = await getRandomUnwatched(Object.keys(filters).length > 0 ? filters : undefined);
 
     // Wait for animation to complete
     await phraseAnimation;
@@ -120,7 +155,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     }
 
     setIsSpinning(false);
-  }, [animatePhrases, selectedGenre, spinCount]);
+  }, [animatePhrases, selectedGenre, selectedDuration, selectedMood, spinCount]);
 
   // Handle mark as watched
   const handleMarkWatched = useCallback(async () => {
@@ -133,6 +168,8 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setPersuasivePhrase(null);
       setSpinCount(0); // Reset spin count after watching
       setSelectedGenre(''); // Reset genre filter
+      setSelectedDuration(''); // Reset duration filter
+      setSelectedMood(''); // Reset mood filter
       await loadGenres(); // Reload genres to reflect updated watchlist
       onWatched?.();
     }
@@ -313,25 +350,70 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
               </div>
             )}
 
-            {/* Genre Filter - always visible when spins available */}
-            {genres.length > 0 && spinCount < MAX_SPINS && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-zinc-500">Genre:</span>
-                <div className="relative">
-                  <select
-                    value={selectedGenre}
-                    onChange={(e) => setSelectedGenre(e.target.value)}
-                    disabled={isSpinning}
-                    className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer disabled:opacity-50"
-                  >
-                    <option value="">All genres</option>
-                    {genres.map((genre) => (
-                      <option key={genre} value={genre}>
-                        {genre}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+            {/* Filters Panel - always visible when spins available */}
+            {spinCount < MAX_SPINS && (
+              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 w-full">
+                {/* Genre Filter */}
+                {genres.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-zinc-500">Genre:</span>
+                    <div className="relative">
+                      <select
+                        value={selectedGenre}
+                        onChange={(e) => setSelectedGenre(e.target.value)}
+                        disabled={isSpinning}
+                        className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer disabled:opacity-50"
+                      >
+                        <option value="">All genres</option>
+                        {genres.map((genre) => (
+                          <option key={genre} value={genre}>
+                            {genre}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Duration Filter */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-zinc-500" />
+                  <div className="relative">
+                    <select
+                      value={selectedDuration}
+                      onChange={(e) => setSelectedDuration(e.target.value)}
+                      disabled={isSpinning}
+                      className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer disabled:opacity-50"
+                    >
+                      {DURATION_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Mood Filter */}
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-zinc-500" />
+                  <div className="relative">
+                    <select
+                      value={selectedMood}
+                      onChange={(e) => setSelectedMood(e.target.value)}
+                      disabled={isSpinning}
+                      className="appearance-none bg-zinc-800 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-amber-500 cursor-pointer disabled:opacity-50"
+                    >
+                      {MOOD_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  </div>
                 </div>
               </div>
             )}

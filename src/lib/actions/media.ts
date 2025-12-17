@@ -192,7 +192,39 @@ export async function deleteMediaItem(id: string): Promise<MediaActionResult> {
 // GET RANDOM UNWATCHED
 // ==============================================
 
-export async function getRandomUnwatched(genre?: string): Promise<MediaActionResult> {
+// ==============================================
+// SPIN FILTERS TYPE
+// ==============================================
+
+export interface SpinFilters {
+  genre?: string;
+  maxDuration?: number; // in minutes
+  mood?: string;
+}
+
+// Helper to parse duration string to minutes
+function parseDurationToMinutes(duration: string): number {
+  const hoursMatch = duration.match(/(\d+)\s*h/);
+  const minutesMatch = duration.match(/(\d+)\s*m/);
+  
+  const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+  const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+  
+  return hours * 60 + minutes;
+}
+
+// Mood keywords mapping
+const MOOD_KEYWORDS: Record<string, string[]> = {
+  'christmas': ['christmas', 'holiday', 'xmas', 'winter', 'snow', 'santa', 'miracle'],
+  'romantic': ['romance', 'romantic', 'love', 'wedding', 'relationship'],
+  'action': ['action', 'adventure', 'thriller', 'spy', 'war', 'fight'],
+  'funny': ['comedy', 'funny', 'humor', 'laugh', 'parody'],
+  'scary': ['horror', 'scary', 'thriller', 'suspense', 'terror', 'ghost'],
+  'family': ['family', 'animation', 'kids', 'children', 'pixar', 'disney', 'animated'],
+  'thoughtful': ['drama', 'biography', 'documentary', 'history', 'thought-provoking'],
+};
+
+export async function getRandomUnwatched(filters?: SpinFilters): Promise<MediaActionResult> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -219,18 +251,45 @@ export async function getRandomUnwatched(genre?: string): Promise<MediaActionRes
     let docs = snapshot.docs;
 
     // Filter by genre if specified
-    if (genre) {
+    if (filters?.genre) {
       docs = docs.filter(doc => {
         const data = doc.data();
-        return data.genre?.toLowerCase().includes(genre.toLowerCase());
+        return data.genre?.toLowerCase().includes(filters.genre!.toLowerCase());
       });
+    }
 
-      if (docs.length === 0) {
-        return {
-          success: false,
-          error: `No unwatched ${genre} movies found. Try another genre!`,
-        };
+    // Filter by max duration if specified
+    if (filters?.maxDuration) {
+      docs = docs.filter(doc => {
+        const data = doc.data();
+        if (!data.duration) return true; // Include films without duration info
+        const filmMinutes = parseDurationToMinutes(data.duration);
+        return filmMinutes <= filters.maxDuration!;
+      });
+    }
+
+    // Filter by mood if specified
+    if (filters?.mood) {
+      const moodKeywords = MOOD_KEYWORDS[filters.mood.toLowerCase()] || [];
+      if (moodKeywords.length > 0) {
+        docs = docs.filter(doc => {
+          const data = doc.data();
+          const searchText = `${data.genre || ''} ${data.plot || ''} ${data.title || ''}`.toLowerCase();
+          return moodKeywords.some(keyword => searchText.includes(keyword));
+        });
       }
+    }
+
+    if (docs.length === 0) {
+      const filterParts = [];
+      if (filters?.genre) filterParts.push(filters.genre);
+      if (filters?.maxDuration) filterParts.push(`under ${filters.maxDuration} min`);
+      if (filters?.mood) filterParts.push(`${filters.mood} mood`);
+      
+      return {
+        success: false,
+        error: `No movies match your filters (${filterParts.join(', ')}). Try different options!`,
+      };
     }
 
     const randomIndex = Math.floor(Math.random() * docs.length);
