@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, ChevronDown, Clock } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film, Clock, X } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
@@ -30,11 +30,40 @@ const LOADING_PHRASES = [
 // ==============================================
 
 const DURATION_OPTIONS = [
-  { value: '', label: 'Any length' },
-  { value: '90', label: '≤ 1h 30m' },
-  { value: '120', label: '≤ 2h' },
-  { value: '150', label: '≤ 2h 30m' },
+  { value: '', label: 'Any', emoji: '⏱️' },
+  { value: '90', label: '≤1h30', emoji: '⚡' },
+  { value: '120', label: '≤2h', emoji: '🎬' },
+  { value: '150', label: '≤2h30', emoji: '🍿' },
 ];
+
+// ==============================================
+// GENRE EMOJIS
+// ==============================================
+
+const GENRE_EMOJIS: Record<string, string> = {
+  'Action': '💥',
+  'Adventure': '🌍',
+  'Animation': '🎨',
+  'Biography': '📖',
+  'Comedy': '😂',
+  'Crime': '🔫',
+  'Documentary': '📹',
+  'Drama': '🎭',
+  'Family': '👨‍👩‍👧‍👦',
+  'Fantasy': '🧙',
+  'History': '🏛️',
+  'Horror': '👻',
+  'Music': '🎵',
+  'Musical': '🎵',
+  'Mystery': '🕵️',
+  'Romance': '💕',
+  'Science Fiction': '🚀',
+  'Sci-Fi': '🚀',
+  'Sport': '⚽',
+  'Thriller': '🔍',
+  'War': '⚔️',
+  'Western': '🤠',
+};
 
 // ==============================================
 // FORMAT ICONS
@@ -352,49 +381,92 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
             {/* Filters Panel - always visible when spins available */}
             {spinCount < MAX_SPINS && (
-              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 w-full">
-                {/* Genre Filter */}
+              <div className="flex flex-col items-center gap-4 w-full">
+                {/* Genre Pills */}
                 {genres.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-zinc-400">🎭</span>
-                    <div className="relative">
-                      <select
-                        value={selectedGenre}
-                        onChange={(e) => setSelectedGenre(e.target.value)}
+                  <div className="w-full">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <button
+                        onClick={() => setSelectedGenre('')}
                         disabled={isSpinning}
-                        className="appearance-none bg-zinc-900 border border-red-900/50 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-yellow-500 cursor-pointer disabled:opacity-50"
+                        className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                          selectedGenre === ''
+                            ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
+                            : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                        } disabled:opacity-50`}
                       >
-                        <option value="">All genres</option>
-                        {genres.map((genre) => (
-                          <option key={genre} value={genre}>
-                            {genre}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                        🎬 All
+                      </button>
+                      {genres.slice(0, 8).map((genre) => (
+                        <button
+                          key={genre}
+                          onClick={() => setSelectedGenre(selectedGenre === genre ? '' : genre)}
+                          disabled={isSpinning}
+                          className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                            selectedGenre === genre
+                              ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
+                              : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                          } disabled:opacity-50`}
+                        >
+                          {GENRE_EMOJIS[genre] || '🎬'} {genre}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {/* Duration Filter */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">⏱️</span>
-                  <div className="relative">
-                    <select
-                      value={selectedDuration}
-                      onChange={(e) => setSelectedDuration(e.target.value)}
-                      disabled={isSpinning}
-                      className="appearance-none bg-zinc-900 border border-red-900/50 text-zinc-200 text-sm rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-yellow-500 cursor-pointer disabled:opacity-50"
-                    >
-                      {DURATION_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                {/* Duration Pills */}
+                <div className="w-full">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className="text-xs text-zinc-500 uppercase tracking-wider">Duration</span>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {DURATION_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setSelectedDuration(selectedDuration === option.value ? '' : option.value)}
+                        disabled={isSpinning}
+                        className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                          selectedDuration === option.value
+                            ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
+                            : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                        } disabled:opacity-50`}
+                      >
+                        {option.emoji} {option.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
+
+                {/* Active Filters Summary */}
+                {(selectedGenre || selectedDuration) && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-xs text-zinc-500"
+                  >
+                    <span>Filtering by:</span>
+                    {selectedGenre && (
+                      <span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full border border-yellow-500/20">
+                        {selectedGenre}
+                      </span>
+                    )}
+                    {selectedDuration && (
+                      <span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full border border-yellow-500/20">
+                        {DURATION_OPTIONS.find(d => d.value === selectedDuration)?.label}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => { setSelectedGenre(''); setSelectedDuration(''); }}
+                      className="text-zinc-600 hover:text-zinc-400 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </motion.div>
+                )}
               </div>
             )}
 
