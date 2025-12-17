@@ -177,7 +177,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
         <div className="h-3 bg-gradient-to-b from-zinc-700 to-zinc-800 rounded-t-xl border-t border-l border-r border-zinc-600" />
         
         {/* Screen */}
-        <div className="relative bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-r border-zinc-700 p-8 overflow-hidden">
+        <div className="relative bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-r border-zinc-700 p-4 sm:p-6 md:p-8 overflow-hidden">
           {/* Projector Light Effect */}
           <div className="absolute top-0 left-1/4 right-1/4 h-24 bg-gradient-to-b from-yellow-500/5 to-transparent projector-light" />
           
@@ -244,7 +244,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight"
+                    className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight px-2"
                   >
                     {movieEmoji} {selectedMedia.title} {movieEmoji}
                   </motion.h3>
@@ -254,7 +254,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="flex items-center justify-center gap-3 text-zinc-400 text-sm mb-6"
+                    className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-zinc-400 text-xs sm:text-sm mb-4 sm:mb-6 px-2"
                   >
                     {selectedMedia.year && <span>{selectedMedia.year}</span>}
                     {selectedMedia.duration && (
@@ -398,16 +398,16 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             {spinCount >= MAX_SPINS && selectedMedia ? (
               <>
                 {/* No more spins - only show Mark as Watched */}
-                <div className="text-sm text-yellow-400 mr-2">🎟️ Final showing!</div>
+                <div className="text-sm text-yellow-400 mb-2 sm:mb-0 sm:mr-2">🎟️ Final showing!</div>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleMarkWatched}
-                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-colors shadow-lg shadow-emerald-900/50"
+                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
                 >
                   <Check className="w-4 h-4" />
                   <span>✅ Mark as Watched</span>
@@ -421,7 +421,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSpin}
                   disabled={isSpinning}
-                  className="flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-full transition-colors disabled:opacity-50 border border-zinc-700"
+                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm sm:text-base rounded-full transition-colors disabled:opacity-50 border border-zinc-700"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>🎰 Spin Again</span>
@@ -432,7 +432,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleMarkWatched}
-                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-colors shadow-lg shadow-emerald-900/50"
+                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
                 >
                   <Check className="w-4 h-4" />
                   <span>✅ Watched</span>
@@ -445,11 +445,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSpin}
                 disabled={isSpinning}
-                className="group relative px-10 py-4 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-xl shadow-red-900/50 border border-red-500/30"
+                className="group relative px-8 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-xl shadow-red-900/50 border border-red-500/30"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  <span className="text-xl">🎬</span>
-                  <span>Roll the Film!</span>
+                  <span className="text-lg sm:text-xl">🎬</span>
+                  <span className="text-sm sm:text-base">Roll the Film!</span>
                 </span>
                 <motion.div
                   className="absolute inset-0 bg-white/20"

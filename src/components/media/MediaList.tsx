@@ -260,31 +260,31 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
       className="group relative overflow-hidden"
     >
       {/* Main Card */}
-      <div className={`relative bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/10 ${status.borderColor} hover:border-red-700/50`}>
+      <div className={`relative bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border rounded-2xl p-3 sm:p-5 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/10 ${status.borderColor} hover:border-red-700/50`}>
         {/* Decorative gradient accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-3 sm:gap-4">
           {/* Genre Emoji Badge */}
-          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-2xl shadow-inner">
+          <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl shadow-inner">
             {genreEmoji}
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             {/* Title Row */}
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <h3 className="text-lg font-semibold text-white truncate leading-tight">
+            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-white truncate leading-tight">
                 {media.title}
               </h3>
               {/* Status Badge */}
-              <span className={`flex-shrink-0 px-2.5 py-1 text-xs font-medium rounded-full ${status.bgColor} ${status.textColor} border ${status.borderColor}`}>
+              <span className={`flex-shrink-0 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full ${status.bgColor} ${status.textColor} border ${status.borderColor}`}>
                 {status.label}
               </span>
             </div>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-400 mb-3">
+            <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-xs sm:text-sm text-zinc-400 mb-2 sm:mb-3">
               {media.year && (
                 <span className="flex items-center gap-1">
                   <span className="text-zinc-600">📅</span>
@@ -298,54 +298,54 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
                 </span>
               )}
               {media.genre && (
-                <span className="text-zinc-500 truncate max-w-[150px]">
+                <span className="text-zinc-500 truncate max-w-[100px] sm:max-w-[150px]">
                   {media.genre}
                 </span>
               )}
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1">
               <button
                 onClick={() => onEdit(media)}
-                className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                 title="Edit"
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               {media.status !== 'unwatched' && (
                 <button
                   onClick={() => onStatusChange(media.id, 'unwatched')}
-                  className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   title="Move to To Watch"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               )}
               {media.status !== 'watching' && (
                 <button
                   onClick={() => onStatusChange(media.id, 'watching')}
-                  className="p-2 text-zinc-500 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
                   title="Mark as Watching"
                 >
-                  <Eye className="w-4 h-4" />
+                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               )}
               {media.status !== 'watched' && (
                 <button
                   onClick={() => onStatusChange(media.id, 'watched')}
-                  className="p-2 text-zinc-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
                   title="Mark as Watched"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               )}
               <button
                 onClick={() => onDelete(media.id)}
-                className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto"
+                className="p-1.5 sm:p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto"
                 title="Delete"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
