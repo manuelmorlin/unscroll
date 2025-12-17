@@ -36,24 +36,25 @@ export default async function HomePage() {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-lg border-b border-red-900/30">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
-              <span className="text-xl">🎬</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <span className="text-lg sm:text-xl">🎬</span>
             </div>
-            <span className="text-xl font-bold gold-shimmer">Unscroll</span>
+            <span className="text-lg sm:text-xl font-bold gold-shimmer">Unscroll</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link 
               href="/auth?mode=login"
-              className="px-4 py-2 text-zinc-400 hover:text-yellow-400 transition-colors"
+              className="px-3 sm:px-4 py-2 text-sm sm:text-base text-zinc-400 hover:text-yellow-400 transition-colors"
             >
               Sign In
             </Link>
             <Link 
               href="/auth?mode=register"
-              className="px-5 py-2 bg-gradient-to-r from-red-700 to-red-600 text-white font-semibold rounded-full hover:from-red-600 hover:to-red-500 transition-all shadow-lg shadow-red-900/50 border border-red-500/30"
+              className="px-3 sm:px-5 py-2 text-sm sm:text-base bg-gradient-to-r from-red-700 to-red-600 text-white font-semibold rounded-full hover:from-red-600 hover:to-red-500 transition-all shadow-lg shadow-red-900/50 border border-red-500/30"
             >
-              Get Started
+              <span className="hidden sm:inline">Get Started</span>
+              <span className="sm:hidden">Start</span>
             </Link>
           </div>
         </div>

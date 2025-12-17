@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, List, LogOut, User, BookOpen } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
 import { AddMediaForm, MediaList, Diary } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
@@ -25,21 +25,21 @@ export default function AppPage() {
       
       {/* Header */}
       <header className="border-b border-red-900/30 bg-black/60 backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🎬</span>
-            <span className="text-lg font-semibold gold-shimmer">Unscroll</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xl sm:text-2xl">🎬</span>
+            <span className="text-base sm:text-lg font-semibold gold-shimmer">Unscroll</span>
             {isDemo && (
-              <span className="px-2 py-0.5 text-xs bg-violet-500/20 text-violet-400 rounded-full">
+              <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs bg-violet-500/20 text-violet-400 rounded-full">
                 Demo
               </span>
             )}
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 text-sm text-zinc-200">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
               <User className="w-4 h-4 text-yellow-500" />
               <span className="font-medium">
                 {user?.displayName || 'User'}
@@ -48,11 +48,11 @@ export default function AppPage() {
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-white bg-red-600/80 hover:bg-red-500 rounded-lg transition-colors font-medium"
+                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white bg-red-600/80 hover:bg-red-500 rounded-lg transition-colors font-medium"
                 title="Sign Out"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
+                <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline sm:inline">Sign Out</span>
               </button>
             </form>
           </div>
@@ -61,22 +61,23 @@ export default function AppPage() {
 
       {/* Tab Navigation */}
       <div className="border-b border-red-900/30">
-        <div className="max-w-4xl mx-auto px-4">
-          <nav className="flex gap-1">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4">
+          <nav className="flex gap-0.5 sm:gap-1">
             {[
-              { id: 'decide' as Tab, label: '🎰 Decide', icon: Sparkles },
-              { id: 'list' as Tab, label: '📋 Watchlist', icon: List },
-              { id: 'diary' as Tab, label: '📔 Diary', icon: BookOpen },
-            ].map(({ id, label }) => (
+              { id: 'decide' as Tab, label: 'Decide', emoji: '🎰' },
+              { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
+              { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
+            ].map(({ id, label, emoji }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                   activeTab === id
                     ? 'border-yellow-500 text-yellow-400'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
+                <span>{emoji}</span>
                 <span>{label}</span>
               </button>
             ))}
