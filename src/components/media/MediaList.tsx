@@ -305,7 +305,7 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => onEdit(media)}
                 className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
