@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -146,11 +146,11 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto relative z-10">
       {/* Back to Home */}
       <Link 
         href="/"
-        className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-zinc-400 hover:text-yellow-400 transition-colors mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
@@ -162,15 +162,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', duration: 0.5 }}
-          className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl mb-6"
+          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-700 to-red-600 rounded-2xl mb-6 shadow-xl shadow-red-900/30 border border-red-500/30"
         >
-          <Sparkles className="w-8 h-8 text-black" />
+          <span className="text-4xl">🎬</span>
         </motion.div>
         <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
-          Unscroll
+          <span className="gold-shimmer">Unscroll</span>
         </h1>
         <p className="text-zinc-400 font-light">
-          End the endless scrolling. Let fate decide.
+          🍿 Your cinema experience awaits
         </p>
       </div>
 
@@ -180,15 +180,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         whileTap={{ scale: 0.98 }}
         onClick={handleDemoLogin}
         disabled={isDemoLoading}
-        className="w-full mb-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+        className="w-full mb-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-violet-900/30"
       >
         {isDemoLoading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
           <>
-            <Sparkles className="w-5 h-5" />
+            <span className="text-lg">🎟️</span>
             <span>Try Demo</span>
-            <span className="text-violet-200 text-sm ml-1">(No sign-up required)</span>
+            <span className="text-violet-200 text-sm ml-1">(No ticket needed)</span>
           </>
         )}
       </motion.button>
@@ -196,26 +196,26 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       {/* Divider */}
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-zinc-800" />
+          <div className="w-full border-t border-red-900/30" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-zinc-950 text-zinc-500">or continue with email</span>
+          <span className="px-4 bg-transparent text-zinc-500">or continue with email</span>
         </div>
       </div>
 
       {/* Mode Toggle */}
-      <div className="flex bg-zinc-900 rounded-xl p-1 mb-6">
+      <div className="flex bg-zinc-900/80 border border-red-900/30 rounded-xl p-1 mb-6">
         {(['login', 'register'] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
               mode === m
-                ? 'bg-zinc-800 text-white'
+                ? 'bg-red-700 text-white shadow-lg'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {m === 'login' ? 'Sign In' : 'Create Account'}
+            {m === 'login' ? '🎬 Sign In' : '🎟️ Create Account'}
           </button>
         ))}
       </div>
@@ -265,7 +265,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                   name="username"
                   placeholder="Username"
                   required={mode === 'register'}
-                  className="w-full pl-12 pr-4 py-3.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
                 />
               </div>
             </motion.div>
@@ -279,7 +279,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             name="email"
             placeholder="Email address"
             required
-            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
           />
         </div>
 
@@ -291,7 +291,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             placeholder="Password"
             required
             minLength={6}
-            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
           />
         </div>
 
@@ -300,13 +300,13 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           whileTap={{ scale: 0.99 }}
           type="submit"
           disabled={isLoading}
-          className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <span>{mode === 'login' ? 'Sign In' : 'Create Account'}</span>
+              <span>{mode === 'login' ? '🎬 Enter Cinema' : '🎟️ Get Your Ticket'}</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -316,11 +316,11 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       {/* Footer */}
       <p className="text-center text-zinc-500 text-sm mt-8">
         By continuing, you agree to our{' '}
-        <a href="#" className="text-amber-500 hover:underline">
+        <a href="#" className="text-yellow-500 hover:underline">
           Terms
         </a>{' '}
         and{' '}
-        <a href="#" className="text-amber-500 hover:underline">
+        <a href="#" className="text-yellow-500 hover:underline">
           Privacy Policy
         </a>
       </p>

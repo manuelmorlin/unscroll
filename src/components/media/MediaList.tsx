@@ -68,13 +68,15 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-zinc-900 border border-red-900/30 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl shadow-red-900/20"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Edit Movie</h2>
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <span>✏️</span> Edit Movie
+          </h2>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+            className="p-2 text-zinc-400 hover:text-white hover:bg-red-900/30 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -83,12 +85,12 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">Title</label>
+            <label className="block text-sm text-zinc-400 mb-1">🎬 Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
               required
             />
           </div>
@@ -96,22 +98,22 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
           {/* Year & Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Year</label>
+              <label className="block text-sm text-zinc-400 mb-1">📅 Year</label>
               <input
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
                 placeholder="2024"
               />
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Duration</label>
+              <label className="block text-sm text-zinc-400 mb-1">⏱️ Duration</label>
               <input
                 type="text"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
                 placeholder="2h 30m"
               />
             </div>
@@ -119,36 +121,36 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 
           {/* Genre */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">Genre</label>
+            <label className="block text-sm text-zinc-400 mb-1">🎭 Genre</label>
             <input
               type="text"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
               placeholder="Drama, Thriller"
             />
           </div>
 
           {/* Cast */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">Cast</label>
+            <label className="block text-sm text-zinc-400 mb-1">⭐ Cast</label>
             <input
               type="text"
               value={cast}
               onChange={(e) => setCast(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
               placeholder="Actor 1, Actor 2, Actor 3"
             />
           </div>
 
           {/* Plot */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">Plot</label>
+            <label className="block text-sm text-zinc-400 mb-1">📝 Plot</label>
             <textarea
               value={plot}
               onChange={(e) => setPlot(e.target.value)}
               rows={3}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-amber-500 resize-none"
+              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500 resize-none"
               placeholder="Brief plot description..."
             />
           </div>
@@ -165,9 +167,9 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="px-6 py-2 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 shadow-lg shadow-red-900/30"
             >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving ? 'Saving...' : '✅ Save Changes'}
             </button>
           </div>
         </form>
@@ -196,7 +198,7 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="group bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-all"
+      className="group bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/20 rounded-xl p-4 hover:border-red-800/40 transition-all"
     >
       <div className="flex items-start justify-between gap-4">
         {/* Content */}
@@ -320,7 +322,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className="h-24 bg-zinc-900/50 border border-zinc-800 rounded-xl animate-pulse"
+            className="h-24 bg-zinc-900/50 border border-red-900/20 rounded-xl animate-pulse"
           />
         ))}
       </div>
@@ -338,14 +340,14 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
   if (filteredItems.length === 0) {
     return (
       <div className="text-center py-12">
-        <Film className="w-12 h-12 mx-auto mb-4 text-zinc-700" />
+        <div className="text-5xl mb-4">🎬</div>
         <p className="text-zinc-400 mb-2">
           {filter === 'all'
-            ? "Your watchlist is empty"
+            ? "Your cinema is empty"
             : `No ${filter} films`}
         </p>
         <p className="text-zinc-500 text-sm">
-          Add some films to get started
+          🍿 Add some films to get started
         </p>
       </div>
     );
@@ -366,11 +368,11 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
       {/* Stats */}
       <div className="flex items-center gap-4 mb-4 text-sm text-zinc-500">
-        <span>{filteredItems.length} items</span>
+        <span>🎬 {filteredItems.length} films</span>
         <span>•</span>
-        <span>{unwatchedCount} to watch</span>
+        <span>🎟️ {unwatchedCount} to watch</span>
         <span>•</span>
-        <span>{watchedCount} watched</span>
+        <span>✅ {watchedCount} watched</span>
       </div>
 
       {/* List */}

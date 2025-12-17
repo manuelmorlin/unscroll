@@ -217,10 +217,10 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-full transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white rounded-full transition-colors shadow-lg shadow-red-900/30 border border-red-500/30"
       >
         <Plus className="w-4 h-4" />
-        <span>Add Media</span>
+        <span>🎬 Add Film</span>
       </motion.button>
 
       {/* Modal */}
@@ -241,14 +241,16 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed inset-x-4 top-[5%] md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl z-50 overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="fixed inset-x-4 top-[5%] md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-zinc-900 border border-red-900/30 rounded-2xl z-50 overflow-hidden max-h-[90vh] overflow-y-auto shadow-2xl shadow-red-900/20"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-zinc-800">
-                <h2 className="text-xl font-semibold text-white">Add to Watchlist</h2>
+              <div className="flex items-center justify-between p-6 border-b border-red-900/30 bg-gradient-to-r from-zinc-900 to-zinc-950">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <span>🎟️</span> Add to Watchlist
+                </h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 text-zinc-400 hover:text-white transition-colors"
+                  className="p-2 text-zinc-400 hover:text-white hover:bg-red-900/30 rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -265,7 +267,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
                 {/* Title + Autofill */}
                 <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">Title *</label>
+                  <label className="text-sm text-zinc-400">🎬 Title *</label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <input
@@ -275,7 +277,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                         onChange={(e) => setTitle(e.target.value)}
                         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                         placeholder="e.g., Inception"
-                        className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                        className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                       />
                       {isSearching && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -291,7 +293,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto"
+                            className="absolute z-50 w-full mt-1 bg-zinc-900 border border-red-900/30 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto"
                           >
                             {suggestions.map((movie) => (
                               <button
@@ -301,7 +303,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                                   e.preventDefault();
                                   handleSelectSuggestion(movie);
                                 }}
-                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-zinc-700 transition-colors text-left"
+                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-red-900/20 transition-colors text-left"
                               >
                                 {movie.poster_path ? (
                                   <img
@@ -332,7 +334,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       whileTap={{ scale: 0.98 }}
                       onClick={handleAutofill}
                       disabled={isAutofilling || !title.trim()}
-                      className="px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-medium rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
+                      className="px-4 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-medium rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
                     >
                       {isAutofilling ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -347,17 +349,17 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                 {/* Genre & Year */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm text-zinc-400">Genre</label>
+                    <label className="text-sm text-zinc-400">🎭 Genre</label>
                     <input
                       type="text"
                       value={genre}
                       onChange={(e) => setGenre(e.target.value)}
                       placeholder="e.g., Sci-Fi, Thriller"
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm text-zinc-400">Year</label>
+                    <label className="text-sm text-zinc-400">📅 Year</label>
                     <input
                       type="number"
                       value={year}
@@ -365,44 +367,44 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       placeholder="e.g., 2010"
                       min="1800"
                       max="2100"
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                     />
                   </div>
                 </div>
 
                 {/* Duration */}
                 <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">Duration</label>
+                  <label className="text-sm text-zinc-400">⏱️ Duration</label>
                   <input
                     type="text"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     placeholder="e.g., 2h 28m"
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                   />
                 </div>
 
                 {/* Cast */}
                 <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">Cast (comma-separated)</label>
+                  <label className="text-sm text-zinc-400">⭐ Cast (comma-separated)</label>
                   <input
                     type="text"
                     value={cast}
                     onChange={(e) => setCast(e.target.value)}
                     placeholder="e.g., Leonardo DiCaprio, Ellen Page"
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                   />
                 </div>
 
                 {/* Plot */}
                 <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">Plot</label>
+                  <label className="text-sm text-zinc-400">📝 Plot</label>
                   <textarea
                     value={plot}
                     onChange={(e) => setPlot(e.target.value)}
                     placeholder="Brief description..."
                     rows={3}
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 resize-none"
                   />
                 </div>
 
@@ -412,13 +414,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   disabled={isSubmitting}
-                  className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl shadow-red-900/30 border border-red-500/30"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      <Plus className="w-5 h-5" />
+                      <span>🎬</span>
                       <span>Add to Watchlist</span>
                     </>
                   )}
