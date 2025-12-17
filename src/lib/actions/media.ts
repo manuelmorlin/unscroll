@@ -125,7 +125,10 @@ export async function updateMediaItem(
 // ==============================================
 
 export async function markAsWatched(id: string): Promise<MediaActionResult> {
-  return updateMediaItem(id, { status: 'watched' });
+  return updateMediaItem(id, { 
+    status: 'watched', 
+    watched_at: new Date().toISOString() 
+  });
 }
 
 // ==============================================
@@ -136,7 +139,19 @@ export async function updateMediaStatus(
   id: string,
   status: MediaStatus
 ): Promise<MediaActionResult> {
-  return updateMediaItem(id, { status });
+  // If marking as watched, set watched_at date
+  if (status === 'watched') {
+    return updateMediaItem(id, { 
+      status, 
+      watched_at: new Date().toISOString() 
+    });
+  }
+  // If moving away from watched, clear watched_at
+  return updateMediaItem(id, { 
+    status,
+    watched_at: null,
+    user_rating: null,
+  });
 }
 
 // ==============================================

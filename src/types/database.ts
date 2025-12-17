@@ -19,6 +19,8 @@ export interface MediaItem {
   poster_url: string | null;
   year: number | null;
   rating: number | null;
+  user_rating: number | null;
+  watched_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -34,6 +36,8 @@ export interface MediaItemInsert {
   poster_url?: string | null;
   year?: number | null;
   rating?: number | null;
+  user_rating?: number | null;
+  watched_at?: string | null;
 }
 
 export interface MediaItemUpdate {
@@ -47,6 +51,8 @@ export interface MediaItemUpdate {
   poster_url?: string | null;
   year?: number | null;
   rating?: number | null;
+  user_rating?: number | null;
+  watched_at?: string | null;
   updated_at?: string;
 }
 

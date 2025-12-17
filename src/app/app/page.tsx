@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, List, LogOut, User, Film, Eye, Check } from 'lucide-react';
+import { Sparkles, List, LogOut, User, Film, Eye, Check, BookOpen } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
-import { AddMediaForm, MediaList } from '@/components/media';
+import { AddMediaForm, MediaList, Diary } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
 import type { MediaStatus } from '@/types/database';
 
-type Tab = 'decide' | 'list';
+type Tab = 'decide' | 'list' | 'diary';
 type ListFilter = 'all' | MediaStatus;
 
 export default function AppPage() {
@@ -66,6 +66,7 @@ export default function AppPage() {
             {[
               { id: 'decide' as Tab, label: '🎰 Decide', icon: Sparkles },
               { id: 'list' as Tab, label: '📋 Watchlist', icon: List },
+              { id: 'diary' as Tab, label: '📔 Diary', icon: BookOpen },
             ].map(({ id, label }) => (
               <button
                 key={id}
@@ -85,7 +86,7 @@ export default function AppPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
-        {activeTab === 'decide' ? (
+        {activeTab === 'decide' && (
           <motion.div
             key="decide"
             initial={{ opacity: 0, y: 20 }}
@@ -109,7 +110,9 @@ export default function AppPage() {
               <AddMediaForm />
             </div>
           </motion.div>
-        ) : (
+        )}
+        
+        {activeTab === 'list' && (
           <motion.div
             key="list"
             initial={{ opacity: 0, y: 20 }}
@@ -157,6 +160,27 @@ export default function AppPage() {
             </div>
 
             <MediaList filter={listFilter} />
+          </motion.div>
+        )}
+        
+        {activeTab === 'diary' && (
+          <motion.div
+            key="diary"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                <span>📔</span> Your Film Diary
+              </h1>
+              <p className="text-zinc-400 text-sm">
+                A timeline of everything you&apos;ve watched
+              </p>
+            </div>
+
+            <Diary />
           </motion.div>
         )}
       </main>
