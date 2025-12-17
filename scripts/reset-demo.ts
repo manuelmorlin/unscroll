@@ -189,10 +189,15 @@ async function deleteAllUserProfiles() {
 async function createDemoUser() {
   console.log('👤 Creating demo user...');
   
+  const demoPassword = process.env.DEMO_USER_PASSWORD;
+  if (!demoPassword) {
+    throw new Error('DEMO_USER_PASSWORD environment variable is required');
+  }
+  
   // Create user in Firebase Auth
   const demoUser = await auth.createUser({
     email: 'demo@unscroll.app',
-    password: 'demo1234',
+    password: demoPassword,
     displayName: 'demo',
     emailVerified: true,
   });
@@ -265,7 +270,7 @@ async function main() {
     console.log('✅ Database reset complete!\n');
     console.log('Demo credentials:');
     console.log('  Email: demo@unscroll.app');
-    console.log('  Password: demo1234');
+    console.log('  Password: (see DEMO_USER_PASSWORD env var)');
     console.log('  Username: demo\n');
     
   } catch (error) {

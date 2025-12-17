@@ -24,7 +24,7 @@ export function DemoButton({ className, children }: DemoButtonProps) {
     setIsLoading(true);
 
     const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@unscroll.app';
-    const demoPassword = 'demo1234';
+    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD || '';
 
     try {
       let userCredential;
