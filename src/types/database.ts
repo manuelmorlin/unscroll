@@ -20,6 +20,7 @@ export interface MediaItem {
   year: number | null;
   rating: number | null;
   user_rating: number | null;
+  user_review: string | null;
   watched_at: string | null;
   created_at: string;
   updated_at: string;
@@ -37,6 +38,7 @@ export interface MediaItemInsert {
   year?: number | null;
   rating?: number | null;
   user_rating?: number | null;
+  user_review?: string | null;
   watched_at?: string | null;
 }
 
@@ -52,6 +54,7 @@ export interface MediaItemUpdate {
   year?: number | null;
   rating?: number | null;
   user_rating?: number | null;
+  user_review?: string | null;
   watched_at?: string | null;
   updated_at?: string;
 }

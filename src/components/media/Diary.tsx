@@ -64,17 +64,27 @@ function formatMonth(dateString: string): string {
 interface DiaryCardProps {
   media: MediaItem;
   onRatingChange: (id: string, rating: number) => void;
+  onReviewChange: (id: string, review: string) => void;
 }
 
-function DiaryCard({ media, onRatingChange }: DiaryCardProps) {
+function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRating, setIsRating] = useState(false);
+  const [isSavingReview, setIsSavingReview] = useState(false);
+  const [review, setReview] = useState(media.user_review || '');
   const genreEmoji = getGenreEmoji(media.genre);
 
   const handleRatingChange = async (rating: number) => {
     setIsRating(true);
     await onRatingChange(media.id, rating);
     setIsRating(false);
+  };
+
+  const handleReviewSave = async () => {
+    if (review === media.user_review) return;
+    setIsSavingReview(true);
+    await onReviewChange(media.id, review);
+    setIsSavingReview(false);
   };
 
   return (
@@ -143,10 +153,19 @@ function DiaryCard({ media, onRatingChange }: DiaryCardProps) {
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
-                  <span>{isExpanded ? 'Hide' : 'Rate'}</span>
+                  <span>{isExpanded ? 'Hide' : media.user_review ? 'Edit' : 'Rate & Review'}</span>
                   {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
               </div>
+
+              {/* Review Preview */}
+              {!isExpanded && media.user_review && (
+                <div className="mt-2 pt-2 border-t border-zinc-800/30">
+                  <p className="text-xs text-zinc-400 italic line-clamp-2">
+                    &quot;{media.user_review}&quot;
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -177,14 +196,26 @@ function DiaryCard({ media, onRatingChange }: DiaryCardProps) {
                   )}
                 </div>
                 
-                {/* Plot summary if available */}
-                {media.plot && (
-                  <div className="mt-4 pt-3 border-t border-zinc-800/30">
-                    <p className="text-xs text-zinc-500 leading-relaxed line-clamp-3">
-                      {media.plot}
-                    </p>
+                {/* Review textarea */}
+                <div className="mt-4 pt-3 border-t border-zinc-800/30">
+                  <label className="block text-sm text-zinc-400 mb-2">✍️ Your thoughts</label>
+                  <textarea
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    onBlur={handleReviewSave}
+                    placeholder="Write your review..."
+                    rows={3}
+                    className="w-full px-3 py-2 bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+                  />
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-zinc-600">
+                      {review.length > 0 ? `${review.length} characters` : 'Auto-saves when you click away'}
+                    </span>
+                    {isSavingReview && (
+                      <span className="text-xs text-yellow-500">Saving...</span>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -236,6 +267,10 @@ export function Diary() {
 
   const handleRatingChange = async (id: string, rating: number) => {
     await updateMediaItem(id, { user_rating: rating });
+  };
+
+  const handleReviewChange = async (id: string, review: string) => {
+    await updateMediaItem(id, { user_review: review || null });
   };
 
   if (isLoading) {
@@ -330,6 +365,7 @@ export function Diary() {
                   key={media.id}
                   media={media}
                   onRatingChange={handleRatingChange}
+                  onReviewChange={handleReviewChange}
                 />
               ))}
             </div>

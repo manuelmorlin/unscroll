@@ -146,11 +146,12 @@ export async function updateMediaStatus(
       watched_at: new Date().toISOString() 
     });
   }
-  // If moving away from watched, clear watched_at
+  // If moving away from watched, clear watched_at, rating and review
   return updateMediaItem(id, { 
     status,
     watched_at: null,
     user_rating: null,
+    user_review: null,
   });
 }
 
