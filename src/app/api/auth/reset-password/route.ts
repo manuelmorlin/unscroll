@@ -37,15 +37,23 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (data.error) {
-      // Don't reveal if email exists or not for security
-      // Always return success to prevent email enumeration
+      // Check specific error codes
+      if (data.error.message === 'EMAIL_NOT_FOUND') {
+        return NextResponse.json(
+          { error: 'No account found with this email address' },
+          { status: 404 }
+        );
+      }
       console.log('Password reset error:', data.error.message);
+      return NextResponse.json(
+        { error: 'Failed to send reset email. Please try again.' },
+        { status: 400 }
+      );
     }
 
-    // Always return success for security (don't reveal if email exists)
     return NextResponse.json({ 
       success: true,
-      message: 'If an account exists with this email, a password reset link has been sent.'
+      message: 'Password reset email sent! Check your inbox.'
     });
   } catch (error) {
     console.error('Password reset error:', error);
