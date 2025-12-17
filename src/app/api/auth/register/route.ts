@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     
     if (!usernameSnapshot.empty) {
       return NextResponse.json(
-        { error: 'username_taken', message: 'This username is already taken' },
+        { error: 'username_taken', message: 'This username is already taken. Please choose another.' },
         { status: 400 }
       );
     }

@@ -32,6 +32,10 @@ export function DemoButton({ className, children }: DemoButtonProps) {
       try {
         // Try to sign in
         userCredential = await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+        // Ensure displayName is 'demo' for existing demo accounts
+        if (userCredential.user.displayName !== 'demo') {
+          await updateProfile(userCredential.user, { displayName: 'demo' });
+        }
       } catch (signInError: unknown) {
         // If user doesn't exist, create it
         const fbError = signInError as { code?: string };

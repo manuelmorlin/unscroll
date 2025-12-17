@@ -25,6 +25,94 @@ const persuadeResponseSchema = z.object({
 });
 
 // ==============================================
+// GENRE-BASED FALLBACK SYSTEM
+// ==============================================
+
+interface FallbackData {
+  phrase: string;
+  mood: 'excited' | 'intriguing' | 'cozy' | 'thrilling';
+  emoji: string;
+}
+
+const GENRE_FALLBACKS: Record<string, FallbackData[]> = {
+  horror: [
+    { phrase: "Sleep is overrated anyway.", mood: 'thrilling', emoji: '👻' },
+    { phrase: "Keep the lights on. Trust me.", mood: 'thrilling', emoji: '🔪' },
+    { phrase: "Your heart rate is about to spike.", mood: 'thrilling', emoji: '💀' },
+  ],
+  thriller: [
+    { phrase: "The twist? You won't see it coming.", mood: 'thrilling', emoji: '🔍' },
+    { phrase: "Edge of your seat doesn't cover it.", mood: 'thrilling', emoji: '😰' },
+    { phrase: "Your jaw will hit the floor.", mood: 'intriguing', emoji: '🎯' },
+  ],
+  comedy: [
+    { phrase: "Warning: may cause uncontrollable laughter.", mood: 'excited', emoji: '😂' },
+    { phrase: "Your cheeks will hurt from smiling.", mood: 'cozy', emoji: '🤣' },
+    { phrase: "Pure serotonin in film form.", mood: 'excited', emoji: '😄' },
+  ],
+  romance: [
+    { phrase: "Get the tissues ready.", mood: 'cozy', emoji: '💕' },
+    { phrase: "Your heart will thank you.", mood: 'cozy', emoji: '❤️' },
+    { phrase: "Love stories don't get better than this.", mood: 'intriguing', emoji: '💝' },
+  ],
+  action: [
+    { phrase: "Buckle up. It's a wild ride.", mood: 'excited', emoji: '💥' },
+    { phrase: "Adrenaline rush guaranteed.", mood: 'thrilling', emoji: '🔥' },
+    { phrase: "Non-stop from start to finish.", mood: 'excited', emoji: '⚡' },
+  ],
+  'sci-fi': [
+    { phrase: "Prepare to have your mind blown.", mood: 'intriguing', emoji: '🚀' },
+    { phrase: "The future never looked this good.", mood: 'excited', emoji: '🤖' },
+    { phrase: "Reality will never feel the same.", mood: 'intriguing', emoji: '🌌' },
+  ],
+  fantasy: [
+    { phrase: "Magic awaits. Dive in.", mood: 'excited', emoji: '🧙' },
+    { phrase: "A world you won't want to leave.", mood: 'cozy', emoji: '✨' },
+    { phrase: "Epic doesn't begin to describe it.", mood: 'excited', emoji: '🐉' },
+  ],
+  drama: [
+    { phrase: "Cinema at its finest.", mood: 'intriguing', emoji: '🎭' },
+    { phrase: "The kind of story that stays with you.", mood: 'intriguing', emoji: '💫' },
+    { phrase: "Prepare to feel everything.", mood: 'cozy', emoji: '🌟' },
+  ],
+  animation: [
+    { phrase: "Not just for kids. Pure art.", mood: 'excited', emoji: '🎨' },
+    { phrase: "Animation perfection.", mood: 'cozy', emoji: '✨' },
+    { phrase: "Visually stunning. Emotionally powerful.", mood: 'excited', emoji: '🌈' },
+  ],
+  christmas: [
+    { phrase: "Holiday spirit incoming.", mood: 'cozy', emoji: '🎄' },
+    { phrase: "Hot cocoa and blankets required.", mood: 'cozy', emoji: '☃️' },
+    { phrase: "The most wonderful time for this film.", mood: 'cozy', emoji: '🎅' },
+  ],
+  default: [
+    { phrase: "This one hits different.", mood: 'intriguing', emoji: '⭐' },
+    { phrase: "Cinema magic at its finest.", mood: 'excited', emoji: '🎬' },
+    { phrase: "A must-watch experience.", mood: 'excited', emoji: '🍿' },
+    { phrase: "You won't regret this choice.", mood: 'intriguing', emoji: '🎥' },
+    { phrase: "Trust the universe on this one.", mood: 'cozy', emoji: '✨' },
+  ],
+};
+
+function getGenreBasedFallback(genre: string, title: string): FallbackData {
+  const genreLower = genre?.toLowerCase() || '';
+  
+  // Find matching genre category
+  let fallbacks = GENRE_FALLBACKS.default;
+  
+  for (const [key, value] of Object.entries(GENRE_FALLBACKS)) {
+    if (genreLower.includes(key)) {
+      fallbacks = value;
+      break;
+    }
+  }
+  
+  // Use title length as a simple hash to pick a varied phrase
+  const index = (title?.length || 0) % fallbacks.length;
+  return fallbacks[index];
+}
+
+// ==============================================
 // ACTION RESULT TYPES
 // ==============================================
 
@@ -167,11 +255,7 @@ export async function actionPersuade(
     // Return a fallback phrase if AI is not configured
     return {
       success: true,
-      data: {
-        phrase: "Fate has chosen. Time to watch!",
-        mood: 'excited',
-        emoji: '🎬',
-      },
+      data: getGenreBasedFallback(genre, title),
     };
   }
 
@@ -224,14 +308,10 @@ Plot: ${plot || 'A captivating story'}`,
   } catch (error) {
     console.error('Persuade error:', error);
 
-    // Fallback phrase if AI fails
+    // Fallback phrase if AI fails - use genre-based fallback
     return {
       success: true,
-      data: {
-        phrase: "You picked this for a reason. Time to find out why.",
-        mood: 'intriguing',
-        emoji: '🎬',
-      },
+      data: getGenreBasedFallback(genre, title),
     };
   }
 }

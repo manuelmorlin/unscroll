@@ -103,7 +103,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       const errorMessage = firebaseError?.message || '';
       
       if (errorMessage === 'username_taken') {
-        setError('This username is already taken');
+        setError('This username is already taken. Please choose another.');
       } else if (errorMessage === 'email_exists') {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
@@ -138,6 +138,10 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       try {
         // Try to sign in
         userCredential = await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+        // Ensure displayName is 'demo' for existing demo accounts
+        if (userCredential.user.displayName !== 'demo') {
+          await updateProfile(userCredential.user, { displayName: 'demo' });
+        }
       } catch (signInError: unknown) {
         // If user doesn't exist, create it
         const fbError = signInError as { code?: string };

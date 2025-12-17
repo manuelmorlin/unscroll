@@ -11,6 +11,64 @@ const formatIcons = {
   movie: Film,
 };
 
+const statusConfig = {
+  unwatched: { 
+    color: 'bg-red-500', 
+    label: 'To Watch',
+    textColor: 'text-red-400',
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/30',
+  },
+  watching: { 
+    color: 'bg-yellow-500', 
+    label: 'Watching',
+    textColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/10',
+    borderColor: 'border-yellow-500/30',
+  },
+  watched: { 
+    color: 'bg-green-500', 
+    label: 'Watched',
+    textColor: 'text-green-400',
+    bgColor: 'bg-green-500/10',
+    borderColor: 'border-green-500/30',
+  },
+};
+
+// Genre to emoji mapping for visual flair
+const genreEmojis: Record<string, string> = {
+  horror: '👻',
+  thriller: '🔍',
+  comedy: '😂',
+  romance: '💕',
+  action: '💥',
+  'sci-fi': '🚀',
+  science: '🚀',
+  fantasy: '🧙',
+  drama: '🎭',
+  animation: '🎨',
+  adventure: '🌍',
+  crime: '🔫',
+  mystery: '🕵️',
+  family: '👨‍👩‍👧‍👦',
+  musical: '🎵',
+  war: '⚔️',
+  western: '🤠',
+  documentary: '📹',
+  biography: '📖',
+  sport: '⚽',
+  history: '🏛️',
+};
+
+function getGenreEmoji(genre: string | null | undefined): string {
+  if (!genre) return '🎬';
+  const genreLower = genre.toLowerCase();
+  for (const [key, emoji] of Object.entries(genreEmojis)) {
+    if (genreLower.includes(key)) return emoji;
+  }
+  return '🎬';
+}
+
 const statusColors = {
   unwatched: 'bg-red-500',
   watching: 'bg-yellow-500',
@@ -190,7 +248,8 @@ interface MediaCardProps {
 }
 
 function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) {
-  const FormatIcon = formatIcons[media.format] || Film;
+  const status = statusConfig[media.status];
+  const genreEmoji = getGenreEmoji(media.genre);
 
   return (
     <motion.div
@@ -198,84 +257,98 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="group bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/20 rounded-xl p-4 hover:border-red-800/40 transition-all"
+      className="group relative overflow-hidden"
     >
-      <div className="flex items-start justify-between gap-4">
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          {/* Status Badge */}
-          <div className="flex items-center gap-2 mb-2">
-            <div
-              className={`w-2 h-2 rounded-full ${statusColors[media.status]}`}
-            />
+      {/* Main Card */}
+      <div className={`relative bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/10 ${status.borderColor} hover:border-red-700/50`}>
+        {/* Decorative gradient accent */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        
+        <div className="flex items-start gap-4">
+          {/* Genre Emoji Badge */}
+          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-2xl shadow-inner">
+            {genreEmoji}
           </div>
 
-          {/* Title */}
-          <h3 className="text-lg font-medium text-white truncate mb-1">
-            {media.title}
-          </h3>
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            {/* Title Row */}
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <h3 className="text-lg font-semibold text-white truncate leading-tight">
+                {media.title}
+              </h3>
+              {/* Status Badge */}
+              <span className={`flex-shrink-0 px-2.5 py-1 text-xs font-medium rounded-full ${status.bgColor} ${status.textColor} border ${status.borderColor}`}>
+                {status.label}
+              </span>
+            </div>
 
-          {/* Meta */}
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
-            {media.year && <span>{media.year}</span>}
-            {media.duration && (
-              <>
-                <span>•</span>
-                <span>{media.duration}</span>
-              </>
-            )}
-            {media.genre && (
-              <>
-                <span>•</span>
-                <span className="truncate">{media.genre}</span>
-              </>
-            )}
+            {/* Meta Info */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-400 mb-3">
+              {media.year && (
+                <span className="flex items-center gap-1">
+                  <span className="text-zinc-600">📅</span>
+                  {media.year}
+                </span>
+              )}
+              {media.duration && (
+                <span className="flex items-center gap-1">
+                  <span className="text-zinc-600">⏱️</span>
+                  {media.duration}
+                </span>
+              )}
+              {media.genre && (
+                <span className="text-zinc-500 truncate max-w-[150px]">
+                  {media.genre}
+                </span>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+              <button
+                onClick={() => onEdit(media)}
+                className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                title="Edit"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              {media.status !== 'unwatched' && (
+                <button
+                  onClick={() => onStatusChange(media.id, 'unwatched')}
+                  className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  title="Move to To Watch"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              )}
+              {media.status !== 'watching' && (
+                <button
+                  onClick={() => onStatusChange(media.id, 'watching')}
+                  className="p-2 text-zinc-500 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                  title="Mark as Watching"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+              )}
+              {media.status !== 'watched' && (
+                <button
+                  onClick={() => onStatusChange(media.id, 'watched')}
+                  className="p-2 text-zinc-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                  title="Mark as Watched"
+                >
+                  <Check className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => onDelete(media.id)}
+                className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto"
+                title="Delete"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* Actions - always visible on mobile, hover on desktop */}
-        <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => onEdit(media)}
-            className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-zinc-800 rounded-lg transition-colors"
-            title="Edit"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-          {media.status !== 'unwatched' && (
-            <button
-              onClick={() => onStatusChange(media.id, 'unwatched')}
-              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
-              title="Move to To Watch"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-          )}
-          {media.status !== 'watching' && (
-            <button
-              onClick={() => onStatusChange(media.id, 'watching')}
-              className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 rounded-lg transition-colors"
-              title="Mark as Watching"
-            >
-              <Eye className="w-4 h-4" />
-            </button>
-          )}
-          {media.status !== 'watched' && (
-            <button
-              onClick={() => onStatusChange(media.id, 'watched')}
-              className="p-2 text-zinc-400 hover:text-emerald-400 hover:bg-zinc-800 rounded-lg transition-colors"
-              title="Mark as Watched"
-            >
-              <Check className="w-4 h-4" />
-            </button>
-          )}
-          <button
-            onClick={() => onDelete(media.id)}
-            className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </motion.div>
