@@ -14,19 +14,50 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'forgot';
 
 interface AuthFormProps {
   initialMode?: AuthMode;
 }
 
 export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
-  const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [mode, setMode] = useState<AuthMode>(initialMode === 'forgot' ? 'forgot' : initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [resetEmail, setResetEmail] = useState('');
   const router = useRouter();
+
+  // Handle password reset
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('✉️ If an account exists with this email, a password reset link has been sent. Check your inbox!');
+        setResetEmail('');
+      } else {
+        setError(data.error || 'Failed to send reset email');
+      }
+    } catch (err) {
+      console.error('Password reset error:', err);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -179,50 +210,66 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       </div>
 
       {/* Demo Button - For Recruiters */}
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={handleDemoLogin}
-        disabled={isDemoLoading}
-        className="w-full mb-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-violet-900/30"
-      >
-        {isDemoLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <>
-            <span className="text-lg">🎟️</span>
-            <span>Try Demo</span>
-            <span className="text-violet-200 text-sm ml-1">(No ticket needed)</span>
-          </>
-        )}
-      </motion.button>
+      {mode !== 'forgot' && (
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleDemoLogin}
+          disabled={isDemoLoading}
+          className="w-full mb-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-violet-900/30"
+        >
+          {isDemoLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <>
+              <span className="text-lg">🎟️</span>
+              <span>Try Demo</span>
+              <span className="text-violet-200 text-sm ml-1">(No ticket needed)</span>
+            </>
+          )}
+        </motion.button>
+      )}
 
       {/* Divider */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-red-900/30" />
+      {mode !== 'forgot' && (
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-red-900/30" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-transparent text-zinc-500">or continue with email</span>
+          </div>
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-transparent text-zinc-500">or continue with email</span>
-        </div>
-      </div>
+      )}
 
       {/* Mode Toggle */}
-      <div className="flex bg-zinc-900/80 border border-red-900/30 rounded-xl p-1 mb-6">
-        {(['login', 'register'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
-              mode === m
-                ? 'bg-red-700 text-white shadow-lg'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            {m === 'login' ? '🎬 Sign In' : '🎟️ Create Account'}
-          </button>
-        ))}
-      </div>
+      {mode !== 'forgot' && (
+        <div className="flex bg-zinc-900/80 border border-red-900/30 rounded-xl p-1 mb-6">
+          {(['login', 'register'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                mode === m
+                  ? 'bg-red-700 text-white shadow-lg'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              {m === 'login' ? '🎬 Sign In' : '🎟️ Create Account'}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Forgot Password Header */}
+      {mode === 'forgot' && (
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-2">🔑 Reset Password</h2>
+          <p className="text-sm text-zinc-400">
+            Enter your email and we&apos;ll send you a link to reset your password.
+          </p>
+        </div>
+      )}
 
       {/* Success Message */}
       <AnimatePresence>
@@ -253,34 +300,80 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       </AnimatePresence>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <AnimatePresence mode="wait">
-          {mode === 'register' && (
-            <motion.div
-              key="username"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  required={mode === 'register'}
-                  className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {mode === 'forgot' ? (
+        /* Forgot Password Form */
+        <form onSubmit={handleForgotPassword} className="space-y-4">
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <input
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="Email address"
+              required
+              className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+            />
+          </div>
 
-        <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="email"
-            name="email"
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
+          >
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <span>📧 Send Reset Link</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </motion.button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMode('login');
+              setError(null);
+              setSuccessMessage(null);
+            }}
+            className="w-full text-center text-sm text-zinc-400 hover:text-yellow-400 transition-colors mt-4"
+          >
+            ← Back to Sign In
+          </button>
+        </form>
+      ) : (
+        /* Login/Register Form */
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <AnimatePresence mode="wait">
+            {mode === 'register' && (
+              <motion.div
+                key="username"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    required={mode === 'register'}
+                    className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <input
+              type="email"
+              name="email"
             placeholder="Email address"
             required
             className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
@@ -299,6 +392,23 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           />
         </div>
 
+        {/* Forgot Password Link */}
+        {mode === 'login' && (
+          <div className="text-right -mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setMode('forgot');
+                setError(null);
+                setSuccessMessage(null);
+              }}
+              className="text-sm text-zinc-400 hover:text-yellow-400 transition-colors"
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
+
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
@@ -315,7 +425,8 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             </>
           )}
         </motion.button>
-      </form>
+        </form>
+      )}
     </div>
   );
 }
