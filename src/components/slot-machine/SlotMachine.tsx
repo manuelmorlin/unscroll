@@ -81,6 +81,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
+  const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
 
   // Load genres function
   const loadGenres = useCallback(async () => {
@@ -128,6 +129,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     if (selectedGenre) filters.genre = selectedGenre;
     if (selectedDuration) filters.maxDuration = parseInt(selectedDuration);
     if (selectedMood) filters.mood = selectedMood;
+    if (shownFilmIds.length > 0) filters.excludeIds = shownFilmIds; // Exclude already shown films
 
     // Fetch random media with filters
     const result = await getRandomUnwatched(Object.keys(filters).length > 0 ? filters : undefined);
@@ -143,6 +145,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
     const media = result.data as MediaItem;
     setSelectedMedia(media);
+    setShownFilmIds(prev => [...prev, media.id]); // Add to shown films
 
     // Generate persuasive phrase
     const persuadeResult = await actionPersuade(
@@ -170,6 +173,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setPersuasivePhrase(null);
       setMovieEmoji('🎬'); // Reset emoji
       setSpinCount(0); // Reset spin count after watching
+      setShownFilmIds([]); // Reset shown films
       setSelectedGenre(''); // Reset genre filter
       setSelectedDuration(''); // Reset duration filter
       setSelectedMood(''); // Reset mood filter

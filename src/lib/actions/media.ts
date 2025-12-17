@@ -200,6 +200,7 @@ export interface SpinFilters {
   genre?: string;
   maxDuration?: number; // in minutes
   mood?: string;
+  excludeIds?: string[]; // IDs of films to exclude (already shown in current spin session)
 }
 
 // Helper to parse duration string to minutes
@@ -278,6 +279,11 @@ export async function getRandomUnwatched(filters?: SpinFilters): Promise<MediaAc
           return moodKeywords.some(keyword => searchText.includes(keyword));
         });
       }
+    }
+
+    // Exclude already shown films (from current spin session)
+    if (filters?.excludeIds && filters.excludeIds.length > 0) {
+      docs = docs.filter(doc => !filters.excludeIds!.includes(doc.id));
     }
 
     if (docs.length === 0) {
