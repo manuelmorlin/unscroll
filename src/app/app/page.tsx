@@ -52,7 +52,7 @@ export default function AppPage() {
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Esci</span>
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </form>
           </div>

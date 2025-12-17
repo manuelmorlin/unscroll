@@ -103,14 +103,14 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       const errorMessage = firebaseError?.message || '';
       
       if (errorMessage === 'username_taken') {
-        setError('Questo username è già in uso');
+        setError('This username is already taken');
       } else if (errorMessage === 'email_exists') {
-        setError("È già presente un account con quest'email, effettua il login");
+        setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
       } else if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
         setError('Invalid email or password');
       } else if (errorCode === 'auth/email-already-in-use') {
-        setError("È già presente un account con quest'email, effettua il login");
+        setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
       } else if (errorCode === 'auth/weak-password') {
         setError('Password must be at least 6 characters');

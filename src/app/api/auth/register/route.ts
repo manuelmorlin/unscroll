@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     
     if (!usernameSnapshot.empty) {
       return NextResponse.json(
-        { error: 'username_taken', message: 'Questo username è già in uso' },
+        { error: 'username_taken', message: 'This username is already taken' },
         { status: 400 }
       );
     }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     
     if (!emailSnapshot.empty) {
       return NextResponse.json(
-        { error: 'email_exists', message: 'È già presente un account con quest\'email, effettua il login' },
+        { error: 'email_exists', message: 'An account with this email already exists. Please sign in.' },
         { status: 400 }
       );
     }
