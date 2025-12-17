@@ -205,7 +205,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
                     onBlur={handleReviewSave}
                     placeholder="Write your review..."
                     rows={3}
-                    className="w-full px-3 py-2 bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 resize-none transition-all"
                   />
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-zinc-600">

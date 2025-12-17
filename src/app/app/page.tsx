@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, List, LogOut, User, Film, Eye, Check, BookOpen } from 'lucide-react';
+import { Sparkles, List, LogOut, User, BookOpen } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
 import { AddMediaForm, MediaList, Diary } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
@@ -130,31 +130,24 @@ export default function AppPage() {
               <AddMediaForm />
             </div>
 
-            {/* Filter Tabs */}
+            {/* Filter Pills - Consistent with SlotMachine style */}
             <div className="flex flex-wrap gap-2 mb-6">
               {[
-                { id: 'all' as ListFilter, label: 'All', icon: Film, color: 'text-zinc-400 hover:text-white' },
-                { id: 'unwatched' as ListFilter, label: 'To Watch', icon: Film, color: 'text-red-400 hover:text-red-300' },
-                { id: 'watching' as ListFilter, label: 'Watching', icon: Eye, color: 'text-yellow-400 hover:text-yellow-300' },
-                { id: 'watched' as ListFilter, label: 'Watched', icon: Check, color: 'text-green-400 hover:text-green-300' },
-              ].map(({ id, label, icon: Icon, color }) => (
+                { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
+                { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '🎯' },
+                { id: 'watching' as ListFilter, label: 'Watching', emoji: '👀' },
+                { id: 'watched' as ListFilter, label: 'Watched', emoji: '✅' },
+              ].map(({ id, label, emoji }) => (
                 <button
                   key={id}
                   onClick={() => setListFilter(id)}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`px-4 py-2 text-sm rounded-full transition-all duration-200 ${
                     listFilter === id
-                      ? id === 'all'
-                        ? 'bg-zinc-700 text-white'
-                        : id === 'unwatched'
-                        ? 'bg-red-500/20 text-red-400'
-                        : id === 'watching'
-                        ? 'bg-yellow-500/20 text-yellow-400'
-                        : 'bg-green-500/20 text-green-400'
-                      : `bg-zinc-800/50 ${color}`
+                      ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
+                      : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{label}</span>
+                  {emoji} {label}
                 </button>
               ))}
             </div>

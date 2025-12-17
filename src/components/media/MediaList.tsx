@@ -148,7 +148,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
               required
             />
           </div>
@@ -161,7 +161,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
                 placeholder="2024"
               />
             </div>
@@ -171,7 +171,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
                 type="text"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
                 placeholder="2h 30m"
               />
             </div>
@@ -184,7 +184,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
               type="text"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
               placeholder="Drama, Thriller"
             />
           </div>
@@ -196,7 +196,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
               type="text"
               value={cast}
               onChange={(e) => setCast(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
               placeholder="Actor 1, Actor 2, Actor 3"
             />
           </div>
@@ -208,7 +208,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
               value={plot}
               onChange={(e) => setPlot(e.target.value)}
               rows={3}
-              className="w-full px-4 py-2 bg-zinc-900/80 border border-red-900/30 rounded-lg text-white focus:outline-none focus:border-yellow-500 resize-none"
+              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 resize-none transition-all"
               placeholder="Brief plot description..."
             />
           </div>
@@ -218,14 +218,14 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+              className="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 shadow-lg shadow-red-900/30"
+              className="px-6 py-2.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
             >
               {isSaving ? 'Saving...' : '✅ Save Changes'}
             </button>
