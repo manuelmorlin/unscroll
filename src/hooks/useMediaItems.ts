@@ -19,6 +19,7 @@ interface UseMediaItemsReturn {
   error: string | null;
   refetch: () => void;
   unwatchedCount: number;
+  watchingCount: number;
   watchedCount: number;
 }
 
@@ -98,6 +99,9 @@ export function useMediaItems(): UseMediaItemsReturn {
   const unwatchedCount = mediaItems.filter(
     (item) => item.status === 'unwatched'
   ).length;
+  const watchingCount = mediaItems.filter(
+    (item) => item.status === 'watching'
+  ).length;
   const watchedCount = mediaItems.filter(
     (item) => item.status === 'watched'
   ).length;
@@ -108,6 +112,7 @@ export function useMediaItems(): UseMediaItemsReturn {
     error,
     refetch,
     unwatchedCount,
+    watchingCount,
     watchedCount,
   };
 }

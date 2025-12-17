@@ -74,6 +74,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [persuasivePhrase, setPersuasivePhrase] = useState<string | null>(null);
+  const [movieEmoji, setMovieEmoji] = useState<string>('🎬');
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
@@ -152,6 +153,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
     if (persuadeResult.success && persuadeResult.data) {
       setPersuasivePhrase(persuadeResult.data.phrase);
+      setMovieEmoji(persuadeResult.data.emoji || '🎬');
     }
 
     setIsSpinning(false);
@@ -166,6 +168,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     if (result.success) {
       setSelectedMedia(null);
       setPersuasivePhrase(null);
+      setMovieEmoji('🎬'); // Reset emoji
       setSpinCount(0); // Reset spin count after watching
       setSelectedGenre(''); // Reset genre filter
       setSelectedDuration(''); // Reset duration filter
@@ -257,7 +260,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     transition={{ delay: 0.1 }}
                     className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight"
                   >
-                    ✨ {selectedMedia.title} ✨
+                    {movieEmoji} {selectedMedia.title} {movieEmoji}
                   </motion.h3>
 
                   {/* Meta Info */}
@@ -303,7 +306,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       className="bg-gradient-to-r from-red-900/20 to-red-800/10 border border-red-800/30 rounded-lg p-4 mb-6"
                     >
                       <p className="text-yellow-300/90 italic font-light">
-                        "🎬 {persuasivePhrase}"
+                        "{movieEmoji} {persuasivePhrase}"
                       </p>
                     </motion.div>
                   )}

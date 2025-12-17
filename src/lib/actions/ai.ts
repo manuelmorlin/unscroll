@@ -21,6 +21,7 @@ const autofillResponseSchema = z.object({
 const persuadeResponseSchema = z.object({
   phrase: z.string(),
   mood: z.enum(['excited', 'intriguing', 'cozy', 'thrilling']),
+  emoji: z.string(),
 });
 
 // ==============================================
@@ -169,6 +170,7 @@ export async function actionPersuade(
       data: {
         phrase: "Fate has chosen. Time to watch!",
         mood: 'excited',
+        emoji: '🎬',
       },
     };
   }
@@ -184,11 +186,12 @@ export async function actionPersuade(
 
 Return ONLY a JSON object:
 {
-  "phrase": "string - A compelling 1-2 sentence persuasive pitch (max 100 chars). Be creative, witty, and enthusiastic. Examples: 'Trust me, you'll forget to breathe during the last 20 minutes.' or 'The kind of story that stays with you for weeks.'",
-  "mood": "excited" | "intriguing" | "cozy" | "thrilling" - The vibe of the content
+  "phrase": "string - A compelling 1-2 sentence persuasive pitch (max 100 chars). Be creative, witty, enthusiastic, and VARIED. Never repeat the same phrase. Examples: 'Trust me, you'll forget to breathe during the last 20 minutes.' or 'The kind of story that stays with you for weeks.' or 'Grab the tissues. You'll thank me later.' or 'This one hits different at 2am.' or 'The twist? You won't see it coming.' or 'Pure cinema magic from start to finish.'",
+  "mood": "excited" | "intriguing" | "cozy" | "thrilling" - The vibe of the content,
+  "emoji": "string - A single emoji that best represents this specific film based on its genre, mood, and plot. Examples: 🔪 for horror/thriller, 💕 for romance, 🚀 for sci-fi, 🦸 for superhero, 😂 for comedy, 🎄 for Christmas films, 🏎️ for action/racing, 🧙 for fantasy, 🎭 for drama, 👻 for supernatural, 🔫 for crime, 🌊 for adventure, 🤖 for robots/AI, 🦖 for dinosaurs, 🧟 for zombies, etc."
 }
 
-Match the tone to the genre - thrillers should be intense, comedies light, dramas emotional.`,
+IMPORTANT: Be creative and never repeat the same phrase. Match the tone to the genre - thrillers should be intense, comedies light, dramas emotional. The emoji should be specific to the film's theme, not generic.`,
         },
         {
           role: 'user',
@@ -198,7 +201,7 @@ Genre: ${genre || 'Unknown'}
 Plot: ${plot || 'A captivating story'}`,
         },
       ],
-      temperature: 0.8,
+      temperature: 0.95,
       max_tokens: 150,
     });
 
@@ -227,6 +230,7 @@ Plot: ${plot || 'A captivating story'}`,
       data: {
         phrase: "You picked this for a reason. Time to find out why.",
         mood: 'intriguing',
+        emoji: '🎬',
       },
     };
   }

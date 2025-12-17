@@ -14,6 +14,7 @@ export interface AutofillResponse {
 export interface PersuadeResponse {
   phrase: string;
   mood: 'excited' | 'intriguing' | 'cozy' | 'thrilling';
+  emoji: string;
 }
 
 // Auth state

@@ -48,10 +48,11 @@ export default function AppPage() {
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="p-2 text-zinc-400 hover:text-white transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-400 hover:text-white hover:bg-red-900/30 rounded-lg transition-colors border border-transparent hover:border-red-800/50"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Esci</span>
               </button>
             </form>
           </div>

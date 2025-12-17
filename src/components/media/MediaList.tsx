@@ -203,12 +203,8 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
       <div className="flex items-start justify-between gap-4">
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Format Badge */}
+          {/* Status Badge */}
           <div className="flex items-center gap-2 mb-2">
-            <FormatIcon className="w-3.5 h-3.5 text-zinc-500" />
-            <span className="text-xs uppercase tracking-wider text-zinc-500">
-              {media.format}
-            </span>
             <div
               className={`w-2 h-2 rounded-full ${statusColors[media.status]}`}
             />
@@ -291,7 +287,7 @@ interface MediaListProps {
 }
 
 export function MediaList({ filter = 'all' }: MediaListProps) {
-  const { mediaItems, isLoading, error, unwatchedCount, watchedCount } =
+  const { mediaItems, isLoading, error, unwatchedCount, watchingCount, watchedCount } =
     useMediaItems();
   const [editingMedia, setEditingMedia] = useState<MediaItem | null>(null);
 
@@ -371,6 +367,8 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         <span>🎬 {filteredItems.length} films</span>
         <span>•</span>
         <span>🎟️ {unwatchedCount} to watch</span>
+        <span>•</span>
+        <span>👀 {watchingCount} watching</span>
         <span>•</span>
         <span>✅ {watchedCount} watched</span>
       </div>

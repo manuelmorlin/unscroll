@@ -13,6 +13,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if username is already taken
+    const usernameSnapshot = await adminDb.collection('users')
+      .where('username', '==', username)
+      .limit(1)
+      .get();
+    
+    if (!usernameSnapshot.empty) {
+      return NextResponse.json(
+        { error: 'username_taken', message: 'Questo username è già in uso' },
+        { status: 400 }
+      );
+    }
+
+    // Check if email is already registered (in users collection)
+    const emailSnapshot = await adminDb.collection('users')
+      .where('email', '==', email)
+      .limit(1)
+      .get();
+    
+    if (!emailSnapshot.empty) {
+      return NextResponse.json(
+        { error: 'email_exists', message: 'È già presente un account con quest\'email, effettua il login' },
+        { status: 400 }
+      );
+    }
+
     // Verify the token and get the user
     const decodedToken = await adminAuth.verifyIdToken(idToken);
 

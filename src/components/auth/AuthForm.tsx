@@ -63,6 +63,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         });
         
         if (!response.ok) {
+          const data = await response.json();
+          if (data.error === 'username_taken') {
+            // Delete the Firebase user since username is taken
+            await userCredential.user.delete();
+            throw new Error('username_taken');
+          } else if (data.error === 'email_exists') {
+            await userCredential.user.delete();
+            throw new Error('email_exists');
+          }
           throw new Error('Failed to complete registration');
         }
         
@@ -91,10 +100,18 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       // Handle Firebase errors
       const firebaseError = err as { code?: string; message?: string };
       const errorCode = firebaseError?.code || '';
-      if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
+      const errorMessage = firebaseError?.message || '';
+      
+      if (errorMessage === 'username_taken') {
+        setError('Questo username è già in uso');
+      } else if (errorMessage === 'email_exists') {
+        setError("È già presente un account con quest'email, effettua il login");
+        setMode('login'); // Switch to login mode
+      } else if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
         setError('Invalid email or password');
       } else if (errorCode === 'auth/email-already-in-use') {
-        setError('An account with this email already exists');
+        setError("È già presente un account con quest'email, effettua il login");
+        setMode('login'); // Switch to login mode
       } else if (errorCode === 'auth/weak-password') {
         setError('Password must be at least 6 characters');
       } else if (errorCode === 'auth/invalid-email') {
@@ -126,6 +143,10 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         const fbError = signInError as { code?: string };
         if (fbError.code === 'auth/user-not-found' || fbError.code === 'auth/invalid-credential') {
           userCredential = await createUserWithEmailAndPassword(auth, demoEmail, demoPassword);
+          // Set displayName to 'demo' for new demo accounts
+          await updateProfile(userCredential.user, {
+            displayName: 'demo',
+          });
         } else {
           throw signInError;
         }
@@ -312,18 +333,6 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           )}
         </motion.button>
       </form>
-
-      {/* Footer */}
-      <p className="text-center text-zinc-500 text-sm mt-8">
-        By continuing, you agree to our{' '}
-        <a href="#" className="text-yellow-500 hover:underline">
-          Terms
-        </a>{' '}
-        and{' '}
-        <a href="#" className="text-yellow-500 hover:underline">
-          Privacy Policy
-        </a>
-      </p>
     </div>
   );
 }

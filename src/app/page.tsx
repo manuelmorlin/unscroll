@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/actions/auth';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { DemoButton } from '@/components/auth';
 
 export default async function HomePage() {
   const user = await getCurrentUser();
@@ -91,12 +92,11 @@ export default async function HomePage() {
               <span>🎟️ Get Your Ticket</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link 
-              href="/auth?mode=login"
-              className="flex items-center gap-2 px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800 text-white font-medium rounded-full transition-all text-lg border border-zinc-700"
+            <DemoButton 
+              className="flex items-center gap-2 px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800 text-white font-medium rounded-full transition-all text-lg border border-zinc-700 disabled:opacity-50"
             >
               <span>🎬 Watch Demo</span>
-            </Link>
+            </DemoButton>
           </div>
 
         </div>
