@@ -18,16 +18,18 @@ export default function AppPage() {
   const { user, isDemo } = useAuth();
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen cinema-bg">
+      {/* Subtle curtain effects */}
+      <div className="fixed left-0 top-0 bottom-0 w-16 curtain-left pointer-events-none opacity-50" />
+      <div className="fixed right-0 top-0 bottom-0 w-16 curtain-right pointer-events-none opacity-50" />
+      
       {/* Header */}
-      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-red-900/30 bg-black/60 backdrop-blur-sm sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-black" />
-            </div>
-            <span className="text-lg font-semibold text-white">Unscroll</span>
+            <span className="text-2xl">🎬</span>
+            <span className="text-lg font-semibold gold-shimmer">Unscroll</span>
             {isDemo && (
               <span className="px-2 py-0.5 text-xs bg-violet-500/20 text-violet-400 rounded-full">
                 Demo
@@ -57,23 +59,22 @@ export default function AppPage() {
       </header>
 
       {/* Tab Navigation */}
-      <div className="border-b border-zinc-800">
+      <div className="border-b border-red-900/30">
         <div className="max-w-4xl mx-auto px-4">
           <nav className="flex gap-1">
             {[
-              { id: 'decide' as Tab, label: 'Decide', icon: Sparkles },
-              { id: 'list' as Tab, label: 'Watchlist', icon: List },
-            ].map(({ id, label, icon: Icon }) => (
+              { id: 'decide' as Tab, label: '🎰 Decide', icon: Sparkles },
+              { id: 'list' as Tab, label: '📋 Watchlist', icon: List },
+            ].map(({ id, label }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === id
-                    ? 'border-amber-500 text-amber-500'
+                    ? 'border-yellow-500 text-yellow-400'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <Icon className="w-4 h-4" />
                 <span>{label}</span>
               </button>
             ))}
@@ -91,12 +92,12 @@ export default function AppPage() {
             transition={{ duration: 0.3 }}
           >
             <div className="text-center mb-8">
+              <div className="text-4xl mb-4">🎬</div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                What should I watch?
+                Tonight&apos;s <span className="gold-shimmer">Feature</span>
               </h1>
               <p className="text-zinc-400 font-light max-w-md mx-auto">
-                Stop scrolling through endless options. Let us pick something from your
-                watchlist.
+                The projector is ready. Let fate choose your next cinematic experience.
               </p>
             </div>
 
@@ -160,15 +161,16 @@ export default function AppPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 mt-auto">
+      <footer className="border-t border-red-900/30 mt-auto bg-black/40">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-zinc-500">
-          <p>
-            Built with Next.js, Firebase & OpenAI •{' '}
+          <p className="flex items-center justify-center gap-2">
+            <span>Made with 🍿 for movie lovers</span>
+            <span>•</span>
             <a
               href="https://github.com/manuelmorlin/unscroll"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-500 hover:underline"
+              className="text-yellow-500 hover:underline"
             >
               View Source
             </a>

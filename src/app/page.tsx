@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/actions/auth';
 import Link from 'next/link';
-import { Sparkles, Film, Shuffle, Clock, CheckCircle, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default async function HomePage() {
   const user = await getCurrentUser();
@@ -11,26 +11,46 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen cinema-bg text-white overflow-hidden">
+      {/* Animated Stars Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-yellow-300 rounded-full star"
+            style={{
+              left: `${5 + (i * 5) % 90}%`,
+              top: `${10 + (i * 7) % 80}%`,
+              animationDelay: `${(i * 0.1) % 2}s`,
+              opacity: 0.3,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Curtain Effects */}
+      <div className="fixed left-0 top-0 bottom-0 w-32 curtain-left pointer-events-none" />
+      <div className="fixed right-0 top-0 bottom-0 w-32 curtain-right pointer-events-none" />
+
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
+      <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-lg border-b border-red-900/30">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-black" />
+            <div className="w-9 h-9 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <span className="text-xl">🎬</span>
             </div>
-            <span className="text-xl font-bold">Unscroll</span>
+            <span className="text-xl font-bold gold-shimmer">Unscroll</span>
           </div>
           <div className="flex items-center gap-4">
             <Link 
               href="/auth?mode=login"
-              className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-zinc-400 hover:text-yellow-400 transition-colors"
             >
               Sign In
             </Link>
             <Link 
               href="/auth?mode=register"
-              className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all"
+              className="px-5 py-2 bg-gradient-to-r from-red-700 to-red-600 text-white font-semibold rounded-full hover:from-red-600 hover:to-red-500 transition-all shadow-lg shadow-red-900/50 border border-red-500/30"
             >
               Get Started
             </Link>
@@ -39,18 +59,21 @@ export default async function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="pt-32 pb-20 px-4 relative">
+        {/* Spotlight Effect */}
+        <div className="absolute inset-0 spotlight pointer-events-none" />
+        
+        <div className="max-w-4xl mx-auto text-center relative">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-sm mb-8">
-            <Sparkles className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-900/30 border border-red-700/40 rounded-full text-red-300 text-sm mb-8">
+            <span className="text-lg">🍿</span>
             <span>Stop scrolling. Start watching.</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Let <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">fate</span> decide
-            <br />what you watch
+            Let <span className="gold-shimmer">fate</span> decide
+            <br />what you watch <span className="text-4xl md:text-6xl">🎭</span>
           </h1>
 
           {/* Subheadline */}
@@ -63,49 +86,78 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
               href="/auth?mode=register"
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all text-lg"
+              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-700 to-red-600 text-white font-semibold rounded-full hover:from-red-600 hover:to-red-500 transition-all text-lg shadow-xl shadow-red-900/50 border border-red-500/30"
             >
-              <span>Start for Free</span>
+              <span>🎟️ Get Your Ticket</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link 
               href="/auth?mode=login"
-              className="flex items-center gap-2 px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-full transition-all text-lg"
+              className="flex items-center gap-2 px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800 text-white font-medium rounded-full transition-all text-lg border border-zinc-700"
             >
-              <span>Try Demo</span>
+              <span>🎬 Watch Demo</span>
             </Link>
           </div>
 
         </div>
       </section>
 
-      {/* Slot Machine Animation Preview */}
+      {/* Cinema Screen Preview */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-b from-zinc-900 to-zinc-950 rounded-3xl border border-zinc-800 p-8 md:p-12 overflow-hidden">
-            {/* Glow Effect */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl" />
+          {/* Screen Frame */}
+          <div className="relative">
+            {/* Top Frame Bar */}
+            <div className="h-4 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-t-xl border-t border-l border-r border-zinc-700" />
             
-            <div className="relative">
-              {/* Mock Slot Machine */}
-              <div className="flex justify-center gap-4 mb-8">
-                {['🎬', '🍿', '🎭'].map((emoji, i) => (
-                  <div 
-                    key={i}
-                    className="w-24 h-24 md:w-32 md:h-32 bg-zinc-800 rounded-2xl flex items-center justify-center text-4xl md:text-5xl border border-zinc-700 shadow-xl"
-                  >
-                    {emoji}
-                  </div>
-                ))}
+            {/* Screen */}
+            <div className="relative bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-r border-zinc-700 p-8 md:p-12 overflow-hidden">
+              {/* Projector Light Effect */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full">
+                <div className="absolute top-0 left-1/4 right-1/4 h-32 bg-gradient-to-b from-yellow-500/5 to-transparent projector-light" />
               </div>
               
-              {/* Mock Result */}
-              <div className="text-center">
-                <p className="text-zinc-500 text-sm mb-2">Tonight&apos;s pick:</p>
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Inception</h3>
-                <p className="text-amber-400 italic">&ldquo;Trust me, you&apos;ll forget to breathe during the last 20 minutes.&rdquo;</p>
+              {/* Glow Effect */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+              
+              <div className="relative">
+                {/* Mock Slot Machine Reels */}
+                <div className="flex justify-center gap-4 mb-8">
+                  {['🎬', '🍿', '🎭'].map((emoji, i) => (
+                    <div 
+                      key={i}
+                      className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center text-4xl md:text-5xl border border-zinc-700 shadow-2xl shadow-black/50"
+                      style={{
+                        boxShadow: '0 0 30px rgba(139, 0, 0, 0.2), inset 0 2px 4px rgba(255,255,255,0.1)'
+                      }}
+                    >
+                      {emoji}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Mock Result */}
+                <div className="text-center">
+                  <p className="text-zinc-500 text-sm mb-2 flex items-center justify-center gap-2">
+                    <span className="inline-block w-8 h-px bg-zinc-700" />
+                    Tonight&apos;s Feature Presentation
+                    <span className="inline-block w-8 h-px bg-zinc-700" />
+                  </p>
+                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">✨ Inception ✨</h3>
+                  <p className="text-yellow-400 italic text-lg">&ldquo;Trust me, you&apos;ll forget to breathe during the last 20 minutes.&rdquo;</p>
+                </div>
               </div>
             </div>
+            
+            {/* Bottom Frame Bar */}
+            <div className="h-4 bg-gradient-to-t from-zinc-800 to-zinc-900 rounded-b-xl border-b border-l border-r border-zinc-700" />
+          </div>
+          
+          {/* Speaker Dots */}
+          <div className="flex justify-center gap-1 mt-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="w-2 h-2 rounded-full bg-zinc-800 border border-zinc-700" />
+            ))}
           </div>
         </div>
       </section>
@@ -114,15 +166,17 @@ export default async function HomePage() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="gold-shimmer">How it works</span> 🎥
+            </h2>
             <p className="text-zinc-400 text-lg">Three simple steps to movie night bliss</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-zinc-700 transition-all">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-xl flex items-center justify-center mb-6">
-                <Film className="w-7 h-7 text-amber-500" />
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                📝
               </div>
               <h3 className="text-xl font-semibold mb-3">Build your list</h3>
               <p className="text-zinc-400 leading-relaxed">
@@ -131,9 +185,9 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-zinc-700 transition-all">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-xl flex items-center justify-center mb-6">
-                <Shuffle className="w-7 h-7 text-amber-500" />
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                🎰
               </div>
               <h3 className="text-xl font-semibold mb-3">Spin the wheel</h3>
               <p className="text-zinc-400 leading-relaxed">
@@ -142,11 +196,11 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-zinc-700 transition-all">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-xl flex items-center justify-center mb-6">
-                <CheckCircle className="w-7 h-7 text-amber-500" />
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                🎬
               </div>
-              <h3 className="text-xl font-semibold mb-3">Start watching</h3>
+              <h3 className="text-xl font-semibold mb-3">Lights, camera, action!</h3>
               <p className="text-zinc-400 leading-relaxed">
                 Get a persuasive pitch that&apos;ll make you excited to press play.
               </p>
@@ -156,21 +210,19 @@ export default async function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4 border-y border-zinc-800">
+      <section className="py-16 px-4 border-y border-red-900/30">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-amber-500 mb-2">∞</div>
+              <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">∞</div>
               <div className="text-zinc-400 text-sm">Hours saved from scrolling</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-amber-500 mb-2">100%</div>
+              <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">100%</div>
               <div className="text-zinc-400 text-sm">Decision fatigue eliminated</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-amber-500 mb-2">
-                <Clock className="w-8 h-8 md:w-10 md:h-10 mx-auto" />
-              </div>
+              <div className="text-3xl md:text-5xl mb-2">🍿</div>
               <div className="text-zinc-400 text-sm">More time actually watching</div>
             </div>
           </div>
@@ -178,40 +230,41 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="py-20 px-4 relative">
+        <div className="absolute inset-0 spotlight pointer-events-none" style={{ '--y': '70%' } as React.CSSProperties} />
+        <div className="max-w-3xl mx-auto text-center relative">
+          <div className="text-5xl mb-6">🎟️</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to stop scrolling?
+            Ready to enter the <span className="gold-shimmer">cinema</span>?
           </h2>
           <p className="text-zinc-400 text-lg mb-8">
             Join now and let fate decide your next movie night.
           </p>
           <Link 
             href="/auth?mode=register"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-full hover:from-amber-400 hover:to-orange-400 transition-all text-lg"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-700 to-red-600 text-white font-semibold rounded-full hover:from-red-600 hover:to-red-500 transition-all text-lg shadow-xl shadow-red-900/50 border border-red-500/30"
           >
-            <span>Get Started Free</span>
+            <span>🎬 Get Started Free</span>
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-8 px-4">
+      <footer className="border-t border-red-900/30 py-8 px-4 bg-black/40">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-black" />
-            </div>
-            <span className="font-semibold">Unscroll</span>
+            <span className="text-2xl">🎬</span>
+            <span className="font-semibold gold-shimmer">Unscroll</span>
           </div>
-          <p className="text-zinc-500 text-sm">
-            Built with Next.js, Firebase & OpenAI •{' '}
+          <p className="text-zinc-500 text-sm flex items-center gap-2">
+            <span>Made with 🍿 for movie lovers</span>
+            <span>•</span>
             <a
               href="https://github.com/manuelmorlin/unscroll"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-500 hover:underline"
+              className="text-yellow-500 hover:underline"
             >
               View Source
             </a>
