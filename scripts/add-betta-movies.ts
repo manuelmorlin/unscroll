@@ -102,7 +102,7 @@ async function main() {
   for (const movie of movies) {
     const tmdb = await searchTMDB(movie.title, movie.year);
     
-    const mediaItem: Record<string, any> = {
+    const mediaItem: Record<string, string | string[] | null> = {
       title: tmdb?.title || movie.title,
       year: tmdb?.release_date?.split('-')[0] || movie.year?.toString(),
       format: 'movie',
@@ -116,9 +116,9 @@ async function main() {
 
     if (tmdb) {
       mediaItem.duration = tmdb.runtime ? formatDuration(tmdb.runtime) : null;
-      mediaItem.genre = tmdb.genres?.map((g: any) => g.name).join(', ') || null;
+      mediaItem.genre = tmdb.genres?.map((g: { name: string }) => g.name).join(', ') || null;
       mediaItem.plot = tmdb.overview || null;
-      mediaItem.cast = tmdb.credits?.cast?.slice(0, 5).map((c: any) => c.name) || null;
+      mediaItem.cast = tmdb.credits?.cast?.slice(0, 5).map((c: { name: string }) => c.name) || null;
     }
 
     await db.collection('users').doc(userId).collection('mediaItems').add(mediaItem);

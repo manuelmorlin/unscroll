@@ -15,8 +15,8 @@ export async function POST(request: Request) {
     // First, check if user exists using Admin SDK
     try {
       await adminAuth.getUserByEmail(email);
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
+    } catch (error: unknown) {
+      if ((error as { code?: string })?.code === 'auth/user-not-found') {
         return NextResponse.json(
           { error: 'No account found with this email address' },
           { status: 404 }
@@ -25,12 +25,7 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    // User exists, generate password reset link
-    const resetLink = await adminAuth.generatePasswordResetLink(email);
-
-    // For now, we use Firebase's built-in email sending
-    // The generatePasswordResetLink confirms the user exists
-    // but we need to use the REST API to actually send the email
+    // User exists, send password reset email via REST API
     
     const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!FIREBASE_API_KEY) {
