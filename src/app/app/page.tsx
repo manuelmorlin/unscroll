@@ -38,21 +38,21 @@ export default function AppPage() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-zinc-400">
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 text-sm text-zinc-200">
+              <User className="w-4 h-4 text-yellow-500" />
+              <span className="font-medium">
                 {user?.displayName || 'User'}
               </span>
             </div>
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-400 hover:text-white hover:bg-red-900/30 rounded-lg transition-colors border border-transparent hover:border-red-800/50"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-white bg-red-600/80 hover:bg-red-500 rounded-lg transition-colors font-medium"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign Out</span>
+                <span>Sign Out</span>
               </button>
             </form>
           </div>
