@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, Clock, X } from 'lucide-react';
-import { getRandomUnwatched, markAsWatched, getAllGenres } from '@/lib/actions/media';
+import { Sparkles, RotateCcw, Check, Film, Clock, X, Star } from 'lucide-react';
+import { getRandomUnwatched, markAsWatched, getAllGenres, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { actionPersuade } from '@/lib/actions/ai';
+import { StarRating } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
 
 // ==============================================
@@ -95,6 +96,8 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
   const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [watchedMedia, setWatchedMedia] = useState<MediaItem | null>(null);
 
   // Load genres function
   const loadGenres = useCallback(async () => {
@@ -181,6 +184,10 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     const result = await markAsWatched(selectedMedia.id);
 
     if (result.success) {
+      // Store the media for rating modal
+      setWatchedMedia(selectedMedia);
+      setShowRatingModal(true);
+      
       setSelectedMedia(null);
       setPersuasivePhrase(null);
       setMovieEmoji('🎬'); // Reset emoji
@@ -192,6 +199,20 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       onWatched?.();
     }
   }, [selectedMedia, onWatched, loadGenres]);
+
+  // Handle rating from modal
+  const handleRate = useCallback(async (rating: number) => {
+    if (!watchedMedia) return;
+    await updateMediaItem(watchedMedia.id, { user_rating: rating });
+    setShowRatingModal(false);
+    setWatchedMedia(null);
+  }, [watchedMedia]);
+
+  // Handle skip rating
+  const handleSkipRating = useCallback(() => {
+    setShowRatingModal(false);
+    setWatchedMedia(null);
+  }, []);
 
   // Get format icon
   const FormatIcon = selectedMedia
@@ -552,6 +573,68 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
           <div key={i} className="w-1.5 h-1.5 rounded-full bg-zinc-800 border border-zinc-700" />
         ))}
       </div>
+
+      {/* Rating Modal */}
+      <AnimatePresence>
+        {showRatingModal && watchedMedia && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={handleSkipRating}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl shadow-green-900/20"
+            >
+              {/* Success Badge */}
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center border border-green-500/30">
+                  <Check className="w-8 h-8 text-green-400" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-xl font-semibold text-white text-center mb-2">
+                🎬 {watchedMedia.title}
+              </h2>
+              <p className="text-sm text-green-400 text-center mb-6">
+                Marked as watched!
+              </p>
+
+              {/* Reminder */}
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
+                <p className="text-yellow-300 text-sm text-center flex items-center justify-center gap-2">
+                  <Star className="w-4 h-4" />
+                  Don&apos;t forget to rate this film!
+                </p>
+              </div>
+
+              {/* Rating */}
+              <div className="flex justify-center mb-6">
+                <StarRating
+                  value={null}
+                  onChange={handleRate}
+                  size="lg"
+                  showLabel
+                />
+              </div>
+
+              {/* Skip Button */}
+              <button
+                onClick={handleSkipRating}
+                className="w-full py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all text-sm"
+              >
+                Skip for now
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
