@@ -89,9 +89,9 @@ export function FloatingPosters({ posters, className = '' }: FloatingPostersProp
                 alt=""
                 width={96}
                 height={144}
-                className="w-16 sm:w-20 md:w-24 h-auto rounded-lg shadow-2xl shadow-black/50 opacity-20 sm:opacity-25 border border-zinc-800/50"
+                className="w-16 sm:w-20 md:w-24 h-auto rounded-lg shadow-2xl shadow-black/50 opacity-35 sm:opacity-40 border border-zinc-700/50"
                 style={{
-                  filter: 'grayscale(30%)',
+                  filter: 'grayscale(20%)',
                 }}
                 unoptimized
               />
