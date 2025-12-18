@@ -188,6 +188,76 @@ export async function markAsRewatched(id: string): Promise<MediaActionResult> {
 }
 
 // ==============================================
+// REMOVE REWATCH - Decrement rewatch counter
+// ==============================================
+
+export async function removeRewatch(id: string): Promise<MediaActionResult> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'You must be logged in to update media',
+    };
+  }
+
+  try {
+    const docRef = adminDb.collection('media_items').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return {
+        success: false,
+        error: 'Media item not found',
+      };
+    }
+
+    const docData = doc.data();
+    if (docData?.user_id !== user.id) {
+      return {
+        success: false,
+        error: 'You do not have permission to update this item',
+      };
+    }
+
+    const currentRewatchCount = docData?.rewatch_count || 0;
+    
+    if (currentRewatchCount <= 0) {
+      return {
+        success: false,
+        error: 'No rewatches to remove',
+      };
+    }
+
+    await docRef.update({
+      rewatch_count: currentRewatchCount - 1,
+      updated_at: new Date().toISOString(),
+    });
+
+    revalidatePath('/app');
+
+    return {
+      success: true,
+      data: { rewatch_count: currentRewatchCount - 1 },
+    };
+  } catch (error) {
+    console.error('Remove rewatch error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to remove rewatch',
+    };
+  }
+}
+
+// ==============================================
+// UPDATE WATCH DATE
+// ==============================================
+
+export async function updateWatchDate(id: string, date: string): Promise<MediaActionResult> {
+  return updateMediaItem(id, { watched_at: date });
+}
+
+// ==============================================
 // UPDATE STATUS
 // ==============================================
 

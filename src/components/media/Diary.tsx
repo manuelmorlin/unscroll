@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Star, Film, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Calendar, Star, Film, ChevronDown, ChevronUp, RefreshCw, Minus, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
-import { updateMediaItem, markAsRewatched } from '@/lib/actions/media';
+import { updateMediaItem, markAsRewatched, removeRewatch, updateWatchDate } from '@/lib/actions/media';
 import { StarRating, StarRatingCompact } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
 
@@ -67,16 +67,23 @@ interface DiaryCardProps {
   onRatingChange: (id: string, rating: number) => void;
   onReviewChange: (id: string, review: string) => void;
   onRewatch: (id: string) => void;
+  onRemoveRewatch: (id: string) => void;
+  onDateChange: (id: string, date: string) => void;
 }
 
-function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch }: DiaryCardProps) {
+function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveRewatch, onDateChange }: DiaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRating, setIsRating] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
   const [isRewatching, setIsRewatching] = useState(false);
+  const [isRemovingRewatch, setIsRemovingRewatch] = useState(false);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [isSavingDate, setIsSavingDate] = useState(false);
   const [review, setReview] = useState(media.user_review || '');
+  const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : '');
   const genreEmoji = getGenreEmoji(media.genre);
   const rewatchCount = media.rewatch_count || 0;
+  const totalViews = rewatchCount + 1; // First watch + rewatches
 
   const handleRatingChange = async (rating: number) => {
     setIsRating(true);
@@ -95,6 +102,25 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch }: DiaryCa
     setIsRewatching(true);
     await onRewatch(media.id);
     setIsRewatching(false);
+  };
+
+  const handleRemoveRewatch = async () => {
+    setIsRemovingRewatch(true);
+    await onRemoveRewatch(media.id);
+    setIsRemovingRewatch(false);
+  };
+
+  const handleDateSave = async () => {
+    if (!editedDate) return;
+    const newDate = new Date(editedDate).toISOString();
+    if (newDate === media.watched_at) {
+      setIsEditingDate(false);
+      return;
+    }
+    setIsSavingDate(true);
+    await onDateChange(media.id, newDate);
+    setIsSavingDate(false);
+    setIsEditingDate(false);
   };
 
   return (
@@ -146,28 +172,57 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch }: DiaryCa
                         <span className="truncate max-w-[100px] sm:max-w-[150px]">{media.genre}</span>
                       </>
                     )}
-                    {/* Rewatch badge */}
+                    {/* Rewatch badge - shows total views */}
                     {rewatchCount > 0 && (
                       <>
                         <span className="text-zinc-600">•</span>
                         <span className="flex items-center gap-1 text-green-400">
                           <RefreshCw className="w-3 h-3" />
-                          {rewatchCount}x
+                          {totalViews}x
                         </span>
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Watch Date */}
+                {/* Watch Date - editable */}
                 <div className="flex-shrink-0 text-right">
-                  <div className="flex items-center gap-1 text-xs text-zinc-500">
-                    <Calendar className="w-3 h-3" />
-                    <span className="hidden sm:inline">{formatDate(media.watched_at)}</span>
-                    <span className="sm:hidden">
-                      {media.watched_at ? new Date(media.watched_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
-                    </span>
-                  </div>
+                  {isEditingDate ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="date"
+                        value={editedDate}
+                        onChange={(e) => setEditedDate(e.target.value)}
+                        className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-white"
+                      />
+                      <button
+                        onClick={handleDateSave}
+                        disabled={isSavingDate}
+                        className="text-xs text-green-500 hover:text-green-400 px-1"
+                      >
+                        {isSavingDate ? '...' : '✓'}
+                      </button>
+                      <button
+                        onClick={() => setIsEditingDate(false)}
+                        className="text-xs text-zinc-500 hover:text-zinc-400 px-1"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditingDate(true)}
+                      className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                      title="Edit watch date"
+                    >
+                      <Calendar className="w-3 h-3" />
+                      <span className="hidden sm:inline">{formatDate(media.watched_at)}</span>
+                      <span className="sm:hidden">
+                        {media.watched_at ? new Date(media.watched_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                      </span>
+                      <Pencil className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -182,15 +237,28 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch }: DiaryCa
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  {/* Remove rewatch button - only show if there are rewatches */}
+                  {rewatchCount > 0 && (
+                    <button
+                      onClick={handleRemoveRewatch}
+                      disabled={isRemovingRewatch}
+                      className="flex items-center gap-1 text-xs text-red-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                      title="Remove one rewatch"
+                    >
+                      <Minus className="w-3 h-3" />
+                      <span className="hidden sm:inline">-1</span>
+                    </button>
+                  )}
+                  
                   {/* Rewatch button */}
                   <button
                     onClick={handleRewatch}
                     disabled={isRewatching}
                     className="flex items-center gap-1 text-xs text-green-500 hover:text-green-400 transition-colors disabled:opacity-50"
-                    title="Watch again"
+                    title="Watch again (+1)"
                   >
                     <RefreshCw className={`w-3 h-3 ${isRewatching ? 'animate-spin' : ''}`} />
-                    <span className="hidden sm:inline">Rewatch</span>
+                    <span className="hidden sm:inline">+1</span>
                   </button>
                   
                   <button
@@ -322,6 +390,14 @@ export function Diary() {
     await markAsRewatched(id);
   };
 
+  const handleRemoveRewatch = async (id: string) => {
+    await removeRewatch(id);
+  };
+
+  const handleDateChange = async (id: string, date: string) => {
+    await updateWatchDate(id, date);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -416,6 +492,8 @@ export function Diary() {
                   onRatingChange={handleRatingChange}
                   onReviewChange={handleReviewChange}
                   onRewatch={handleRewatch}
+                  onRemoveRewatch={handleRemoveRewatch}
+                  onDateChange={handleDateChange}
                 />
               ))}
             </div>
