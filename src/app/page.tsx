@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/actions/auth';
+import { getPopularMoviePosters } from '@/lib/actions/tmdb';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { DemoButton } from '@/components/auth';
+import { LandingPosters } from '@/components/ui';
 
 export default async function HomePage() {
   const user = await getCurrentUser();
@@ -11,8 +13,15 @@ export default async function HomePage() {
     redirect('/app');
   }
 
+  // Fetch popular movie posters for background
+  const postersResult = await getPopularMoviePosters();
+  const posters = postersResult.success ? postersResult.posters || [] : [];
+
   return (
     <div className="min-h-screen cinema-bg text-white overflow-hidden">
+      {/* Floating Movie Posters Background */}
+      <LandingPosters initialPosters={posters} />
+
       {/* Animated Stars Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (

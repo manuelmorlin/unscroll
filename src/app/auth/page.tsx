@@ -1,4 +1,6 @@
 import { AuthForm } from '@/components/auth';
+import { getPopularMoviePosters } from '@/lib/actions/tmdb';
+import { LandingPosters } from '@/components/ui';
 
 export default async function AuthPage({
   searchParams,
@@ -8,8 +10,15 @@ export default async function AuthPage({
   const params = await searchParams;
   const initialMode = params.mode === 'register' ? 'register' : 'login';
 
+  // Fetch popular movie posters for background
+  const postersResult = await getPopularMoviePosters();
+  const posters = postersResult.success ? postersResult.posters || [] : [];
+
   return (
     <main className="min-h-screen cinema-bg flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Floating Movie Posters Background */}
+      <LandingPosters initialPosters={posters} />
+
       {/* Animated Stars */}
       <div className="fixed inset-0 pointer-events-none">
         {[...Array(15)].map((_, i) => (

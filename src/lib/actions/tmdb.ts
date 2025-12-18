@@ -173,3 +173,46 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
     };
   }
 }
+
+/**
+ * Get popular movies from TMDB for background decoration
+ */
+export interface PopularMoviesResult {
+  success: boolean;
+  posters?: string[];
+  error?: string;
+}
+
+export async function getPopularMoviePosters(): Promise<PopularMoviesResult> {
+  if (!TMDB_API_KEY) {
+    return { success: false, error: 'TMDB API key not configured' };
+  }
+
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
+      { next: { revalidate: 86400 } } // Cache for 24 hours
+    );
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    interface TMDBPopularMovie {
+      poster_path: string | null;
+    }
+
+    // Get first 20 movies with posters
+    const posters: string[] = data.results
+      .filter((movie: TMDBPopularMovie) => movie.poster_path)
+      .slice(0, 20)
+      .map((movie: TMDBPopularMovie) => `https://image.tmdb.org/t/p/w342${movie.poster_path}`);
+
+    return { success: true, posters };
+  } catch (error) {
+    console.error('TMDB popular error:', error);
+    return { success: false, error: 'Failed to get popular movies' };
+  }
+}
