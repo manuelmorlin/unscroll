@@ -7,6 +7,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  signInWithCustomToken,
+  signOut,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { setSessionAction } from '@/lib/actions/auth';
@@ -161,6 +163,9 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
     setError(null);
 
     try {
+      // Sign out any existing user first
+      await signOut(auth);
+
       const response = await fetch('/api/auth/demo', {
         method: 'POST',
       });
@@ -168,6 +173,13 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Demo login failed');
+      }
+
+      const data = await response.json();
+      
+      // Sign in with custom token on client-side Firebase
+      if (data.customToken) {
+        await signInWithCustomToken(auth, data.customToken);
       }
 
       router.push('/app');

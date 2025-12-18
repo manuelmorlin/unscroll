@@ -137,7 +137,10 @@ export async function POST() {
       sameSite: 'lax',
     });
 
-    return NextResponse.json({ success: true });
+    // Create a custom token for client-side Firebase auth
+    const customToken = await adminAuth.createCustomToken(localId);
+
+    return NextResponse.json({ success: true, customToken });
   } catch (error) {
     console.error('Demo login error:', error);
     return NextResponse.json(

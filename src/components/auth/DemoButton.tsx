@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { signInWithCustomToken, signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
 
 interface DemoButtonProps {
   className?: string;
@@ -18,12 +20,22 @@ export function DemoButton({ className, children }: DemoButtonProps) {
     setIsLoading(true);
 
     try {
+      // Sign out any existing user first
+      await signOut(auth);
+
       const response = await fetch('/api/auth/demo', {
         method: 'POST',
       });
 
       if (!response.ok) {
         throw new Error('Demo login failed');
+      }
+
+      const data = await response.json();
+      
+      // Sign in with custom token on client-side Firebase
+      if (data.customToken) {
+        await signInWithCustomToken(auth, data.customToken);
       }
 
       router.push('/app');
