@@ -190,6 +190,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
                 {/* Watch Date - editable */}
                 <div className="flex-shrink-0 text-right">
+                  <p className="text-[10px] text-zinc-500 mb-0.5">When did you watch it?</p>
                   {isEditingDate ? (
                     <div className="flex items-center gap-1">
                       <input
@@ -215,15 +216,15 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                   ) : (
                     <button
                       onClick={() => setIsEditingDate(true)}
-                      className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-                      title="Edit watch date"
+                      className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                      title="Click to edit"
                     >
                       <Calendar className="w-3 h-3" />
                       <span className="hidden sm:inline">{formatDate(media.watched_at)}</span>
                       <span className="sm:hidden">
                         {media.watched_at ? new Date(media.watched_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                       </span>
-                      <Pencil className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Pencil className="w-2.5 h-2.5 opacity-50" />
                     </button>
                   )}
                 </div>
@@ -322,30 +323,29 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                           className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-3 min-w-[220px]"
                         >
                           <p className="text-xs text-zinc-400 mb-2">Watch history</p>
-                          <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                          <div className="space-y-1.5 max-h-[200px] overflow-y-auto w-[250px]">
                             {/* First watch (original) */}
-                            <div className="flex items-center justify-between text-sm py-1.5 px-2 bg-zinc-900/50 rounded">
-                              <span className="text-zinc-300">
+                            <div className="grid grid-cols-[1fr_40px_24px] items-center text-sm py-1.5 px-2 bg-zinc-900/50 rounded gap-2">
+                              <span className="text-zinc-300 truncate">
                                 {formatDate(media.watched_at)}
                               </span>
-                              <span className="text-xs text-zinc-500">1st</span>
+                              <span className="text-xs text-zinc-500 text-right">1st</span>
+                              <span></span>
                             </div>
                             {/* Rewatches */}
                             {rewatchDates.map((date, index) => (
-                              <div key={index} className="flex items-center justify-between text-sm py-1.5 px-2 bg-zinc-900/50 rounded group">
-                                <span className="text-zinc-300">
+                              <div key={index} className="grid grid-cols-[1fr_40px_24px] items-center text-sm py-1.5 px-2 bg-zinc-900/50 rounded gap-2 group">
+                                <span className="text-zinc-300 truncate">
                                   {formatDate(date)}
                                 </span>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-zinc-500">{index + 2}nd</span>
-                                  <button
-                                    onClick={() => handleRemoveRewatch(index)}
-                                    className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
-                                    title="Remove this watch"
-                                  >
-                                    <Minus className="w-3 h-3" />
-                                  </button>
-                                </div>
+                                <span className="text-xs text-zinc-500 text-right">{index + 2}nd</span>
+                                <button
+                                  onClick={() => handleRemoveRewatch(index)}
+                                  className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity flex justify-center"
+                                  title="Remove this watch"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
                               </div>
                             ))}
                           </div>
