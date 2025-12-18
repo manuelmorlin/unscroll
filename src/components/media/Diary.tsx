@@ -256,11 +256,11 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                           initial={{ opacity: 0, y: -5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
-                          className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-3 w-[280px]"
+                          className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl w-[300px]"
                         >
-                          {/* Add new watch section - always visible */}
-                          <div className="mb-3 pb-3 border-b border-zinc-700">
-                            <p className="text-xs text-zinc-400 mb-2">When did you watch it?</p>
+                          {/* Add new watch section */}
+                          <div className="p-3 border-b border-zinc-700 bg-zinc-800/80">
+                            <p className="text-xs font-medium text-zinc-300 mb-2">➕ Add another view</p>
                             <div className="flex gap-2">
                               <input
                                 type="date"
@@ -271,44 +271,47 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                               <button
                                 onClick={handleRewatch}
                                 disabled={isRewatching}
-                                className="text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded transition-colors disabled:opacity-50 whitespace-nowrap"
+                                className="text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
                               >
-                                {isRewatching ? '...' : 'Add View'}
+                                {isRewatching ? '...' : 'Add'}
                               </button>
                             </div>
                           </div>
                           
                           {/* Watch history */}
-                          <p className="text-xs text-zinc-400 mb-2">Watch history</p>
-                          <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
-                            {/* First watch (original) */}
-                            <div className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded">
-                              <span className="flex-1 text-zinc-300 truncate">
-                                {formatDate(media.watched_at)}
-                              </span>
-                              <span className="text-xs text-zinc-500 w-10 text-right">1st</span>
-                              <span className="w-6"></span>
-                            </div>
-                            {/* Rewatches */}
-                            {rewatchDates.map((date, index) => (
-                              <div key={index} className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded group">
+                          <div className="p-3">
+                            <p className="text-xs font-medium text-zinc-300 mb-2">📅 Watch history</p>
+                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                              {/* First watch (original) */}
+                              <div className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded">
                                 <span className="flex-1 text-zinc-300 truncate">
-                                  {formatDate(date)}
+                                  {formatDate(media.watched_at)}
                                 </span>
-                                <span className="text-xs text-zinc-500 w-10 text-right">{index + 2}{index === 0 ? 'nd' : index === 1 ? 'rd' : 'th'}</span>
-                                <button
-                                  onClick={() => handleRemoveRewatch(index)}
-                                  className="w-6 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
-                                  title="Remove this watch"
-                                >
-                                  <Minus className="w-3 h-3" />
-                                </button>
+                                <span className="text-xs text-zinc-500 w-10 text-right">1st</span>
+                                <span className="w-6"></span>
                               </div>
-                            ))}
+                              {/* Rewatches */}
+                              {rewatchDates.map((date, index) => (
+                                <div key={index} className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded group">
+                                  <span className="flex-1 text-zinc-300 truncate">
+                                    {formatDate(date)}
+                                  </span>
+                                  <span className="text-xs text-zinc-500 w-10 text-right">{index + 2}{index === 0 ? 'nd' : index === 1 ? 'rd' : 'th'}</span>
+                                  <button
+                                    onClick={() => handleRemoveRewatch(index)}
+                                    className="w-6 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
+                                    title="Remove this watch"
+                                  >
+                                    <Minus className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
+                          
                           <button
                             onClick={() => setShowRewatchDates(false)}
-                            className="w-full text-xs text-zinc-400 hover:text-white mt-3 py-1 transition-colors"
+                            className="w-full text-xs text-zinc-500 hover:text-white py-2 border-t border-zinc-700 transition-colors"
                           >
                             Close
                           </button>
