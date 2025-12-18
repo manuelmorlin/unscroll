@@ -98,10 +98,20 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
         {/* Main Row */}
         <div className="p-3 sm:p-4">
           <div className="flex items-start gap-3 sm:gap-4">
-            {/* Genre Emoji */}
-            <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl">
-              {genreEmoji}
-            </div>
+            {/* Poster or Emoji Fallback */}
+            {media.poster_url ? (
+              <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg">
+                <img
+                  src={media.poster_url}
+                  alt={media.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl">
+                {genreEmoji}
+              </div>
+            )}
 
             {/* Content */}
             <div className="flex-1 min-w-0">
