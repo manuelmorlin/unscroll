@@ -176,7 +176,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     <span className="text-zinc-600">•</span>
                     <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${rewatchCount > 0 ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700/50 text-zinc-400'}`}>
                       <Film className="w-3 h-3" />
-                      {totalViews === 1 ? '1 visione' : `${totalViews} visioni`}
+                      {totalViews === 1 ? '1 view' : `${totalViews} views`}
                     </span>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                       onClick={handleRemoveRewatch}
                       disabled={isRemovingRewatch || totalViews <= 1}
                       className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      title={totalViews <= 1 ? 'Minimo 1 visione' : 'Rimuovi una visione'}
+                      title={totalViews <= 1 ? 'Minimum 1 view' : 'Remove a view'}
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -255,7 +255,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                       onClick={handleRewatch}
                       disabled={isRewatching}
                       className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
-                      title="Aggiungi una visione"
+                      title="Add a view"
                     >
                       {isRewatching ? (
                         <RefreshCw className="w-4 h-4 animate-spin" />
