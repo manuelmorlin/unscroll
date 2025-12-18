@@ -185,7 +185,6 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
                 {/* Watch Date - editable */}
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-[10px] text-zinc-500 mb-0.5">When did you watch it?</p>
                   {isEditingDate ? (
                     <div className="flex items-center gap-1">
                       <input
@@ -281,7 +280,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                           {/* Watch history */}
                           <div className="p-3">
                             <p className="text-xs font-medium text-zinc-300 mb-2">📅 Watch history</p>
-                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto scrollbar-yellow">
                               {/* First watch (original) */}
                               <div className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded">
                                 <span className="flex-1 text-zinc-300 truncate">

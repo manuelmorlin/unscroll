@@ -65,6 +65,25 @@ input, select, textarea {
   padding-right: var(--safe-area-inset-right);
 }
 
+/* Custom scrollbar for watch history */
+.scrollbar-yellow::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-yellow::-webkit-scrollbar-track {
+  background: #18181b;
+  border-radius: 3px;
+}
+
+.scrollbar-yellow::-webkit-scrollbar-thumb {
+  background: #ca8a04;
+  border-radius: 3px;
+}
+
+.scrollbar-yellow::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+
 /* Cinema Background Pattern */
 .cinema-bg {
   background: 
