@@ -184,6 +184,15 @@ export default function AppPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 text-center text-xs text-zinc-500">
           <p className="flex items-center justify-center gap-2">
             <span>Made with 🍿 for movie lovers</span>
+            <span className="text-zinc-700">•</span>
+            <a
+              href="https://github.com/manuelmorlin/unscroll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-yellow-500/70 hover:text-yellow-400 transition-colors"
+            >
+              View Source
+            </a>
           </p>
         </div>
       </footer>

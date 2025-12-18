@@ -382,13 +382,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
             {/* Filters Panel - always visible when spins available */}
             {spinCount < MAX_SPINS && (
               <div className="flex flex-col items-center gap-3 w-full">
-                {/* Genre Pills - horizontal scroll on mobile */}
+                {/* Genre Pills - horizontal scroll on mobile, centered on desktop */}
                 {genres.length > 0 && (
                   <div className="w-full">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                    <div className="flex gap-2 justify-center overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                       <button
                         onClick={() => setSelectedGenre('')}
                         disabled={isSpinning}
