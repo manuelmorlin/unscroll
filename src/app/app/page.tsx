@@ -38,8 +38,9 @@ export default function AppPage() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
             <AddMediaForm />
+            <div className="hidden sm:block w-px h-6 bg-zinc-700" />
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
               <User className="w-4 h-4 text-yellow-500" />
               <span className="font-medium">
@@ -49,7 +50,7 @@ export default function AppPage() {
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-white bg-red-600/80 hover:bg-red-500 active:bg-red-600 rounded-xl transition-colors font-medium min-w-[44px]"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 active:bg-zinc-700 rounded-xl transition-colors font-medium min-w-[44px]"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
