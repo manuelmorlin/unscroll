@@ -211,7 +211,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           transition={{ type: 'spring', duration: 0.5 }}
           className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-700 to-red-600 rounded-2xl mb-6 shadow-xl shadow-red-900/30 border border-red-500/30"
         >
-          <span className="text-4xl">🎬</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            className="w-10 h-10 text-yellow-400"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+          </svg>
         </motion.div>
         <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
           <span className="gold-shimmer">Unscroll</span>
