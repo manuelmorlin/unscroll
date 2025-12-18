@@ -182,18 +182,16 @@ export default function AppPage() {
       {/* Footer - with safe area */}
       <footer className="border-t border-red-900/30 bg-black/40 safe-bottom">
         <div className="max-w-4xl mx-auto px-4 py-4 text-center text-xs text-zinc-500">
-          <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <span>Made with 🍿 for movie lovers</span>
-            <span className="hidden sm:inline text-zinc-700">•</span>
-            <a
-              href="https://github.com/manuelmorlin/unscroll"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-500/70 hover:text-yellow-400 transition-colors"
-            >
-              View Source
-            </a>
-          </p>
+          <span>Made with 🍿 for movie lovers</span>
+          <span className="hidden sm:inline mx-2 text-zinc-700">•</span>
+          <a
+            href="https://github.com/manuelmorlin/unscroll"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-yellow-500/70 hover:text-yellow-400 transition-colors inline min-h-0"
+          >
+            View Source
+          </a>
         </div>
       </footer>
     </div>
