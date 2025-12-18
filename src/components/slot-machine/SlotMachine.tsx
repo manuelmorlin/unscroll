@@ -268,6 +268,22 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     </span>
                   </div>
 
+                  {/* Poster */}
+                  {selectedMedia.poster_url && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 }}
+                      className="flex justify-center mb-4"
+                    >
+                      <img
+                        src={selectedMedia.poster_url}
+                        alt={selectedMedia.title}
+                        className="w-32 sm:w-40 md:w-48 rounded-xl shadow-2xl shadow-black/50 border border-zinc-700/50"
+                      />
+                    </motion.div>
+                  )}
+
                   {/* Title */}
                   <motion.h3
                     initial={{ opacity: 0, y: 20 }}

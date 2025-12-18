@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X } from 'lucide-react';
+import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
+import { StarRating } from '@/components/ui';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
 const formatIcons = {
@@ -237,6 +238,93 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 }
 
 // ==============================================
+// RATE MODAL - Opens after marking as Watched
+// ==============================================
+
+interface RateModalProps {
+  media: MediaItem;
+  onClose: () => void;
+  onRate: (id: string, rating: number) => Promise<void>;
+}
+
+function RateModal({ media, onClose, onRate }: RateModalProps) {
+  const [rating, setRating] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleRate = async (newRating: number) => {
+    setRating(newRating);
+    setIsSaving(true);
+    await onRate(media.id, newRating);
+    setIsSaving(false);
+    onClose();
+  };
+
+  const handleSkip = () => {
+    onClose();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={handleSkip}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl shadow-green-900/20"
+      >
+        {/* Success Badge */}
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center border border-green-500/30">
+            <Check className="w-8 h-8 text-green-400" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-xl font-semibold text-white text-center mb-2">
+          🎬 {media.title}
+        </h2>
+        <p className="text-sm text-green-400 text-center mb-6">
+          Marked as watched!
+        </p>
+
+        {/* Reminder */}
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
+          <p className="text-yellow-300 text-sm text-center flex items-center justify-center gap-2">
+            <Star className="w-4 h-4" />
+            Don&apos;t forget to rate this film!
+          </p>
+        </div>
+
+        {/* Rating */}
+        <div className="flex justify-center mb-6">
+          <StarRating
+            value={rating}
+            onChange={handleRate}
+            size="lg"
+            showLabel
+          />
+        </div>
+
+        {/* Skip Button */}
+        <button
+          onClick={handleSkip}
+          disabled={isSaving}
+          className="w-full py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all text-sm"
+        >
+          {isSaving ? 'Saving...' : 'Skip for now'}
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ==============================================
 // MEDIA CARD
 // ==============================================
 
@@ -363,6 +451,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
   const { mediaItems, isLoading, error, unwatchedCount, watchingCount, watchedCount } =
     useMediaItems();
   const [editingMedia, setEditingMedia] = useState<MediaItem | null>(null);
+  const [ratingMedia, setRatingMedia] = useState<MediaItem | null>(null);
 
   const filteredItems =
     filter === 'all'
@@ -371,6 +460,14 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   const handleStatusChange = async (id: string, status: MediaStatus) => {
     await updateMediaStatus(id, status);
+    
+    // Open rating modal when marking as watched
+    if (status === 'watched') {
+      const media = mediaItems.find(item => item.id === id);
+      if (media) {
+        setRatingMedia(media);
+      }
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -383,6 +480,10 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   const handleSaveEdit = async (id: string, updates: Partial<MediaItem>) => {
     await updateMediaItem(id, updates);
+  };
+
+  const handleRate = async (id: string, rating: number) => {
+    await updateMediaItem(id, { user_rating: rating });
   };
 
   if (isLoading) {
@@ -431,6 +532,17 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
             media={editingMedia}
             onClose={() => setEditingMedia(null)}
             onSave={handleSaveEdit}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Rate Modal - Shows after marking as Watched */}
+      <AnimatePresence>
+        {ratingMedia && (
+          <RateModal
+            media={ratingMedia}
+            onClose={() => setRatingMedia(null)}
+            onRate={handleRate}
           />
         )}
       </AnimatePresence>

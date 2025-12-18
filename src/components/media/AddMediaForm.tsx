@@ -25,6 +25,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [cast, setCast] = useState('');
   const [duration, setDuration] = useState('');
   const [year, setYear] = useState('');
+  const [posterUrl, setPosterUrl] = useState('');
   const [selectedTmdbId, setSelectedTmdbId] = useState<number | null>(null);
 
   // Autocomplete state
@@ -44,6 +45,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setCast('');
     setDuration('');
     setYear('');
+    setPosterUrl('');
     setError(null);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -86,6 +88,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setCast('');
     setDuration('');
     setYear('');
+    setPosterUrl('');
 
     if (title.trim().length < 2) {
       setSuggestions([]);
@@ -151,6 +154,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         setCast(tmdbResult.data.cast.join(', '));
         setDuration(tmdbResult.data.duration);
         setYear(tmdbResult.data.year.toString());
+        setPosterUrl(tmdbResult.data.poster_url || '');
         setIsAutofilling(false);
         return;
       }
@@ -193,6 +197,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         duration: duration || null,
         format: 'movie',
         year: year ? parseInt(year) : null,
+        poster_url: posterUrl || null,
       };
 
       const result = await addMediaItem(mediaData);

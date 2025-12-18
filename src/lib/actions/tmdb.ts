@@ -33,6 +33,7 @@ export interface MovieDetailsResult {
     cast: string[];
     duration: string;
     year: number;
+    poster_url: string | null;
   };
   error?: string;
 }
@@ -148,6 +149,11 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
       ? parseInt(details.release_date.split('-')[0], 10)
       : new Date().getFullYear();
 
+    // Build poster URL
+    const poster_url = details.poster_path
+      ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
+      : null;
+
     return {
       success: true,
       data: {
@@ -156,6 +162,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
         cast,
         duration,
         year,
+        poster_url,
       },
     };
   } catch (error) {
