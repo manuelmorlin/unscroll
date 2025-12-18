@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, User } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
-import { AddMediaForm, MediaList, Diary } from '@/components/media';
+import { AddMediaForm, MediaList, Diary, Stats } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
 import type { MediaStatus } from '@/types/database';
 
-type Tab = 'decide' | 'list' | 'diary';
+type Tab = 'decide' | 'list' | 'diary' | 'stats';
 type ListFilter = 'all' | MediaStatus;
 
 export default function AppPage() {
@@ -69,6 +69,7 @@ export default function AppPage() {
               { id: 'decide' as Tab, label: 'Decide', emoji: '🎰' },
               { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
               { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
+              { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
             ].map(({ id, label, emoji }) => (
               <button
                 key={id}
@@ -80,7 +81,7 @@ export default function AppPage() {
                 }`}
               >
                 <span className="text-base">{emoji}</span>
-                <span>{label}</span>
+                <span className="hidden sm:inline">{label}</span>
               </button>
             ))}
           </nav>
@@ -169,6 +170,17 @@ export default function AppPage() {
             </div>
 
             <Diary />
+          </motion.div>
+        )}
+
+        {activeTab === 'stats' && (
+          <motion.div
+            key="stats"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Stats />
           </motion.div>
         )}
       </main>

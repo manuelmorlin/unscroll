@@ -22,6 +22,7 @@ export interface MediaItem {
   user_rating: number | null;
   user_review: string | null;
   watched_at: string | null;
+  rewatch_count: number;  // Letterboxd-style rewatch counter
   created_at: string;
   updated_at: string;
 }
@@ -40,6 +41,7 @@ export interface MediaItemInsert {
   user_rating?: number | null;
   user_review?: string | null;
   watched_at?: string | null;
+  rewatch_count?: number;
 }
 
 export interface MediaItemUpdate {
@@ -56,6 +58,7 @@ export interface MediaItemUpdate {
   user_rating?: number | null;
   user_review?: string | null;
   watched_at?: string | null;
+  rewatch_count?: number;
   updated_at?: string;
 }
 

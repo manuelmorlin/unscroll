@@ -132,6 +132,62 @@ export async function markAsWatched(id: string): Promise<MediaActionResult> {
 }
 
 // ==============================================
+// REWATCH - Mark as watched again (increment counter)
+// ==============================================
+
+export async function markAsRewatched(id: string): Promise<MediaActionResult> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'You must be logged in to rewatch media',
+    };
+  }
+
+  try {
+    const docRef = adminDb.collection('media_items').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return {
+        success: false,
+        error: 'Media item not found',
+      };
+    }
+
+    const docData = doc.data();
+    if (docData?.user_id !== user.id) {
+      return {
+        success: false,
+        error: 'You do not have permission to update this item',
+      };
+    }
+
+    const currentRewatchCount = docData?.rewatch_count || 0;
+
+    await docRef.update({
+      rewatch_count: currentRewatchCount + 1,
+      watched_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    revalidatePath('/app');
+
+    return {
+      success: true,
+      data: { rewatch_count: currentRewatchCount + 1 },
+    };
+  } catch (error) {
+    console.error('Rewatch media error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to mark as rewatched',
+    };
+  }
+}
+
+// ==============================================
 // UPDATE STATUS
 // ==============================================
 

@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Star, Film, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Star, Film, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
-import { updateMediaItem } from '@/lib/actions/media';
+import { updateMediaItem, markAsRewatched } from '@/lib/actions/media';
 import { StarRating, StarRatingCompact } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
 
@@ -65,14 +66,17 @@ interface DiaryCardProps {
   media: MediaItem;
   onRatingChange: (id: string, rating: number) => void;
   onReviewChange: (id: string, review: string) => void;
+  onRewatch: (id: string) => void;
 }
 
-function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
+function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch }: DiaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRating, setIsRating] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
+  const [isRewatching, setIsRewatching] = useState(false);
   const [review, setReview] = useState(media.user_review || '');
   const genreEmoji = getGenreEmoji(media.genre);
+  const rewatchCount = media.rewatch_count || 0;
 
   const handleRatingChange = async (rating: number) => {
     setIsRating(true);
@@ -85,6 +89,12 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
     setIsSavingReview(true);
     await onReviewChange(media.id, review);
     setIsSavingReview(false);
+  };
+
+  const handleRewatch = async () => {
+    setIsRewatching(true);
+    await onRewatch(media.id);
+    setIsRewatching(false);
   };
 
   return (
@@ -100,11 +110,13 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
           <div className="flex items-start gap-3 sm:gap-4">
             {/* Poster or Emoji Fallback */}
             {media.poster_url ? (
-              <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg">
-                <img
+              <div className="relative flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg">
+                <Image
                   src={media.poster_url}
                   alt={media.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               </div>
             ) : (
@@ -134,6 +146,16 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
                         <span className="truncate max-w-[100px] sm:max-w-[150px]">{media.genre}</span>
                       </>
                     )}
+                    {/* Rewatch badge */}
+                    {rewatchCount > 0 && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="flex items-center gap-1 text-green-400">
+                          <RefreshCw className="w-3 h-3" />
+                          {rewatchCount}x
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -159,13 +181,26 @@ function DiaryCard({ media, onRatingChange, onReviewChange }: DiaryCardProps) {
                   )}
                 </div>
                 
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-                >
-                  <span>{isExpanded ? 'Hide' : media.user_review ? 'Edit' : 'Rate & Review'}</span>
-                  {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
+                <div className="flex items-center gap-2">
+                  {/* Rewatch button */}
+                  <button
+                    onClick={handleRewatch}
+                    disabled={isRewatching}
+                    className="flex items-center gap-1 text-xs text-green-500 hover:text-green-400 transition-colors disabled:opacity-50"
+                    title="Watch again"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isRewatching ? 'animate-spin' : ''}`} />
+                    <span className="hidden sm:inline">Rewatch</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    <span>{isExpanded ? 'Hide' : media.user_review ? 'Edit' : 'Rate & Review'}</span>
+                    {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </button>
+                </div>
               </div>
 
               {/* Review Preview */}
@@ -283,6 +318,10 @@ export function Diary() {
     await updateMediaItem(id, { user_review: review || null });
   };
 
+  const handleRewatch = async (id: string) => {
+    await markAsRewatched(id);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -376,6 +415,7 @@ export function Diary() {
                   media={media}
                   onRatingChange={handleRatingChange}
                   onReviewChange={handleReviewChange}
+                  onRewatch={handleRewatch}
                 />
               ))}
             </div>

@@ -6,6 +6,7 @@ import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star } from 'lucide-rea
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
 import { StarRating } from '@/components/ui';
+import { FilmDetailModal } from './FilmDetailModal';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
 const formatIcons = {
@@ -333,9 +334,10 @@ interface MediaCardProps {
   onStatusChange: (id: string, status: MediaStatus) => void;
   onDelete: (id: string) => void;
   onEdit: (media: MediaItem) => void;
+  onViewDetails: (media: MediaItem) => void;
 }
 
-function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) {
+function MediaCard({ media, onStatusChange, onDelete, onEdit, onViewDetails }: MediaCardProps) {
   const status = statusConfig[media.status];
   const genreEmoji = getGenreEmoji(media.genre);
 
@@ -372,9 +374,12 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit }: MediaCardProps) 
           <div className="flex-1 min-w-0">
             {/* Title Row */}
             <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
-              <h3 className="text-base sm:text-lg font-semibold text-white truncate leading-tight">
+              <button
+                onClick={() => onViewDetails(media)}
+                className="text-base sm:text-lg font-semibold text-white truncate leading-tight text-left hover:text-yellow-400 transition-colors"
+              >
                 {media.title}
-              </h3>
+              </button>
               {/* Status Badge */}
               <span className={`flex-shrink-0 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full ${status.bgColor} ${status.textColor} border ${status.borderColor}`}>
                 {status.label}
@@ -462,6 +467,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
     useMediaItems();
   const [editingMedia, setEditingMedia] = useState<MediaItem | null>(null);
   const [ratingMedia, setRatingMedia] = useState<MediaItem | null>(null);
+  const [viewingMedia, setViewingMedia] = useState<MediaItem | null>(null);
 
   const filteredItems =
     filter === 'all'
@@ -486,6 +492,10 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   const handleEdit = (media: MediaItem) => {
     setEditingMedia(media);
+  };
+
+  const handleViewDetails = (media: MediaItem) => {
+    setViewingMedia(media);
   };
 
   const handleSaveEdit = async (id: string, updates: Partial<MediaItem>) => {
@@ -557,6 +567,16 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         )}
       </AnimatePresence>
 
+      {/* Film Detail Modal */}
+      <AnimatePresence>
+        {viewingMedia && (
+          <FilmDetailModal
+            media={viewingMedia}
+            onClose={() => setViewingMedia(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Stats - scrollable on mobile */}
       <div className="flex items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-zinc-500 overflow-x-auto scrollbar-hide pb-1">
         <span className="whitespace-nowrap">🎬 {filteredItems.length}</span>
@@ -577,6 +597,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onViewDetails={handleViewDetails}
           />
         ))}
       </div>
