@@ -131,7 +131,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     setIsSpinning(true);
     setError(null);
     setSelectedMedia(null);
-    setPersuasivePhrase(null);
     setSpinCount(prev => prev + 1);
 
     // Start phrase animation
