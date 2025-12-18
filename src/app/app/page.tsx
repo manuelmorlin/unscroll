@@ -38,7 +38,8 @@ export default function AppPage() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <AddMediaForm />
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
               <User className="w-4 h-4 text-yellow-500" />
               <span className="font-medium">
@@ -105,11 +106,6 @@ export default function AppPage() {
             </div>
 
             <SlotMachine />
-
-            {/* Quick Add */}
-            <div className="flex justify-center mt-6">
-              <AddMediaForm />
-            </div>
           </motion.div>
         )}
         
@@ -120,15 +116,12 @@ export default function AppPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Header with Add Button */}
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h1 className="text-xl font-bold text-white mb-0.5">Your Watchlist</h1>
-                <p className="text-zinc-400 text-sm">
-                  Everything you want to watch
-                </p>
-              </div>
-              <AddMediaForm />
+            {/* Header */}
+            <div className="mb-5">
+              <h1 className="text-xl font-bold text-white mb-0.5">Your Watchlist</h1>
+              <p className="text-zinc-400 text-sm">
+                Everything you want to watch
+              </p>
             </div>
 
             {/* Filter Pills - horizontal scroll on mobile */}

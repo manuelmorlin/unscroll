@@ -349,20 +349,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     </motion.p>
                   )}
 
-                  {/* Persuasive Phrase */}
-                  {persuasivePhrase && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className="bg-gradient-to-r from-red-900/20 to-red-800/10 border border-red-800/30 rounded-lg p-4 mb-6"
-                    >
-                      <p className="text-yellow-300/90 italic font-light">
-                        "{movieEmoji} {persuasivePhrase}"
-                      </p>
-                    </motion.div>
-                  )}
-
                   {/* Cast */}
                   {selectedMedia.cast && (
                     <motion.div
