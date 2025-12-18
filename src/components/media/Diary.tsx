@@ -282,7 +282,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                           <p className="text-xs text-zinc-400 mb-2">Watch history</p>
                           <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
                             {/* First watch (original) */}
-                            <div className="flex items-center text-sm py-1.5 px-2 bg-zinc-900/50 rounded">
+                            <div className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded">
                               <span className="flex-1 text-zinc-300 truncate">
                                 {formatDate(media.watched_at)}
                               </span>
@@ -291,14 +291,14 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                             </div>
                             {/* Rewatches */}
                             {rewatchDates.map((date, index) => (
-                              <div key={index} className="flex items-center text-sm py-1.5 px-2 bg-zinc-900/50 rounded group">
+                              <div key={index} className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded group">
                                 <span className="flex-1 text-zinc-300 truncate">
                                   {formatDate(date)}
                                 </span>
                                 <span className="text-xs text-zinc-500 w-10 text-right">{index + 2}{index === 0 ? 'nd' : index === 1 ? 'rd' : 'th'}</span>
                                 <button
                                   onClick={() => handleRemoveRewatch(index)}
-                                  className="w-6 flex justify-center opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
+                                  className="w-6 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
                                   title="Remove this watch"
                                 >
                                   <Minus className="w-3 h-3" />
