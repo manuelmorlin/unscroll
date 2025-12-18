@@ -45,28 +45,43 @@ export async function POST() {
       const signInData = await signInResponse.json();
 
       if (signInData.error) {
-        // User doesn't exist, create it
+        // User doesn't exist or credentials are invalid
         if (signInData.error.message === 'EMAIL_NOT_FOUND' || 
             signInData.error.message === 'INVALID_LOGIN_CREDENTIALS') {
           
-          // Create user with Admin SDK
-          const newUser = await adminAuth.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            displayName: 'demo',
-            emailVerified: true,
-          });
+          // Check if user exists but has wrong password
+          let existingUser = null;
+          try {
+            existingUser = await adminAuth.getUserByEmail(demoEmail);
+          } catch {
+            // User doesn't exist, we'll create it
+          }
 
-          // Create user profile in Firestore
-          await adminDb.collection('users').doc(newUser.uid).set({
-            id: newUser.uid,
-            email: demoEmail,
-            username: 'demo',
-            isDemo: true,
-            createdAt: new Date().toISOString(),
-          });
+          if (existingUser) {
+            // User exists but password is wrong - update password
+            await adminAuth.updateUser(existingUser.uid, {
+              password: demoPassword,
+            });
+          } else {
+            // Create user with Admin SDK
+            const newUser = await adminAuth.createUser({
+              email: demoEmail,
+              password: demoPassword,
+              displayName: 'demo',
+              emailVerified: true,
+            });
 
-          // Sign in the newly created user
+            // Create user profile in Firestore
+            await adminDb.collection('users').doc(newUser.uid).set({
+              id: newUser.uid,
+              email: demoEmail,
+              username: 'demo',
+              isDemo: true,
+              createdAt: new Date().toISOString(),
+            });
+          }
+
+          // Sign in the user (newly created or password updated)
           const newSignInResponse = await fetch(
             `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
             {
