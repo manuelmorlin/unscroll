@@ -23,6 +23,7 @@ export interface TMDBMovieDetails {
 
 export interface TMDBCredits {
   cast: { id: number; name: string; character: string; order: number }[];
+  crew: { id: number; name: string; job: string; department: string }[];
 }
 
 export interface MovieDetailsResult {
@@ -31,6 +32,7 @@ export interface MovieDetailsResult {
     genre: string;
     plot: string;
     cast: string[];
+    director: string | null;
     duration: string;
     year: number;
     poster_url: string | null;
@@ -135,11 +137,14 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
       ? (hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`)
       : '';
 
-    // Get top 4 cast members
+    // Get top 10 cast members
     const cast = credits.cast
       .sort((a, b) => a.order - b.order)
-      .slice(0, 4)
+      .slice(0, 10)
       .map(actor => actor.name);
+
+    // Get director
+    const director = credits.crew.find(member => member.job === 'Director')?.name || null;
 
     // Get genres
     const genre = details.genres.map(g => g.name).join(', ');
@@ -160,6 +165,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
         genre,
         plot: details.overview || '',
         cast,
+        director,
         duration,
         year,
         poster_url,

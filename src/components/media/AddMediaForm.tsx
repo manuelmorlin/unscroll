@@ -23,6 +23,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [genre, setGenre] = useState('');
   const [plot, setPlot] = useState('');
   const [cast, setCast] = useState('');
+  const [director, setDirector] = useState('');
   const [duration, setDuration] = useState('');
   const [year, setYear] = useState('');
   const [posterUrl, setPosterUrl] = useState('');
@@ -43,6 +44,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setGenre('');
     setPlot('');
     setCast('');
+    setDirector('');
     setDuration('');
     setYear('');
     setPosterUrl('');
@@ -152,6 +154,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         setGenre(tmdbResult.data.genre);
         setPlot(tmdbResult.data.plot);
         setCast(tmdbResult.data.cast.join(', '));
+        setDirector(tmdbResult.data.director || '');
         setDuration(tmdbResult.data.duration);
         setYear(tmdbResult.data.year.toString());
         setPosterUrl(tmdbResult.data.poster_url || '');
@@ -194,6 +197,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         genre: genre || null,
         plot: plot || null,
         cast: cast ? cast.split(',').map((c) => c.trim()) : null,
+        director: director || null,
         duration: duration || null,
         format: 'movie',
         year: year ? parseInt(year) : null,

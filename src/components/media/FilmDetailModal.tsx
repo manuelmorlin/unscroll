@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw } from 'lucide-react';
+import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard } from 'lucide-react';
 import Image from 'next/image';
 import { StarRatingCompact } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
@@ -106,7 +106,7 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                   </h2>
                   
                   {/* Year & Duration */}
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-400 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-400 mb-3">
                     {media.year && (
                       <span className="font-medium">{media.year}</span>
                     )}
@@ -117,6 +117,14 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                       </span>
                     )}
                   </div>
+
+                  {/* Director */}
+                  {media.director && (
+                    <div className="flex items-center gap-2 text-sm text-zinc-400 mb-3">
+                      <Clapperboard className="w-3.5 h-3.5" />
+                      <span>Directed by <span className="text-zinc-200 font-medium">{media.director}</span></span>
+                    </div>
+                  )}
                   
                   {/* Genres */}
                   {media.genre && (
@@ -197,7 +205,7 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                   Cast
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {cast.slice(0, 8).map((actor, i) => (
+                  {cast.map((actor, i) => (
                     <span
                       key={i}
                       className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 transition-colors"
@@ -205,11 +213,6 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                       {actor}
                     </span>
                   ))}
-                  {cast.length > 8 && (
-                    <span className="px-3 py-1.5 bg-zinc-800/50 rounded-lg text-sm text-zinc-500">
-                      +{cast.length - 8} more
-                    </span>
-                  )}
                 </div>
               </div>
             )}

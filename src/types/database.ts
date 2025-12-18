@@ -13,6 +13,7 @@ export interface MediaItem {
   genre: string | null;
   plot: string | null;
   cast: string | string[] | null;
+  director: string | null;
   duration: string | null;
   format: MediaFormat;
   status: MediaStatus;
@@ -33,6 +34,7 @@ export interface MediaItemInsert {
   genre?: string | null;
   plot?: string | null;
   cast?: string | string[] | null;
+  director?: string | null;
   duration?: string | null;
   format?: MediaFormat;
   status?: MediaStatus;
