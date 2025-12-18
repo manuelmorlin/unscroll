@@ -258,17 +258,13 @@ export default async function HomePage() {
             <span className="text-2xl">🎬</span>
             <span className="font-semibold gold-shimmer">Unscroll</span>
           </div>
-          <p className="text-zinc-500 text-sm flex items-center gap-2">
-            <span>Made with 🍿 for movie lovers</span>
-            <span>•</span>
-            <a
+          <p className="text-zinc-500 text-sm whitespace-nowrap">
+            Made with 🍿 for movie lovers · <a
               href="https://github.com/manuelmorlin/unscroll"
               target="_blank"
               rel="noopener noreferrer"
               className="text-yellow-500 hover:underline"
-            >
-              View Source
-            </a>
+            >View Source</a>
           </p>
         </div>
       </footer>

@@ -435,15 +435,15 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         )}
       </AnimatePresence>
 
-      {/* Stats */}
-      <div className="flex items-center gap-4 mb-4 text-sm text-zinc-500">
-        <span>🎬 {filteredItems.length} films</span>
-        <span>•</span>
-        <span>🎟️ {unwatchedCount} to watch</span>
-        <span>•</span>
-        <span>👀 {watchingCount} watching</span>
-        <span>•</span>
-        <span>✅ {watchedCount} watched</span>
+      {/* Stats - scrollable on mobile */}
+      <div className="flex items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-zinc-500 overflow-x-auto scrollbar-hide pb-1">
+        <span className="whitespace-nowrap">🎬 {filteredItems.length}</span>
+        <span className="text-zinc-700">•</span>
+        <span className="whitespace-nowrap">🎟️ {unwatchedCount}</span>
+        <span className="text-zinc-700">•</span>
+        <span className="whitespace-nowrap">👀 {watchingCount}</span>
+        <span className="text-zinc-700">•</span>
+        <span className="whitespace-nowrap">✅ {watchedCount}</span>
       </div>
 
       {/* List */}
