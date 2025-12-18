@@ -182,9 +182,9 @@ export default function AppPage() {
       {/* Footer - with safe area */}
       <footer className="border-t border-red-900/30 bg-black/40 safe-bottom">
         <div className="max-w-4xl mx-auto px-4 py-4 text-center text-xs text-zinc-500">
-          <p className="flex items-center justify-center gap-2">
+          <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span>Made with 🍿 for movie lovers</span>
-            <span className="text-zinc-700">•</span>
+            <span className="hidden sm:inline text-zinc-700">•</span>
             <a
               href="https://github.com/manuelmorlin/unscroll"
               target="_blank"
