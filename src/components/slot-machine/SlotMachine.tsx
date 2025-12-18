@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RotateCcw, Check, Film, Clock, X, Star } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
-import { actionPersuade } from '@/lib/actions/ai';
 import { StarRating } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
 
@@ -88,8 +87,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [persuasivePhrase, setPersuasivePhrase] = useState<string | null>(null);
-  const [movieEmoji, setMovieEmoji] = useState<string>('🎬');
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
@@ -162,18 +159,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     setSelectedMedia(media);
     setShownFilmIds(prev => [...prev, media.id]); // Add to shown films
 
-    // Generate persuasive phrase
-    const persuadeResult = await actionPersuade(
-      media.title,
-      media.genre || '',
-      media.plot || ''
-    );
-
-    if (persuadeResult.success && persuadeResult.data) {
-      setPersuasivePhrase(persuadeResult.data.phrase);
-      setMovieEmoji(persuadeResult.data.emoji || '🎬');
-    }
-
     setIsSpinning(false);
   }, [animatePhrases, selectedGenre, selectedDuration, spinCount, shownFilmIds]);
 
@@ -189,8 +174,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setShowRatingModal(true);
       
       setSelectedMedia(null);
-      setPersuasivePhrase(null);
-      setMovieEmoji('🎬'); // Reset emoji
       setSpinCount(0); // Reset spin count after watching
       setShownFilmIds([]); // Reset shown films
       setSelectedGenre(''); // Reset genre filter
@@ -312,7 +295,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     transition={{ delay: 0.1 }}
                     className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight px-2"
                   >
-                    {movieEmoji} {selectedMedia.title} {movieEmoji}
+                    ✨ {selectedMedia.title} ✨
                   </motion.h3>
 
                   {/* Meta Info */}
