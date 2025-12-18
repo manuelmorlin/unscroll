@@ -1,0 +1,19 @@
+{
+  "name": "Unscroll",
+  "short_name": "Unscroll",
+  "description": "End the endless scrolling. Let fate decide what you watch next.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"]
+}

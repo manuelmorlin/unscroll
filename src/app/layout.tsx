@@ -8,7 +8,16 @@ export const metadata: Metadata = {
   title: 'Unscroll - End the Endless Scrolling',
   description: 'A decision-making app for your watchlist. Stop scrolling, start watching.',
   keywords: ['movies', 'tv shows', 'watchlist', 'decision maker', 'entertainment'],
-  authors: [{ name: 'Your Name' }],
+  authors: [{ name: 'Manuel Morlin' }],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Unscroll',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: 'Unscroll',
     description: 'End the endless scrolling. Let fate decide what you watch next.',
@@ -20,6 +29,9 @@ export const viewport: Viewport = {
   themeColor: '#09090b',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -29,6 +41,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+      </head>
       <body className={`${inter.className} antialiased min-h-screen bg-zinc-950`}>
         {children}
       </body>

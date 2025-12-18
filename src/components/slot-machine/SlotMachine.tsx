@@ -381,21 +381,21 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
             {/* Filters Panel - always visible when spins available */}
             {spinCount < MAX_SPINS && (
-              <div className="flex flex-col items-center gap-4 w-full">
-                {/* Genre Pills */}
+              <div className="flex flex-col items-center gap-3 w-full">
+                {/* Genre Pills - horizontal scroll on mobile */}
                 {genres.length > 0 && (
                   <div className="w-full">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-2">
+                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                       <button
                         onClick={() => setSelectedGenre('')}
                         disabled={isSpinning}
-                        className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                        className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 ${
                           selectedGenre === ''
                             ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
-                            : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                            : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                         } disabled:opacity-50`}
                       >
                         🎬 All
@@ -405,10 +405,10 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           key={genre}
                           onClick={() => setSelectedGenre(selectedGenre === genre ? '' : genre)}
                           disabled={isSpinning}
-                          className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                          className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 ${
                             selectedGenre === genre
                               ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
-                              : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                              : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                           } disabled:opacity-50`}
                         >
                           {GENRE_EMOJIS[genre] || '🎬'} {genre}
@@ -418,21 +418,21 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   </div>
                 )}
 
-                {/* Duration Pills */}
+                {/* Duration Pills - horizontal scroll on mobile */}
                 <div className="w-full">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="text-xs text-zinc-500 uppercase tracking-wider">Duration</span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2">
+                  <div className="flex gap-2 justify-center overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                     {DURATION_OPTIONS.map((option) => (
                       <button
                         key={option.value}
                         onClick={() => setSelectedDuration(selectedDuration === option.value ? '' : option.value)}
                         disabled={isSpinning}
-                        className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                        className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 ${
                           selectedDuration === option.value
                             ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
-                            : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                            : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                         } disabled:opacity-50`}
                       >
                         {option.emoji} {option.label}
@@ -470,18 +470,17 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
             {spinCount >= MAX_SPINS && selectedMedia ? (
               <>
                 {/* No more spins - only show Mark as Watched */}
                 <div className="text-sm text-yellow-400 mb-2 sm:mb-0 sm:mr-2">🎟️ Final showing!</div>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleMarkWatched}
-                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 active:bg-emerald-700 text-white text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-5 h-5" />
                   <span>✅ Mark as Watched</span>
                 </motion.button>
               </>
@@ -489,46 +488,37 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
               <>
                 {/* Spin Again */}
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleSpin}
                   disabled={isSpinning}
-                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm sm:text-base rounded-full transition-colors disabled:opacity-50 border border-zinc-700"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-zinc-800 active:bg-zinc-700 text-zinc-200 text-base rounded-full transition-colors disabled:opacity-50 border border-zinc-700"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-5 h-5" />
                   <span>🎰 Spin Again</span>
                 </motion.button>
 
                 {/* Mark as Watched */}
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleMarkWatched}
-                  className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 active:bg-emerald-700 text-white text-base rounded-full transition-colors shadow-lg shadow-emerald-900/50"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-5 h-5" />
                   <span>✅ Watched</span>
                 </motion.button>
               </>
             ) : (
               /* Main Spin Button - Cinema Red */
               <motion.button
-                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSpin}
                 disabled={isSpinning}
-                className="group relative px-8 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-xl shadow-red-900/50 border border-red-500/30"
+                className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-red-700 to-red-600 active:from-red-800 active:to-red-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-xl shadow-red-900/50 border border-red-500/30"
               >
-                <span className="relative z-10 flex items-center gap-2">
-                  <span className="text-lg sm:text-xl">🎬</span>
-                  <span className="text-sm sm:text-base">Roll the Film!</span>
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <span className="text-xl">🎬</span>
+                  <span className="text-base">Roll the Film!</span>
                 </span>
-                <motion.div
-                  className="absolute inset-0 bg-white/20"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: '100%' }}
-                  transition={{ duration: 0.5 }}
-                />
               </motion.button>
             )}
             </div>

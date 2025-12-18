@@ -18,27 +18,27 @@ export default function AppPage() {
   const { user, isDemo } = useAuth();
 
   return (
-    <div className="min-h-screen cinema-bg">
-      {/* Subtle curtain effects */}
-      <div className="fixed left-0 top-0 bottom-0 w-16 curtain-left pointer-events-none opacity-50" />
-      <div className="fixed right-0 top-0 bottom-0 w-16 curtain-right pointer-events-none opacity-50" />
+    <div className="min-h-screen cinema-bg flex flex-col">
+      {/* Subtle curtain effects - hide on small screens for performance */}
+      <div className="hidden sm:block fixed left-0 top-0 bottom-0 w-16 curtain-left pointer-events-none opacity-50" />
+      <div className="hidden sm:block fixed right-0 top-0 bottom-0 w-16 curtain-right pointer-events-none opacity-50" />
       
-      {/* Header */}
-      <header className="border-b border-red-900/30 bg-black/60 backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
+      {/* Header - with safe area */}
+      <header className="border-b border-red-900/30 bg-black/80 backdrop-blur-md sticky top-0 z-40 safe-top">
+        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-xl sm:text-2xl">🎬</span>
-            <span className="text-base sm:text-lg font-semibold gold-shimmer">Unscroll</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎬</span>
+            <span className="text-base font-semibold gold-shimmer">Unscroll</span>
             {isDemo && (
-              <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs bg-violet-500/20 text-violet-400 rounded-full">
+              <span className="px-1.5 py-0.5 text-[10px] bg-violet-500/20 text-violet-400 rounded-full">
                 Demo
               </span>
             )}
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
               <User className="w-4 h-4 text-yellow-500" />
               <span className="font-medium">
@@ -48,21 +48,21 @@ export default function AppPage() {
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white bg-red-600/80 hover:bg-red-500 rounded-lg transition-colors font-medium"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-white bg-red-600/80 hover:bg-red-500 active:bg-red-600 rounded-xl transition-colors font-medium min-w-[44px]"
                 title="Sign Out"
               >
-                <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline sm:inline">Sign Out</span>
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </form>
           </div>
         </div>
       </header>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-red-900/30">
-        <div className="max-w-4xl mx-auto px-2 sm:px-4">
-          <nav className="flex gap-0.5 sm:gap-1">
+      {/* Tab Navigation - larger touch targets */}
+      <div className="border-b border-red-900/30 bg-black/40">
+        <div className="max-w-4xl mx-auto px-2">
+          <nav className="flex">
             {[
               { id: 'decide' as Tab, label: 'Decide', emoji: '🎰' },
               { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
@@ -71,13 +71,13 @@ export default function AppPage() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
+                className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-3.5 text-sm font-medium border-b-2 transition-colors active:bg-white/5 ${
                   activeTab === id
                     ? 'border-yellow-500 text-yellow-400'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                    : 'border-transparent text-zinc-400'
                 }`}
               >
-                <span>{emoji}</span>
+                <span className="text-base">{emoji}</span>
                 <span>{label}</span>
               </button>
             ))}
@@ -85,29 +85,29 @@ export default function AppPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      {/* Main Content - flex-1 to push footer down */}
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
         {activeTab === 'decide' && (
           <motion.div
             key="decide"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="text-center mb-8">
-              <div className="text-4xl mb-4">🎬</div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            <div className="text-center mb-6">
+              <div className="text-3xl mb-3">🎬</div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                 Tonight&apos;s <span className="gold-shimmer">Feature</span>
               </h1>
-              <p className="text-zinc-400 font-light max-w-md mx-auto">
-                The projector is ready. Let fate choose your next cinematic experience.
+              <p className="text-zinc-400 text-sm font-light max-w-xs mx-auto">
+                Let fate choose your next cinematic experience.
               </p>
             </div>
 
             <SlotMachine />
 
             {/* Quick Add */}
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-6">
               <AddMediaForm />
             </div>
           </motion.div>
@@ -116,23 +116,23 @@ export default function AppPage() {
         {activeTab === 'list' && (
           <motion.div
             key="list"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             {/* Header with Add Button */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h1 className="text-2xl font-bold text-white mb-1">Your Watchlist</h1>
+                <h1 className="text-xl font-bold text-white mb-0.5">Your Watchlist</h1>
                 <p className="text-zinc-400 text-sm">
-                  Everything you want to watch, organized
+                  Everything you want to watch
                 </p>
               </div>
               <AddMediaForm />
             </div>
 
-            {/* Filter Pills - Consistent with SlotMachine style */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            {/* Filter Pills - horizontal scroll on mobile */}
+            <div className="flex gap-2 mb-5 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
               {[
                 { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
                 { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '🎯' },
@@ -142,10 +142,10 @@ export default function AppPage() {
                 <button
                   key={id}
                   onClick={() => setListFilter(id)}
-                  className={`px-4 py-2 text-sm rounded-full transition-all duration-200 ${
+                  className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full transition-all duration-200 active:scale-95 ${
                     listFilter === id
                       ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
-                      : 'bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50'
+                      : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                   }`}
                 >
                   {emoji} {label}
@@ -160,13 +160,13 @@ export default function AppPage() {
         {activeTab === 'diary' && (
           <motion.div
             key="diary"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             {/* Header */}
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+            <div className="mb-5">
+              <h1 className="text-xl font-bold text-white mb-0.5 flex items-center gap-2">
                 <span>📔</span> Your Film Diary
               </h1>
               <p className="text-zinc-400 text-sm">
@@ -179,20 +179,11 @@ export default function AppPage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-red-900/30 mt-auto bg-black/40">
-        <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-zinc-500">
+      {/* Footer - with safe area */}
+      <footer className="border-t border-red-900/30 bg-black/40 safe-bottom">
+        <div className="max-w-4xl mx-auto px-4 py-4 text-center text-xs text-zinc-500">
           <p className="flex items-center justify-center gap-2">
             <span>Made with 🍿 for movie lovers</span>
-            <span>•</span>
-            <a
-              href="https://github.com/manuelmorlin/unscroll"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-500 hover:underline"
-            >
-              View Source
-            </a>
           </p>
         </div>
       </footer>
