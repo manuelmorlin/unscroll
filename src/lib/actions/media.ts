@@ -132,10 +132,10 @@ export async function markAsWatched(id: string): Promise<MediaActionResult> {
 }
 
 // ==============================================
-// REWATCH - Mark as watched again (increment counter)
+// REWATCH - Mark as watched again (increment counter and add date)
 // ==============================================
 
-export async function markAsRewatched(id: string): Promise<MediaActionResult> {
+export async function markAsRewatched(id: string, date?: string): Promise<MediaActionResult> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -165,10 +165,12 @@ export async function markAsRewatched(id: string): Promise<MediaActionResult> {
     }
 
     const currentRewatchCount = docData?.rewatch_count || 0;
+    const currentRewatchDates: string[] = docData?.rewatch_dates || [];
+    const rewatchDate = date || new Date().toISOString();
 
     await docRef.update({
       rewatch_count: currentRewatchCount + 1,
-      watched_at: new Date().toISOString(),
+      rewatch_dates: [...currentRewatchDates, rewatchDate],
       updated_at: new Date().toISOString(),
     });
 
@@ -188,10 +190,10 @@ export async function markAsRewatched(id: string): Promise<MediaActionResult> {
 }
 
 // ==============================================
-// REMOVE REWATCH - Decrement rewatch counter
+// REMOVE REWATCH - Remove a specific rewatch by index
 // ==============================================
 
-export async function removeRewatch(id: string): Promise<MediaActionResult> {
+export async function removeRewatch(id: string, index?: number): Promise<MediaActionResult> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -221,6 +223,7 @@ export async function removeRewatch(id: string): Promise<MediaActionResult> {
     }
 
     const currentRewatchCount = docData?.rewatch_count || 0;
+    const currentRewatchDates: string[] = docData?.rewatch_dates || [];
     
     if (currentRewatchCount <= 0) {
       return {
@@ -229,8 +232,17 @@ export async function removeRewatch(id: string): Promise<MediaActionResult> {
       };
     }
 
+    // Remove the specific date or the last one
+    const newRewatchDates = [...currentRewatchDates];
+    if (index !== undefined && index >= 0 && index < newRewatchDates.length) {
+      newRewatchDates.splice(index, 1);
+    } else if (newRewatchDates.length > 0) {
+      newRewatchDates.pop();
+    }
+
     await docRef.update({
       rewatch_count: currentRewatchCount - 1,
+      rewatch_dates: newRewatchDates,
       updated_at: new Date().toISOString(),
     });
 

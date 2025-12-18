@@ -66,8 +66,8 @@ interface DiaryCardProps {
   media: MediaItem;
   onRatingChange: (id: string, rating: number) => void;
   onReviewChange: (id: string, review: string) => void;
-  onRewatch: (id: string) => void;
-  onRemoveRewatch: (id: string) => void;
+  onRewatch: (id: string, date?: string) => void;
+  onRemoveRewatch: (id: string, index?: number) => void;
   onDateChange: (id: string, date: string) => void;
 }
 
@@ -79,10 +79,14 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
   const [isRemovingRewatch, setIsRemovingRewatch] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [isSavingDate, setIsSavingDate] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showRewatchDates, setShowRewatchDates] = useState(false);
+  const [newRewatchDate, setNewRewatchDate] = useState(new Date().toISOString().split('T')[0]);
   const [review, setReview] = useState(media.user_review || '');
   const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : '');
   const genreEmoji = getGenreEmoji(media.genre);
   const rewatchCount = media.rewatch_count || 0;
+  const rewatchDates = media.rewatch_dates || [];
   const totalViews = rewatchCount + 1; // First watch + rewatches
 
   const handleRatingChange = async (rating: number) => {
@@ -100,13 +104,16 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
   const handleRewatch = async () => {
     setIsRewatching(true);
-    await onRewatch(media.id);
+    const date = new Date(newRewatchDate).toISOString();
+    await onRewatch(media.id, date);
     setIsRewatching(false);
+    setShowDatePicker(false);
+    setNewRewatchDate(new Date().toISOString().split('T')[0]);
   };
 
-  const handleRemoveRewatch = async () => {
+  const handleRemoveRewatch = async (index?: number) => {
     setIsRemovingRewatch(true);
-    await onRemoveRewatch(media.id);
+    await onRemoveRewatch(media.id, index);
     setIsRemovingRewatch(false);
   };
 
@@ -234,35 +241,123 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                 
                 <div className="flex items-center gap-1.5">
                   {/* Watch count controls */}
-                  <div className="flex items-center bg-zinc-800/80 rounded-lg border border-zinc-700/50 overflow-hidden">
-                    {/* Remove watch button */}
-                    <button
-                      onClick={handleRemoveRewatch}
-                      disabled={isRemovingRewatch || totalViews <= 1}
-                      className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      title={totalViews <= 1 ? 'Minimum 1 view' : 'Remove a view'}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    
-                    {/* Current count display */}
-                    <div className="flex items-center gap-1 px-2 py-1 text-sm font-medium text-white border-x border-zinc-700/50 min-w-[40px] justify-center">
-                      <span>{totalViews}</span>
+                  <div className="relative">
+                    <div className="flex items-center bg-zinc-800/80 rounded-lg border border-zinc-700/50 overflow-hidden">
+                      {/* Remove watch button - shows list of dates to remove */}
+                      <button
+                        onClick={() => rewatchDates.length > 0 ? setShowRewatchDates(!showRewatchDates) : handleRemoveRewatch()}
+                        disabled={isRemovingRewatch || totalViews <= 1}
+                        className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={totalViews <= 1 ? 'Minimum 1 view' : 'Remove a view'}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      
+                      {/* Current count display - clickable to show dates */}
+                      <button
+                        onClick={() => rewatchDates.length > 0 && setShowRewatchDates(!showRewatchDates)}
+                        className="flex items-center gap-1 px-2 py-1 text-sm font-medium text-white border-x border-zinc-700/50 min-w-[40px] justify-center hover:bg-zinc-700/30 transition-colors"
+                        title={rewatchDates.length > 0 ? 'View watch dates' : undefined}
+                      >
+                        <span>{totalViews}</span>
+                      </button>
+                      
+                      {/* Add watch button - opens date picker */}
+                      <button
+                        onClick={() => setShowDatePicker(!showDatePicker)}
+                        disabled={isRewatching}
+                        className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
+                        title="Add a view"
+                      >
+                        {isRewatching ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <span className="text-lg font-medium">+</span>
+                        )}
+                      </button>
                     </div>
                     
-                    {/* Add watch button */}
-                    <button
-                      onClick={handleRewatch}
-                      disabled={isRewatching}
-                      className="flex items-center justify-center w-7 h-7 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
-                      title="Add a view"
-                    >
-                      {isRewatching ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <span className="text-lg font-medium">+</span>
+                    {/* Date picker dropdown for adding rewatch */}
+                    <AnimatePresence>
+                      {showDatePicker && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-3 min-w-[200px]"
+                        >
+                          <p className="text-xs text-zinc-400 mb-2">When did you watch it?</p>
+                          <input
+                            type="date"
+                            value={newRewatchDate}
+                            onChange={(e) => setNewRewatchDate(e.target.value)}
+                            className="w-full text-sm bg-zinc-900 border border-zinc-600 rounded px-2 py-1.5 text-white mb-2"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleRewatch}
+                              disabled={isRewatching}
+                              className="flex-1 text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded transition-colors disabled:opacity-50"
+                            >
+                              {isRewatching ? 'Adding...' : 'Add View'}
+                            </button>
+                            <button
+                              onClick={() => setShowDatePicker(false)}
+                              className="text-xs text-zinc-400 hover:text-white px-2 py-1.5 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </motion.div>
                       )}
-                    </button>
+                    </AnimatePresence>
+                    
+                    {/* Rewatch dates list dropdown */}
+                    <AnimatePresence>
+                      {showRewatchDates && rewatchDates.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-3 min-w-[220px]"
+                        >
+                          <p className="text-xs text-zinc-400 mb-2">Watch history</p>
+                          <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                            {/* First watch (original) */}
+                            <div className="flex items-center justify-between text-sm py-1.5 px-2 bg-zinc-900/50 rounded">
+                              <span className="text-zinc-300">
+                                {formatDate(media.watched_at)}
+                              </span>
+                              <span className="text-xs text-zinc-500">1st</span>
+                            </div>
+                            {/* Rewatches */}
+                            {rewatchDates.map((date, index) => (
+                              <div key={index} className="flex items-center justify-between text-sm py-1.5 px-2 bg-zinc-900/50 rounded group">
+                                <span className="text-zinc-300">
+                                  {formatDate(date)}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-zinc-500">{index + 2}nd</span>
+                                  <button
+                                    onClick={() => handleRemoveRewatch(index)}
+                                    className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
+                                    title="Remove this watch"
+                                  >
+                                    <Minus className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setShowRewatchDates(false)}
+                            className="w-full text-xs text-zinc-400 hover:text-white mt-2 py-1 transition-colors"
+                          >
+                            Close
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                   
                   <button
@@ -390,12 +485,12 @@ export function Diary() {
     await updateMediaItem(id, { user_review: review || null });
   };
 
-  const handleRewatch = async (id: string) => {
-    await markAsRewatched(id);
+  const handleRewatch = async (id: string, date?: string) => {
+    await markAsRewatched(id, date);
   };
 
-  const handleRemoveRewatch = async (id: string) => {
-    await removeRewatch(id);
+  const handleRemoveRewatch = async (id: string, index?: number) => {
+    await removeRewatch(id, index);
   };
 
   const handleDateChange = async (id: string, date: string) => {
