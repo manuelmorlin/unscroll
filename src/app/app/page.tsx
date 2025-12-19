@@ -39,8 +39,6 @@ export default function AppPage() {
 
           {/* User Menu */}
           <div className="flex items-center gap-3 sm:gap-4">
-            <AddMediaForm />
-            <div className="hidden sm:block w-px h-6 bg-zinc-700" />
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
               <User className="w-4 h-4 text-yellow-500" />
               <span className="font-medium">
@@ -196,6 +194,11 @@ export default function AppPage() {
           >View Source</a>
         </div>
       </footer>
+
+      {/* Floating Add Button */}
+      <div className="fixed bottom-20 right-4 z-40">
+        <AddMediaForm />
+      </div>
     </div>
   );
 }
