@@ -246,12 +246,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
             />
 
             {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed inset-x-4 top-4 bottom-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg md:max-h-[85vh] bg-zinc-900 border border-red-900/30 rounded-2xl z-50 overflow-hidden overflow-y-auto shadow-2xl shadow-red-900/20"
-            >
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="pointer-events-auto w-full max-w-lg max-h-[90vh] bg-zinc-900 border border-red-900/30 rounded-2xl overflow-hidden overflow-y-auto shadow-2xl shadow-red-900/20"
+              >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-red-900/30 bg-gradient-to-r from-zinc-900 to-zinc-950">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -435,7 +436,8 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                   )}
                 </motion.button>
               </form>
-            </motion.div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
