@@ -250,7 +250,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed inset-x-4 top-[max(5%,env(safe-area-inset-top))] md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-zinc-900 border border-red-900/30 rounded-2xl z-50 overflow-hidden max-h-[85vh] overflow-y-auto shadow-2xl shadow-red-900/20"
+              className="fixed inset-x-4 top-4 bottom-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg md:max-h-[85vh] bg-zinc-900 border border-red-900/30 rounded-2xl z-50 overflow-hidden overflow-y-auto shadow-2xl shadow-red-900/20"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-red-900/30 bg-gradient-to-r from-zinc-900 to-zinc-950">
