@@ -137,10 +137,9 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
       ? (hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`)
       : '';
 
-    // Get top 10 cast members
+    // Get all cast members (sorted by billing order)
     const cast = credits.cast
       .sort((a, b) => a.order - b.order)
-      .slice(0, 10)
       .map(actor => actor.name);
 
     // Get director
