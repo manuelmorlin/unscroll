@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, Clock, X, Star } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { StarRating } from '@/components/ui';
@@ -317,6 +317,15 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                         <span>{selectedMedia.genre}</span>
                       </>
                     )}
+                    {selectedMedia.original_language && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="flex items-center gap-1 uppercase">
+                          <Globe className="w-3 h-3" />
+                          {selectedMedia.original_language}
+                        </span>
+                      </>
+                    )}
                   </motion.div>
 
                   {/* Plot */}
@@ -343,6 +352,39 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       {Array.isArray(selectedMedia.cast) 
                         ? selectedMedia.cast.join(', ')
                         : selectedMedia.cast}
+                    </motion.div>
+                  )}
+
+                  {/* Streaming Platforms */}
+                  {selectedMedia.watch_providers && selectedMedia.watch_providers.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="mt-4 pt-4 border-t border-zinc-800"
+                    >
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Tv className="w-3 h-3 text-zinc-500" />
+                        <span className="text-xs text-zinc-500">Available on</span>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        {selectedMedia.watch_providers.map((provider) => (
+                          <div
+                            key={provider.provider_id}
+                            className="flex items-center gap-1.5 px-2 py-1 bg-zinc-800/80 rounded-lg border border-zinc-700/50"
+                            title={provider.provider_name}
+                          >
+                            {provider.logo_path && (
+                              <img
+                                src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
+                                alt={provider.provider_name}
+                                className="w-5 h-5 rounded"
+                              />
+                            )}
+                            <span className="text-xs text-zinc-300">{provider.provider_name}</span>
+                          </div>
+                        ))}
+                      </div>
                     </motion.div>
                   )}
                 </motion.div>
@@ -393,11 +435,12 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
                     </div>
-                    <div className="flex gap-2 justify-center overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                    <div className="flex gap-2 overflow-x-auto pb-2 px-4 scrollbar-hide snap-x snap-mandatory">
+                      <div className="flex gap-2 mx-auto">
                       <button
                         onClick={() => setSelectedGenre('')}
                         disabled={isSpinning}
-                        className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 ${
+                        className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 snap-start ${
                           selectedGenre === ''
                             ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
                             : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
@@ -410,7 +453,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           key={genre}
                           onClick={() => setSelectedGenre(selectedGenre === genre ? '' : genre)}
                           disabled={isSpinning}
-                          className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 ${
+                          className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 snap-start ${
                             selectedGenre === genre
                               ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
                               : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
@@ -419,6 +462,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           {GENRE_EMOJIS[genre] || '🎬'} {genre}
                         </button>
                       ))}
+                      </div>
                     </div>
                   </div>
                 )}
