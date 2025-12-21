@@ -19,6 +19,7 @@ export interface MediaItem {
   status: MediaStatus;
   poster_url: string | null;
   year: number | null;
+  original_language: string | null;
   rating: number | null;
   user_rating: number | null;
   user_review: string | null;
@@ -40,6 +41,7 @@ export interface MediaItemInsert {
   status?: MediaStatus;
   poster_url?: string | null;
   year?: number | null;
+  original_language?: string | null;
   rating?: number | null;
   user_rating?: number | null;
   user_review?: string | null;
@@ -58,6 +60,7 @@ export interface MediaItemUpdate {
   status?: MediaStatus;
   poster_url?: string | null;
   year?: number | null;
+  original_language?: string | null;
   rating?: number | null;
   user_rating?: number | null;
   user_review?: string | null;

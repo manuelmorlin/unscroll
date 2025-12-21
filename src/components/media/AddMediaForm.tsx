@@ -27,6 +27,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [duration, setDuration] = useState('');
   const [year, setYear] = useState('');
   const [posterUrl, setPosterUrl] = useState('');
+  const [originalLanguage, setOriginalLanguage] = useState('');
   const [selectedTmdbId, setSelectedTmdbId] = useState<number | null>(null);
 
   // Autocomplete state
@@ -48,6 +49,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setDuration('');
     setYear('');
     setPosterUrl('');
+    setOriginalLanguage('');
     setError(null);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -91,6 +93,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setDuration('');
     setYear('');
     setPosterUrl('');
+    setOriginalLanguage('');
 
     if (title.trim().length < 2) {
       setSuggestions([]);
@@ -158,6 +161,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         setDuration(tmdbResult.data.duration);
         setYear(tmdbResult.data.year.toString());
         setPosterUrl(tmdbResult.data.poster_url || '');
+        setOriginalLanguage(tmdbResult.data.original_language || '');
         setIsAutofilling(false);
         return;
       }
@@ -202,6 +206,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         format: 'movie',
         year: year ? parseInt(year) : null,
         poster_url: posterUrl || null,
+        original_language: originalLanguage || null,
       };
 
       const result = await addMediaItem(mediaData);
@@ -216,7 +221,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
       setIsSubmitting(false);
     },
-    [title, genre, plot, cast, duration, year, resetForm, onSuccess]
+    [title, genre, plot, cast, duration, year, originalLanguage, resetForm, onSuccess]
   );
 
   return (

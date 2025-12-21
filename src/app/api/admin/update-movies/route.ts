@@ -14,6 +14,7 @@ interface TMDBMovieDetails {
   overview: string;
   runtime: number | null;
   genres: { id: number; name: string }[];
+  original_language: string;
 }
 
 interface TMDBCredits {
@@ -83,6 +84,7 @@ async function getMovieFullDetails(movieId: number) {
     duration,
     year,
     poster_url,
+    original_language: details.original_language,
   };
 }
 
@@ -142,6 +144,7 @@ export async function POST(request: Request) {
           duration: movieDetails.duration || data.duration,
           year: movieDetails.year || data.year,
           poster_url: movieDetails.poster_url || data.poster_url,
+          original_language: movieDetails.original_language || data.original_language,
           updated_at: new Date().toISOString(),
         });
 

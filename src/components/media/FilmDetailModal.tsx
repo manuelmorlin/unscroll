@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard } from 'lucide-react';
+import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { StarRatingCompact } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
@@ -105,7 +105,7 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                     {media.title}
                   </h2>
                   
-                  {/* Year & Duration */}
+                  {/* Year & Duration & Language */}
                   <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-400 mb-3">
                     {media.year && (
                       <span className="font-medium">{media.year}</span>
@@ -114,6 +114,12 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />
                         {formatDuration(media.duration)}
+                      </span>
+                    )}
+                    {media.original_language && (
+                      <span className="flex items-center gap-1 uppercase">
+                        <Globe className="w-3.5 h-3.5" />
+                        {media.original_language}
                       </span>
                     )}
                   </div>

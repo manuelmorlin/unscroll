@@ -19,6 +19,7 @@ export interface TMDBMovieDetails {
   overview: string;
   runtime: number | null;
   genres: { id: number; name: string }[];
+  original_language: string;
 }
 
 export interface TMDBCredits {
@@ -36,6 +37,7 @@ export interface MovieDetailsResult {
     duration: string;
     year: number;
     poster_url: string | null;
+    original_language: string;
   };
   error?: string;
 }
@@ -168,6 +170,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
         duration,
         year,
         poster_url,
+        original_language: details.original_language,
       },
     };
   } catch (error) {
