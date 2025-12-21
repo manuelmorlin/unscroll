@@ -387,16 +387,28 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                   </div>
                 </div>
 
-                {/* Duration */}
-                <div className="space-y-2">
-                  <label className="text-sm text-zinc-400">⏱️ Duration</label>
-                  <input
-                    type="text"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    placeholder="e.g., 2h 28m"
-                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
-                  />
+                {/* Duration & Language */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-zinc-400">⏱️ Duration</label>
+                    <input
+                      type="text"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      placeholder="e.g., 2h 28m"
+                      className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-zinc-400">🌐 Language</label>
+                    <input
+                      type="text"
+                      value={originalLanguage}
+                      onChange={(e) => setOriginalLanguage(e.target.value)}
+                      placeholder="e.g., en, it, ja"
+                      className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 uppercase"
+                    />
+                  </div>
                 </div>
 
                 {/* Cast */}
