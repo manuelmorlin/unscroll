@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
-import { searchMovies, getMovieDetails, type TMDBMovie } from '@/lib/actions/tmdb';
+import { searchMovies, getMovieDetails, type TMDBMovie, type WatchProvider } from '@/lib/actions/tmdb';
 import type { MediaItemInsert } from '@/types/database';
 
 interface AddMediaFormProps {
@@ -28,6 +28,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [year, setYear] = useState('');
   const [posterUrl, setPosterUrl] = useState('');
   const [originalLanguage, setOriginalLanguage] = useState('');
+  const [watchProviders, setWatchProviders] = useState<WatchProvider[]>([]);
   const [selectedTmdbId, setSelectedTmdbId] = useState<number | null>(null);
 
   // Autocomplete state
@@ -50,6 +51,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
     setYear('');
     setPosterUrl('');
     setOriginalLanguage('');
+    setWatchProviders([]);
     setError(null);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -162,6 +164,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         setYear(tmdbResult.data.year.toString());
         setPosterUrl(tmdbResult.data.poster_url || '');
         setOriginalLanguage(tmdbResult.data.original_language || '');
+        setWatchProviders(tmdbResult.data.watch_providers || []);
         setIsAutofilling(false);
         return;
       }
@@ -207,6 +210,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         year: year ? parseInt(year) : null,
         poster_url: posterUrl || null,
         original_language: originalLanguage || null,
+        watch_providers: watchProviders.length > 0 ? watchProviders : null,
       };
 
       const result = await addMediaItem(mediaData);

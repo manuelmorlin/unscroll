@@ -27,6 +27,12 @@ export interface TMDBCredits {
   crew: { id: number; name: string; job: string; department: string }[];
 }
 
+export interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
 export interface MovieDetailsResult {
   success: boolean;
   data?: {
@@ -38,6 +44,7 @@ export interface MovieDetailsResult {
     year: number;
     poster_url: string | null;
     original_language: string;
+    watch_providers: WatchProvider[];
   };
   error?: string;
 }
@@ -113,14 +120,18 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
   }
 
   try {
-    // Fetch movie details and credits in parallel
-    const [detailsRes, creditsRes] = await Promise.all([
+    // Fetch movie details, credits, and watch providers in parallel
+    const [detailsRes, creditsRes, providersRes] = await Promise.all([
       fetch(
         `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`,
         { next: { revalidate: 86400 } } // Cache for 24 hours
       ),
       fetch(
         `${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`,
+        { next: { revalidate: 86400 } }
+      ),
+      fetch(
+        `${TMDB_BASE_URL}/movie/${movieId}/watch/providers?api_key=${TMDB_API_KEY}`,
         { next: { revalidate: 86400 } }
       ),
     ]);
@@ -131,6 +142,20 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
 
     const details: TMDBMovieDetails = await detailsRes.json();
     const credits: TMDBCredits = await creditsRes.json();
+    
+    // Parse watch providers (use IT region, fallback to US)
+    let watchProviders: WatchProvider[] = [];
+    if (providersRes.ok) {
+      const providersData = await providersRes.json();
+      const regionData = providersData.results?.IT || providersData.results?.US;
+      if (regionData?.flatrate) {
+        watchProviders = regionData.flatrate.map((p: { provider_id: number; provider_name: string; logo_path: string }) => ({
+          provider_id: p.provider_id,
+          provider_name: p.provider_name,
+          logo_path: p.logo_path,
+        }));
+      }
+    }
 
     // Format duration
     const hours = details.runtime ? Math.floor(details.runtime / 60) : 0;
@@ -171,6 +196,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
         year,
         poster_url,
         original_language: details.original_language,
+        watch_providers: watchProviders,
       },
     };
   } catch (error) {

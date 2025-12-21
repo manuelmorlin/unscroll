@@ -6,6 +6,12 @@ export type MediaFormat = 'movie';
 
 export type MediaStatus = 'unwatched' | 'watching' | 'watched';
 
+export interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
 export interface MediaItem {
   id: string;
   user_id: string;
@@ -20,6 +26,7 @@ export interface MediaItem {
   poster_url: string | null;
   year: number | null;
   original_language: string | null;
+  watch_providers: WatchProvider[] | null;
   rating: number | null;
   user_rating: number | null;
   user_review: string | null;
@@ -42,6 +49,7 @@ export interface MediaItemInsert {
   poster_url?: string | null;
   year?: number | null;
   original_language?: string | null;
+  watch_providers?: WatchProvider[] | null;
   rating?: number | null;
   user_rating?: number | null;
   user_review?: string | null;
@@ -61,6 +69,7 @@ export interface MediaItemUpdate {
   poster_url?: string | null;
   year?: number | null;
   original_language?: string | null;
+  watch_providers?: WatchProvider[] | null;
   rating?: number | null;
   user_rating?: number | null;
   user_review?: string | null;

@@ -22,6 +22,12 @@ interface TMDBCredits {
   crew: { id: number; name: string; job: string; department: string }[];
 }
 
+interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
 async function searchMovieByTitleAndYear(title: string, year: number | null): Promise<number | null> {
   const yearParam = year ? `&year=${year}` : '';
   const response = await fetch(
@@ -38,15 +44,30 @@ async function searchMovieByTitleAndYear(title: string, year: number | null): Pr
 }
 
 async function getMovieFullDetails(movieId: number) {
-  const [detailsRes, creditsRes] = await Promise.all([
+  const [detailsRes, creditsRes, providersRes] = await Promise.all([
     fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`),
     fetch(`${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`),
+    fetch(`${TMDB_BASE_URL}/movie/${movieId}/watch/providers?api_key=${TMDB_API_KEY}`),
   ]);
 
   if (!detailsRes.ok || !creditsRes.ok) return null;
 
   const details: TMDBMovieDetails = await detailsRes.json();
   const credits: TMDBCredits = await creditsRes.json();
+  
+  // Parse watch providers (use IT region, fallback to US)
+  let watchProviders: WatchProvider[] = [];
+  if (providersRes.ok) {
+    const providersData = await providersRes.json();
+    const regionData = providersData.results?.IT || providersData.results?.US;
+    if (regionData?.flatrate) {
+      watchProviders = regionData.flatrate.map((p: { provider_id: number; provider_name: string; logo_path: string }) => ({
+        provider_id: p.provider_id,
+        provider_name: p.provider_name,
+        logo_path: p.logo_path,
+      }));
+    }
+  }
 
   // Format duration
   const hours = details.runtime ? Math.floor(details.runtime / 60) : 0;
@@ -85,6 +106,7 @@ async function getMovieFullDetails(movieId: number) {
     year,
     poster_url,
     original_language: details.original_language,
+    watch_providers: watchProviders,
   };
 }
 
@@ -145,6 +167,7 @@ export async function POST(request: Request) {
           year: movieDetails.year || data.year,
           poster_url: movieDetails.poster_url || data.poster_url,
           original_language: movieDetails.original_language || data.original_language,
+          watch_providers: movieDetails.watch_providers.length > 0 ? movieDetails.watch_providers : data.watch_providers || null,
           updated_at: new Date().toISOString(),
         });
 
