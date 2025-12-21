@@ -195,7 +195,7 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
               <div>
                 <h3 className="text-sm font-semibold text-zinc-300 mb-2 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-zinc-500" />
-                  Synopsis
+                  Plot
                 </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">
                   {media.plot}
