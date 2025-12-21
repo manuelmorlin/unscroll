@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaItem, markAsRewatched, removeRewatch, updateWatchDate } from '@/lib/actions/media';
 import { StarRating, StarRatingCompact } from '@/components/ui';
+import { FilmDetailModal } from '@/components/media';
 import type { MediaItem } from '@/types/database';
 
 // Genre to emoji mapping
@@ -69,9 +70,10 @@ interface DiaryCardProps {
   onRewatch: (id: string, date?: string) => void;
   onRemoveRewatch: (id: string, index?: number) => void;
   onDateChange: (id: string, date: string) => void;
+  onViewDetails: (media: MediaItem) => void;
 }
 
-function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveRewatch, onDateChange }: DiaryCardProps) {
+function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveRewatch, onDateChange, onViewDetails }: DiaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRating, setIsRating] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
@@ -136,9 +138,12 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
         {/* Main Row */}
         <div className="p-3 sm:p-4">
           <div className="flex items-start gap-3 sm:gap-4">
-            {/* Poster or Emoji Fallback */}
+            {/* Poster or Emoji Fallback - Clickable */}
             {media.poster_url ? (
-              <div className="relative flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg">
+              <button
+                onClick={() => onViewDetails(media)}
+                className="relative flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg hover:border-yellow-500/50 transition-colors cursor-pointer"
+              >
                 <Image
                   src={media.poster_url}
                   alt={media.title}
@@ -146,20 +151,28 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                   className="object-cover"
                   unoptimized
                 />
-              </div>
+              </button>
             ) : (
-              <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl">
+              <button
+                onClick={() => onViewDetails(media)}
+                className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl hover:border-yellow-500/50 transition-colors cursor-pointer"
+              >
                 {genreEmoji}
-              </div>
+              </button>
             )}
 
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base sm:text-lg font-semibold text-white truncate">
-                    {media.title}
-                  </h3>
+                  <button
+                    onClick={() => onViewDetails(media)}
+                    className="text-left"
+                  >
+                    <h3 className="text-base sm:text-lg font-semibold text-white truncate hover:text-yellow-400 transition-colors">
+                      {media.title}
+                    </h3>
+                  </button>
                   <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-xs sm:text-sm text-zinc-400 mt-1">
                     {media.year && <span>{media.year}</span>}
                     {media.duration && (
@@ -416,6 +429,7 @@ function groupByMonth(items: MediaItem[]): Record<string, MediaItem[]> {
 
 export function Diary() {
   const { mediaItems, isLoading, error } = useMediaItems();
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
   // Filter only watched items and sort by watched_at (newest first)
   const watchedItems = mediaItems
@@ -552,12 +566,23 @@ export function Diary() {
                   onRewatch={handleRewatch}
                   onRemoveRewatch={handleRemoveRewatch}
                   onDateChange={handleDateChange}
+                  onViewDetails={setSelectedMedia}
                 />
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {/* Film Detail Modal */}
+      <AnimatePresence>
+        {selectedMedia && (
+          <FilmDetailModal
+            media={selectedMedia}
+            onClose={() => setSelectedMedia(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
