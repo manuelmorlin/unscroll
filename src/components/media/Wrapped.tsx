@@ -17,7 +17,7 @@ interface WrappedStats {
   totalHours: number;
   topGenre: { name: string; count: number } | null;
   topDirector: { name: string; count: number } | null;
-  topRatedFilm: MediaItem | null;
+  topRatedFilms: MediaItem[];
   mostWatchedMonth: { name: string; count: number } | null;
   avgRating: number | null;
   totalRewatches: number;
@@ -264,7 +264,10 @@ function TopDirectorSlide({ stats }: { stats: WrappedStats }) {
 // ==============================================
 
 function TopRatedSlide({ stats }: { stats: WrappedStats }) {
-  if (!stats.topRatedFilm) return null;
+  if (stats.topRatedFilms.length === 0) return null;
+  
+  const isSingleFilm = stats.topRatedFilms.length === 1;
+  const rating = stats.topRatedFilms[0]?.user_rating || 0;
   
   return (
     <Slide gradient="from-yellow-500 via-amber-800 to-black">
@@ -275,39 +278,74 @@ function TopRatedSlide({ stats }: { stats: WrappedStats }) {
         className="text-center"
       >
         <Trophy className="w-16 h-16 text-yellow-300 mx-auto mb-4" />
-        <p className="text-yellow-200 text-xl mb-4">Your favorite film</p>
+        <p className="text-yellow-200 text-xl mb-4">
+          {isSingleFilm ? 'Your favorite film' : `Your ${stats.topRatedFilms.length} favorite films`}
+        </p>
         
-        {stats.topRatedFilm.poster_url && (
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="relative w-40 h-60 mx-auto mb-4 rounded-xl overflow-hidden shadow-2xl"
-          >
-            <Image
-              src={stats.topRatedFilm.poster_url}
-              alt={stats.topRatedFilm.title}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </motion.div>
+        {isSingleFilm ? (
+          // Single film layout
+          <>
+            {stats.topRatedFilms[0].poster_url && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="relative w-40 h-60 mx-auto mb-4 rounded-xl overflow-hidden shadow-2xl"
+              >
+                <Image
+                  src={stats.topRatedFilms[0].poster_url}
+                  alt={stats.topRatedFilms[0].title}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </motion.div>
+            )}
+            
+            <motion.h2
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: 'spring' }}
+              className="text-3xl sm:text-4xl font-black text-white mb-2"
+            >
+              {stats.topRatedFilms[0].title}
+            </motion.h2>
+          </>
+        ) : (
+          // Multiple films grid layout
+          <>
+            <div className={`grid gap-3 mb-4 ${stats.topRatedFilms.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'} max-w-xs sm:max-w-md mx-auto`}>
+              {stats.topRatedFilms.slice(0, 6).map((film, index) => (
+                <motion.div
+                  key={film.id}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  className="text-center"
+                >
+                  {film.poster_url && (
+                    <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden shadow-xl mb-2">
+                      <Image
+                        src={film.poster_url}
+                        alt={film.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  <p className="text-white text-xs font-medium truncate px-1">{film.title}</p>
+                </motion.div>
+              ))}
+            </div>
+          </>
         )}
-        
-        <motion.h2
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.5, type: 'spring' }}
-          className="text-3xl sm:text-4xl font-black text-white mb-2"
-        >
-          {stats.topRatedFilm.title}
-        </motion.h2>
         
         <div className="flex items-center justify-center gap-1 text-yellow-400 text-2xl">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className={`w-6 h-6 ${i < (stats.topRatedFilm?.user_rating || 0) ? 'fill-yellow-400' : 'fill-none'}`}
+              className={`w-6 h-6 ${i < rating ? 'fill-yellow-400' : 'fill-none'}`}
             />
           ))}
         </div>
@@ -525,9 +563,22 @@ export function Wrapped() {
     });
     const favoriteLanguage = Object.entries(languageCount).sort((a, b) => b[1] - a[1])[0];
 
-    // Top rated film
+    // Top rated films - handle ties by rewatch count, show all if still tied
     const ratedFilms = watchedThisYear.filter((item) => item.user_rating);
-    const topRatedFilm = [...ratedFilms].sort((a, b) => (b.user_rating || 0) - (a.user_rating || 0))[0];
+    let topRatedFilms: MediaItem[] = [];
+    if (ratedFilms.length > 0) {
+      const maxRating = Math.max(...ratedFilms.map((f) => f.user_rating || 0));
+      const topRated = ratedFilms.filter((f) => f.user_rating === maxRating);
+      
+      if (topRated.length === 1) {
+        topRatedFilms = topRated;
+      } else {
+        // Tie-breaker: most rewatches
+        const maxRewatches = Math.max(...topRated.map((f) => f.rewatch_count || 0));
+        const topByRewatches = topRated.filter((f) => (f.rewatch_count || 0) === maxRewatches);
+        topRatedFilms = topByRewatches;
+      }
+    }
 
     // Average rating
     const avgRating = ratedFilms.length > 0
@@ -563,7 +614,7 @@ export function Wrapped() {
       totalHours: totalMinutes / 60,
       topGenre: topGenre ? { name: topGenre[0], count: topGenre[1] } : null,
       topDirector: topDirector && topDirector[1] > 1 ? { name: topDirector[0], count: topDirector[1] } : null,
-      topRatedFilm: topRatedFilm || null,
+      topRatedFilms,
       mostWatchedMonth: mostWatchedMonth ? { name: mostWatchedMonth[0], count: mostWatchedMonth[1] } : null,
       avgRating,
       totalRewatches,
@@ -583,7 +634,7 @@ export function Wrapped() {
     stats.topDirector && <TopDirectorSlide key="director" stats={stats} />,
     stats.favoriteLanguage && <LanguageSlide key="language" stats={stats} />,
     stats.mostWatchedMonth && <BusiestMonthSlide key="month" stats={stats} />,
-    stats.topRatedFilm && <TopRatedSlide key="toprated" stats={stats} />,
+    stats.topRatedFilms.length > 0 && <TopRatedSlide key="toprated" stats={stats} />,
     <SummarySlide key="summary" stats={stats} year={year} />,
   ].filter(Boolean) : [];
 
