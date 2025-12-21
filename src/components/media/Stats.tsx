@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Film, Star, Clock, Calendar, TrendingUp, Award, Clapperboard } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
+import { Recommendations } from './Recommendations';
+import { TasteAnalysis } from './TasteAnalysis';
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -335,6 +337,15 @@ export function Stats() {
           </div>
         </motion.div>
       )}
+
+      {/* AI Recommendations */}
+      <Recommendations 
+        watchedFilms={mediaItems.filter(m => m.status === 'watched')} 
+        allTitles={mediaItems.map(m => m.title)}
+      />
+
+      {/* Taste Analysis */}
+      <TasteAnalysis films={mediaItems} />
     </div>
   );
 }

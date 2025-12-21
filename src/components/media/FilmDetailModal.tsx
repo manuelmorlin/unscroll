@@ -1,23 +1,45 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard, Globe, Tv } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard, Globe, Tv, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { StarRatingCompact } from '@/components/ui';
+import { SmartReviewGenerator } from './SmartReviewGenerator';
+import { updateMediaItem } from '@/lib/actions/media';
 import type { MediaItem } from '@/types/database';
 
 interface FilmDetailModalProps {
   media: MediaItem;
   onClose: () => void;
+  onUpdate?: (updatedMedia: MediaItem) => void;
 }
 
-export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
+export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalProps) {
+  const [showReviewGenerator, setShowReviewGenerator] = useState(false);
+  const [currentReview, setCurrentReview] = useState(media.user_review);
+  
   const cast = Array.isArray(media.cast) 
     ? media.cast 
     : media.cast?.split(',').map(s => s.trim()) || [];
   
   const rewatchCount = media.rewatch_count || 0;
   const totalViews = rewatchCount + 1;
+
+  const handleSaveReview = async (review: string) => {
+    setCurrentReview(review);
+    setShowReviewGenerator(false);
+    
+    // Save to database
+    try {
+      await updateMediaItem(media.id, { user_review: review });
+      if (onUpdate) {
+        onUpdate({ ...media, user_review: review });
+      }
+    } catch (error) {
+      console.error('Failed to save review:', error);
+    }
+  };
 
   // Parse duration to show in a nicer format
   const formatDuration = (duration: string | null) => {
@@ -256,7 +278,7 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
             )}
 
             {/* User Review */}
-            {media.user_review && (
+            {currentReview && (
               <div>
                 <h3 className="text-sm font-semibold text-zinc-300 mb-2 flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-500" />
@@ -264,20 +286,53 @@ export function FilmDetailModal({ media, onClose }: FilmDetailModalProps) {
                 </h3>
                 <div className="bg-zinc-800/50 rounded-xl p-4 border-l-4 border-yellow-500/50">
                   <p className="text-sm text-zinc-300 italic leading-relaxed">
-                    &quot;{media.user_review}&quot;
+                    &quot;{currentReview}&quot;
                   </p>
                 </div>
+                {media.user_rating && (
+                  <button
+                    onClick={() => setShowReviewGenerator(true)}
+                    className="mt-2 text-xs text-yellow-500 hover:text-yellow-400 flex items-center gap-1"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    Regenerate with AI
+                  </button>
+                )}
               </div>
             )}
 
+            {/* Generate Review Button (if rated but no review) */}
+            {media.user_rating && !currentReview && (
+              <button
+                onClick={() => setShowReviewGenerator(true)}
+                className="w-full py-3 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 text-yellow-400 rounded-xl hover:from-yellow-500/30 hover:to-amber-500/30 flex items-center justify-center gap-2 text-sm font-medium transition-all"
+              >
+                <Sparkles className="w-4 h-4" />
+                Generate AI Review
+              </button>
+            )}
+
             {/* No rating prompt */}
-            {!media.user_rating && !media.user_review && (
+            {!media.user_rating && !currentReview && (
               <div className="text-center py-4 text-zinc-500 text-sm">
                 You haven&apos;t rated or reviewed this film yet
               </div>
             )}
           </div>
         </div>
+
+        {/* Smart Review Generator Modal */}
+        <AnimatePresence>
+          {showReviewGenerator && media.user_rating && (
+            <SmartReviewGenerator
+              title={media.title}
+              rating={media.user_rating}
+              currentReview={currentReview}
+              onSaveReview={handleSaveReview}
+              onClose={() => setShowReviewGenerator(false)}
+            />
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );

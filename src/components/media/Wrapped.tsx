@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Film, Clock, Star, Trophy, Calendar, Clapperboard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film, Clock, Star, Trophy, Calendar, Clapperboard, Brain, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
+import { actionGetWrappedInsights } from '@/lib/actions/ai';
 import type { MediaItem } from '@/types/database';
 
 // ==============================================
@@ -25,6 +26,14 @@ interface WrappedStats {
   longestFilm: MediaItem | null;
   shortestFilm: MediaItem | null;
   films: MediaItem[];
+}
+
+interface AIInsights {
+  personality: string;
+  spiritAnimal: { director: string; reason: string };
+  prediction2026: string;
+  roast: string;
+  compliment: string;
 }
 
 // ==============================================
@@ -443,6 +452,69 @@ function LanguageSlide({ stats }: { stats: WrappedStats }) {
 }
 
 // ==============================================
+// AI INSIGHTS SLIDE
+// ==============================================
+
+function AIInsightsSlide({ insights }: { insights: AIInsights }) {
+  return (
+    <Slide gradient="from-purple-600 via-violet-900 to-black">
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-center w-full max-w-md"
+      >
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Brain className="w-8 h-8 text-purple-300" />
+          <Sparkles className="w-6 h-6 text-yellow-400" />
+        </div>
+        <p className="text-purple-200 text-lg mb-4">AI says you&apos;re...</p>
+        
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-lg text-white leading-relaxed mb-6 px-4"
+        >
+          &quot;{insights.personality}&quot;
+        </motion.p>
+
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white/10 rounded-xl p-4 mb-4"
+        >
+          <p className="text-purple-300 text-xs mb-1">Your Spirit Director</p>
+          <p className="text-xl font-bold text-white">{insights.spiritAnimal.director}</p>
+          <p className="text-sm text-purple-200 mt-1">{insights.spiritAnimal.reason}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="space-y-3 text-left px-4"
+        >
+          <div className="flex items-start gap-2">
+            <span className="text-yellow-400">🔮</span>
+            <p className="text-sm text-purple-200">{insights.prediction2026}</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-pink-400">😏</span>
+            <p className="text-sm text-purple-200 italic">{insights.roast}</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-green-400">💚</span>
+            <p className="text-sm text-purple-200">{insights.compliment}</p>
+          </div>
+        </motion.div>
+      </motion.div>
+    </Slide>
+  );
+}
+
+// ==============================================
 // SUMMARY SLIDE
 // ==============================================
 
@@ -625,6 +697,43 @@ export function Wrapped() {
     };
   }, [mediaItems, isLoading, year]);
 
+  // AI Insights state
+  const [aiInsights, setAIInsights] = useState<AIInsights | null>(null);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+
+  // Fetch AI insights when stats are ready
+  useEffect(() => {
+    if (!stats || aiInsights || isLoadingInsights) return;
+
+    const fetchInsights = async () => {
+      setIsLoadingInsights(true);
+      
+      // Prepare data for AI
+      const topGenres = stats.topGenre ? [stats.topGenre.name] : [];
+      const topDirectors = stats.topDirector ? [stats.topDirector.name] : [];
+      const topRatedTitles = stats.topRatedFilms.map(f => f.title);
+      
+      const result = await actionGetWrappedInsights({
+        totalFilms: stats.totalFilms,
+        totalHours: stats.totalHours,
+        topGenres,
+        topDirectors,
+        avgRating: stats.avgRating || 3,
+        topRatedFilms: topRatedTitles,
+        mostWatchedMonth: stats.mostWatchedMonth?.name || 'Unknown',
+        favoriteLanguage: stats.favoriteLanguage?.name || 'en',
+      });
+
+      if (result.success && result.data) {
+        setAIInsights(result.data);
+      }
+      
+      setIsLoadingInsights(false);
+    };
+
+    fetchInsights();
+  }, [stats, aiInsights, isLoadingInsights]);
+
   // Build slides array
   const slides = stats ? [
     <IntroSlide key="intro" year={year} />,
@@ -635,6 +744,7 @@ export function Wrapped() {
     stats.favoriteLanguage && <LanguageSlide key="language" stats={stats} />,
     stats.mostWatchedMonth && <BusiestMonthSlide key="month" stats={stats} />,
     stats.topRatedFilms.length > 0 && <TopRatedSlide key="toprated" stats={stats} />,
+    aiInsights && <AIInsightsSlide key="ai-insights" insights={aiInsights} />,
     <SummarySlide key="summary" stats={stats} year={year} />,
   ].filter(Boolean) : [];
 

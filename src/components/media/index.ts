@@ -4,3 +4,6 @@ export { Diary } from './Diary';
 export { Stats } from './Stats';
 export { FilmDetailModal } from './FilmDetailModal';
 export { Wrapped } from './Wrapped';
+export { SmartReviewGenerator } from './SmartReviewGenerator';
+export { Recommendations } from './Recommendations';
+export { TasteAnalysis } from './TasteAnalysis';
