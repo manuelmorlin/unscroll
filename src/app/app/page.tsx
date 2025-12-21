@@ -68,7 +68,8 @@ export default function AppPage() {
               { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
               { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
               { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
-              { id: 'wrapped' as Tab, label: 'Wrapped', emoji: '🎁' },
+              // Wrapped tab only visible in December
+              ...(new Date().getMonth() === 11 ? [{ id: 'wrapped' as Tab, label: 'Wrapped', emoji: '🎁' }] : []),
             ].map(({ id, label, emoji }) => (
               <button
                 key={id}
