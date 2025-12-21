@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, User } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
-import { AddMediaForm, MediaList, Diary, Stats } from '@/components/media';
+import { AddMediaForm, MediaList, Diary, Stats, Wrapped } from '@/components/media';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
 import type { MediaStatus } from '@/types/database';
 
-type Tab = 'decide' | 'list' | 'diary' | 'stats';
+type Tab = 'decide' | 'list' | 'diary' | 'stats' | 'wrapped';
 type ListFilter = 'all' | MediaStatus;
 
 export default function AppPage() {
@@ -68,6 +68,7 @@ export default function AppPage() {
               { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
               { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
               { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
+              { id: 'wrapped' as Tab, label: 'Wrapped', emoji: '🎁' },
             ].map(({ id, label, emoji }) => (
               <button
                 key={id}
@@ -179,6 +180,17 @@ export default function AppPage() {
             transition={{ duration: 0.2 }}
           >
             <Stats />
+          </motion.div>
+        )}
+
+        {activeTab === 'wrapped' && (
+          <motion.div
+            key="wrapped"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Wrapped />
           </motion.div>
         )}
       </main>
