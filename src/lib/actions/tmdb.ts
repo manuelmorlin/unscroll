@@ -172,8 +172,19 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetailsResu
     // Get director
     const director = credits.crew.find(member => member.job === 'Director')?.name || null;
 
-    // Get genres
-    const genre = details.genres.map(g => g.name).join(', ');
+    // Genre name abbreviations (common short forms)
+    const genreAbbreviations: Record<string, string> = {
+      'Science Fiction': 'Sci-Fi',
+      'Documentary': 'Doc',
+      'Animation': 'Animated',
+      'TV Movie': 'TV',
+    };
+
+    // Get genres with abbreviations, joined by "/" (max 2 genres)
+    const genre = details.genres
+      .slice(0, 2)
+      .map(g => genreAbbreviations[g.name] || g.name)
+      .join('/');
 
     // Get year from release date
     const year = details.release_date 
