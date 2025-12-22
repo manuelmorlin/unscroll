@@ -4,70 +4,65 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 
+// ==============================================
+// TOUR STEPS - Simple fullscreen slides
+// ==============================================
+
 interface TourStep {
   id: string;
   title: string;
   description: string;
   emoji: string;
-  target?: string; // CSS selector for highlighting
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
 }
 
 const tourSteps: TourStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to Unscroll! 🎬',
-    description: 'Your personal cinema companion. Let me show you around!',
+    title: 'Welcome to Unscroll!',
+    description: 'Your personal cinema companion.\nLet me show you around!',
     emoji: '🍿',
-    position: 'center',
   },
   {
     id: 'slot-machine',
-    title: 'Can\'t Decide What to Watch?',
-    description: 'Use the 🎰 Decide tab to spin and let fate choose your next film from your watchlist!',
+    title: 'Can\'t Decide?',
+    description: 'Use the 🎰 tab to spin and let fate choose your next film!',
     emoji: '🎰',
-    position: 'center',
   },
   {
     id: 'add-film',
-    title: 'Add Films to Your List',
-    description: 'Tap the red "Add Film" button in the header to search and add movies. We\'ll auto-fill all the details!',
-    emoji: '➕',
-    target: '[data-tour="add-button"]',
-    position: 'bottom',
+    title: 'Add Films',
+    description: 'Tap the red "Add" button to search and add movies to your list.',
+    emoji: '🎬',
   },
   {
     id: 'watchlist',
     title: 'Your Watchlist',
-    description: 'Browse all your saved films in the 📋 tab. Filter by status: To Watch, Watching, or Watched.',
+    description: 'Browse all your saved films in the 📋 tab.',
     emoji: '📋',
-    target: '[data-tour="nav-list"]',
-    position: 'top',
   },
   {
     id: 'diary',
     title: 'Film Diary',
-    description: 'Keep track of everything you\'ve watched with ratings and reviews in the 📔 tab.',
+    description: 'Track what you\'ve watched with ratings in the 📔 tab.',
     emoji: '📔',
-    target: '[data-tour="nav-diary"]',
-    position: 'top',
   },
   {
     id: 'stats',
-    title: 'Your Statistics',
-    description: 'See your viewing habits, favorite genres, and total watch time in the 📊 tab.',
+    title: 'Statistics',
+    description: 'See your viewing habits in the 📊 tab.',
     emoji: '📊',
-    target: '[data-tour="nav-stats"]',
-    position: 'top',
   },
   {
     id: 'ready',
     title: 'You\'re All Set!',
-    description: 'Start building your watchlist and let the movie magic begin!',
+    description: 'Start building your watchlist and enjoy!',
     emoji: '✨',
-    position: 'center',
   },
 ];
+
+// ==============================================
+// COMPONENT - Fullscreen carousel style
+// ==============================================
 
 interface AppTourProps {
   onComplete?: () => void;
@@ -79,21 +74,10 @@ const TOUR_STORAGE_KEY = 'unscroll-tour-completed';
 export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
-  const [windowWidth, setWindowWidth] = useState(0);
-
-  // Track window width for responsive behavior
-  useEffect(() => {
-    const updateWidth = () => setWindowWidth(window.innerWidth);
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
 
   // Check if tour should show
   useEffect(() => {
     if (forceShow) {
-      // Use setTimeout to avoid cascading renders
       setTimeout(() => {
         setIsOpen(true);
         setCurrentStep(0);
@@ -103,49 +87,12 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
 
     const hasCompletedTour = localStorage.getItem(TOUR_STORAGE_KEY);
     if (!hasCompletedTour) {
-      // Small delay to let the page render
       const timer = setTimeout(() => {
         setIsOpen(true);
       }, 500);
       return () => clearTimeout(timer);
     }
   }, [forceShow]);
-
-  // Update target element position with retry logic
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const step = tourSteps[currentStep];
-    
-    const findElement = (retries = 0) => {
-      if (step.target) {
-        const element = document.querySelector(step.target);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          // Only set rect if element has valid dimensions
-          if (rect.width > 0 && rect.height > 0) {
-            setTargetRect(rect);
-            return;
-          }
-        }
-        // Retry up to 5 times with 100ms delay
-        if (retries < 5) {
-          setTimeout(() => findElement(retries + 1), 100);
-        } else {
-          setTargetRect(null);
-        }
-      } else {
-        setTargetRect(null);
-      }
-    };
-
-    // Initial delay to let page render
-    const timer = setTimeout(() => {
-      requestAnimationFrame(() => findElement());
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, [currentStep, isOpen]);
 
   const handleComplete = useCallback(() => {
     localStorage.setItem(TOUR_STORAGE_KEY, 'true');
@@ -178,220 +125,136 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const step = tourSteps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tourSteps.length - 1;
-  const hasValidTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
-  
-  // Mobile check - use windowWidth state (0 means not yet initialized, treat as mobile to be safe)
-  const isMobile = windowWidth === 0 || windowWidth < 640;
-  
-  // On mobile, always center. On desktop, center if no valid target or position is 'center'
-  const isCentered = isMobile || step.position === 'center' || !hasValidTarget;
-
-  // Calculate tooltip position with mobile-safe positioning
-  const getTooltipStyle = (): React.CSSProperties => {
-    // On mobile (or before hydration), ALWAYS center the tooltip for visibility
-    if (isMobile) {
-      return {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      };
-    }
-    
-    // Desktop: center if no target
-    if (isCentered || !targetRect) {
-      return {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      };
-    }
-
-    const padding = 16;
-    const tooltipWidth = Math.min(320, windowWidth - 32);
-    const tooltipHeight = 280; // Approximate max height of tooltip
-
-    // Desktop positioning
-    switch (step.position) {
-      case 'top':
-        return {
-          bottom: `${window.innerHeight - targetRect.top + padding}px`,
-          left: `${Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))}px`,
-        };
-      case 'bottom':
-        return {
-          top: `${targetRect.bottom + padding}px`,
-          left: `${Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))}px`,
-        };
-      case 'left':
-        return {
-          top: `${targetRect.top + targetRect.height / 2 - tooltipHeight / 2}px`,
-          right: `${window.innerWidth - targetRect.left + padding}px`,
-        };
-      case 'right':
-        return {
-          top: `${targetRect.top + targetRect.height / 2 - tooltipHeight / 2}px`,
-          left: `${targetRect.right + padding}px`,
-        };
-      default:
-        return {
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        };
-    }
-  };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop with spotlight */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] pointer-events-auto"
-            onClick={handleSkip}
-          >
-            {/* Dark overlay - always show on mobile for readability, or when centered on desktop */}
-            {(isMobile || isCentered) && (
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-            )}
-            
-            {/* Spotlight on target - only on desktop when we have a valid target */}
-            {!isMobile && hasValidTarget && !isCentered && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] flex flex-col"
+          style={{ background: 'linear-gradient(to bottom, #0a0a0a 0%, #171717 50%, #0a0a0a 100%)' }}
+        >
+          {/* Skip button - top right */}
+          <div className="absolute top-4 right-4 z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+            <button
+              onClick={handleSkip}
+              className="p-3 text-zinc-500 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Main content - vertically centered */}
+          <div className="flex-1 flex items-center justify-center px-8">
+            <AnimatePresence mode="wait">
               <motion.div
-                key={`spotlight-${currentStep}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute rounded-2xl pointer-events-none"
-                style={{
-                  top: targetRect.top - 8,
-                  left: targetRect.left - 8,
-                  width: targetRect.width + 16,
-                  height: targetRect.height + 16,
-                  boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.85)',
-                  border: '2px solid rgba(251, 191, 36, 0.6)',
-                  background: 'transparent',
-                }}
-              />
-            )}
-          </motion.div>
-
-          {/* Tooltip/Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed z-[201] w-[320px] max-w-[calc(100vw-32px)]"
-            style={getTooltipStyle()}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="glass-heavy rounded-2xl overflow-hidden border border-white/10">
-              {/* Header */}
-              <div className="relative p-4 pb-0">
-                <button
-                  onClick={handleSkip}
-                  className="absolute top-3 right-3 p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                
+                key={step.id}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="text-center w-full max-w-sm"
+              >
+                {/* Big Emoji */}
                 <motion.div
-                  key={step.id}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.1 }}
-                  className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20"
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', delay: 0.1, damping: 12 }}
+                  className="text-8xl mb-8"
                 >
-                  <span className="text-3xl">{step.emoji}</span>
+                  {step.emoji}
                 </motion.div>
-              </div>
 
-              {/* Content */}
-              <div className="p-4 pt-2 text-center">
-                <motion.h3
-                  key={`title-${step.id}`}
-                  initial={{ opacity: 0, y: 10 }}
+                {/* Title */}
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-lg font-semibold text-white mb-2"
+                  transition={{ delay: 0.15 }}
+                  className="text-3xl font-bold text-white mb-4"
                 >
                   {step.title}
-                </motion.h3>
+                </motion.h2>
+
+                {/* Description */}
                 <motion.p
-                  key={`desc-${step.id}`}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="text-sm text-zinc-400 leading-relaxed"
+                  transition={{ delay: 0.2 }}
+                  className="text-lg text-zinc-400 leading-relaxed whitespace-pre-line"
                 >
                   {step.description}
                 </motion.p>
-              </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-              {/* Progress dots */}
-              <div className="flex justify-center gap-1.5 pb-3">
-                {tourSteps.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentStep(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentStep
-                        ? 'bg-amber-400 w-4'
-                        : index < currentStep
-                        ? 'bg-amber-400/50'
-                        : 'bg-zinc-600'
-                    }`}
-                  />
-                ))}
-              </div>
+          {/* Bottom navigation - fixed at bottom */}
+          <div className="px-6 pb-6" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
+            {/* Progress dots */}
+            <div className="flex justify-center gap-2 mb-6">
+              {tourSteps.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStep(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentStep
+                      ? 'w-8 bg-amber-400'
+                      : index < currentStep
+                      ? 'w-2 bg-amber-400/50'
+                      : 'w-2 bg-zinc-700'
+                  }`}
+                />
+              ))}
+            </div>
 
-              {/* Navigation */}
-              <div className="flex gap-2 p-4 pt-0">
-                {!isFirstStep && (
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handlePrev}
-                    className="flex-1 py-2.5 px-4 text-sm font-medium text-zinc-400 hover:text-white rounded-xl border border-white/10 hover:border-white/20 transition-colors flex items-center justify-center gap-1"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Back
-                  </motion.button>
-                )}
+            {/* Navigation buttons */}
+            <div className="flex gap-3">
+              {!isFirstStep && (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleNext}
-                  className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-1 ${
-                    isLastStep
-                      ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black'
-                      : 'bg-gradient-to-b from-red-500 to-red-700 text-white'
-                  }`}
+                  onClick={handlePrev}
+                  className="flex-1 py-4 px-6 text-base font-medium text-zinc-300 rounded-2xl border border-zinc-700 hover:border-zinc-600 transition-colors flex items-center justify-center gap-2"
                 >
-                  {isLastStep ? (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      Let&apos;s Go!
-                    </>
-                  ) : (
-                    <>
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </>
-                  )}
+                  <ChevronLeft className="w-5 h-5" />
+                  Back
                 </motion.button>
-              </div>
+              )}
+              
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleNext}
+                className={`flex-1 py-4 px-6 text-base font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2 ${
+                  isLastStep
+                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                }`}
+              >
+                {isLastStep ? (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Get Started
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ChevronRight className="w-5 h-5" />
+                  </>
+                )}
+              </motion.button>
             </div>
-          </motion.div>
-        </>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-// Hook to control tour from anywhere
+// ==============================================
+// HOOK - Control tour from anywhere
+// ==============================================
+
 export function useTour() {
   const [showTour, setShowTour] = useState(false);
 
