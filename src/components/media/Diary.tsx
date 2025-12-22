@@ -8,6 +8,7 @@ import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaItem, markAsRewatched, removeRewatch } from '@/lib/actions/media';
 import { StarRating, StarRatingCompact, useToast, useConfirm } from '@/components/ui';
 import { FilmDetailModal, SmartReviewGenerator } from '@/components/media';
+import { formatGenre } from '@/lib/utils';
 import type { MediaItem } from '@/types/database';
 
 // Genre to emoji mapping
@@ -201,7 +202,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     {media.genre && (
                       <>
                         <span className="text-zinc-600">•</span>
-                        <span className="truncate max-w-[100px] sm:max-w-[150px]">{media.genre}</span>
+                        <span className="truncate max-w-[100px] sm:max-w-[150px]">{formatGenre(media.genre)}</span>
                       </>
                     )}
                     {/* Views badge - shows total watch count */}

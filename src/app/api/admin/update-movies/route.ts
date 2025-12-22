@@ -84,8 +84,19 @@ async function getMovieFullDetails(movieId: number) {
   // Get director
   const director = credits.crew.find(member => member.job === 'Director')?.name || null;
 
-  // Get genres
-  const genre = details.genres.map(g => g.name).join(', ');
+  // Genre abbreviations
+  const genreAbbreviations: Record<string, string> = {
+    'Science Fiction': 'Sci-Fi',
+    'Documentary': 'Doc',
+    'Animation': 'Animated',
+    'TV Movie': 'TV',
+  };
+
+  // Get genres (max 2, with abbreviations)
+  const genre = details.genres
+    .slice(0, 2)
+    .map(g => genreAbbreviations[g.name] || g.name)
+    .join('/');
 
   // Get year
   const year = details.release_date 

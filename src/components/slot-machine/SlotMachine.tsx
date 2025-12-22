@@ -125,13 +125,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   });
 
   // Calculate available genres from unwatched films (reactive)
-  // Split comma-separated genres into individual genres
+  // Split by comma or slash and trim each genre
   const availableGenres = [...new Set(
     unwatchedItems
       .flatMap(item => {
         if (!item.genre) return [];
-        // Split by comma and trim each genre
-        return item.genre.split(',').map(g => g.trim()).filter(g => g.length > 0);
+        // Split by comma or slash and trim each genre
+        return item.genre.split(/,|\//).map(g => g.trim()).filter(g => g.length > 0);
       })
   )].sort();
 

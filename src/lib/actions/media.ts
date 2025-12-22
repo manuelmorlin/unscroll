@@ -499,8 +499,8 @@ export async function getAllGenres(): Promise<MediaActionResult> {
     snapshot.docs.forEach(doc => {
       const data = doc.data();
       if (data.genre) {
-        // Split by comma and add each genre
-        const genres = data.genre.split(',').map((g: string) => g.trim());
+        // Split by comma or slash and add each genre
+        const genres = data.genre.split(/,|\//).map((g: string) => g.trim());
         genres.forEach((g: string) => genresSet.add(g));
       }
     });

@@ -8,6 +8,7 @@ import { actionGetRecommendations } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails } from '@/lib/actions/tmdb';
 import { addMediaItem } from '@/lib/actions/media';
 import { useToast } from '@/components/ui';
+import { formatGenre } from '@/lib/utils';
 import type { MediaItem } from '@/types/database';
 
 interface Recommendation {
@@ -270,12 +271,12 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
                         {/* Genres */}
                         {movieDetails.genre && (
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {movieDetails.genre.split(/,|\//).slice(0, 3).map((g, i) => (
+                            {formatGenre(movieDetails.genre).split('/').map((g, i) => (
                               <span
                                 key={i}
                                 className="px-2.5 py-1 bg-yellow-500/15 border border-yellow-500/30 rounded-full text-xs font-medium text-yellow-400"
                               >
-                                {g.trim()}
+                                {g}
                               </span>
                             ))}
                           </div>

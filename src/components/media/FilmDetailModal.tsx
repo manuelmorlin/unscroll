@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { StarRatingCompact } from '@/components/ui';
 import { SmartReviewGenerator } from './SmartReviewGenerator';
 import { updateMediaItem } from '@/lib/actions/media';
+import { formatGenre } from '@/lib/utils';
 import type { MediaItem } from '@/types/database';
 
 interface FilmDetailModalProps {
@@ -174,12 +175,12 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
                   {/* Genres */}
                   {media.genre && (
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {media.genre.split(/,|\//).slice(0, 3).map((g, i) => (
+                      {formatGenre(media.genre).split('/').map((g, i) => (
                         <span
                           key={i}
                           className="px-2.5 py-1 bg-yellow-500/15 border border-yellow-500/30 rounded-full text-xs font-medium text-yellow-400"
                         >
-                          {g.trim()}
+                          {g}
                         </span>
                       ))}
                     </div>
