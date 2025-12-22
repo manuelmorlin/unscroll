@@ -9,6 +9,7 @@ import {
   updateProfile,
   signInWithCustomToken,
   signOut,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { setSessionAction } from '@/lib/actions/auth';
@@ -29,7 +30,23 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [resetEmail, setResetEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
+
+  // Password validation
+  const passwordRequirements = {
+    minLength: password.length >= 8,
+    hasUppercase: /[A-Z]/.test(password),
+    hasLowercase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+  };
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
+  // Email validation
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   // Handle password reset
   const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,6 +90,20 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
     const password = formData.get('password') as string;
     const username = formData.get('username') as string;
 
+    // Validate email format
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password requirements for registration
+    if (mode === 'register' && !isPasswordValid) {
+      setError('Password does not meet the requirements');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       let userCredential;
 
@@ -108,17 +139,29 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           throw new Error('Failed to complete registration');
         }
         
-        // Sign out after registration (user needs to login)
+        // Send email verification
+        await sendEmailVerification(userCredential.user);
+        
+        // Sign out after registration (user needs to verify email and login)
         await auth.signOut();
         
         // Show success message and switch to login mode
-        setSuccessMessage('Account created successfully! Please sign in.');
+        setSuccessMessage('✉️ Account created! Please check your email to verify your account, then sign in.');
         setMode('login');
+        setPassword('');
         setIsLoading(false);
         return;
       } else {
         // Sign in existing user
         userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Check if email is verified
+        if (!userCredential.user.emailVerified) {
+          // Resend verification email
+          await sendEmailVerification(userCredential.user);
+          await auth.signOut();
+          throw new Error('email_not_verified');
+        }
       }
 
       // Get ID token and create server session (only for login)
@@ -140,6 +183,8 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       } else if (errorMessage === 'email_exists') {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
+      } else if (errorMessage === 'email_not_verified') {
+        setError('Please verify your email before signing in. We sent you a new verification link.');
       } else if (
         errorCode === 'auth/user-not-found' || 
         errorCode === 'auth/wrong-password' ||
@@ -150,7 +195,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
       } else if (errorCode === 'auth/weak-password') {
-        setError('Password must be at least 6 characters');
+        setError('Password must be at least 8 characters with uppercase, lowercase and numbers');
       } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address');
       } else if (errorCode === 'auth/too-many-requests') {
@@ -413,10 +458,37 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             name="password"
             placeholder="Password"
             required
-            minLength={6}
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
           />
         </div>
+
+        {/* Password Requirements - only show for register mode */}
+        {mode === 'register' && password.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="text-xs space-y-1 px-2"
+          >
+            <p className="text-zinc-500 mb-1">Password must have:</p>
+            <div className="grid grid-cols-2 gap-1">
+              <span className={passwordRequirements.minLength ? 'text-emerald-400' : 'text-zinc-500'}>
+                {passwordRequirements.minLength ? '✓' : '○'} 8+ characters
+              </span>
+              <span className={passwordRequirements.hasUppercase ? 'text-emerald-400' : 'text-zinc-500'}>
+                {passwordRequirements.hasUppercase ? '✓' : '○'} Uppercase letter
+              </span>
+              <span className={passwordRequirements.hasLowercase ? 'text-emerald-400' : 'text-zinc-500'}>
+                {passwordRequirements.hasLowercase ? '✓' : '○'} Lowercase letter
+              </span>
+              <span className={passwordRequirements.hasNumber ? 'text-emerald-400' : 'text-zinc-500'}>
+                {passwordRequirements.hasNumber ? '✓' : '○'} Number
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Forgot Password Link */}
         {mode === 'login' && (
