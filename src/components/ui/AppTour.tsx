@@ -174,7 +174,10 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
 
   // Calculate tooltip position with mobile-safe positioning
   const getTooltipStyle = () => {
-    if (isCentered || !targetRect) {
+    // On mobile, always center the tooltip
+    const isMobile = window.innerWidth < 640;
+    
+    if (isCentered || !targetRect || isMobile) {
       return {
         top: '50%',
         left: '50%',
@@ -185,54 +188,6 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
     const padding = 16;
     const tooltipWidth = Math.min(320, window.innerWidth - 32);
     const tooltipHeight = 280; // Approximate max height of tooltip
-    const safeAreaTop = 60; // Account for header
-    const safeAreaBottom = 100; // Account for dock on mobile
-
-    // Calculate available space
-    const spaceAbove = targetRect.top - safeAreaTop;
-    const spaceBelow = window.innerHeight - targetRect.bottom - safeAreaBottom;
-
-    // On mobile, prefer positioning above or below based on available space
-    // If neither has enough space, center the tooltip
-    const isMobile = window.innerWidth < 640;
-    
-    if (isMobile) {
-      // Check if there's enough space above or below
-      if (spaceAbove >= tooltipHeight && step.position === 'top') {
-        return {
-          bottom: `${window.innerHeight - targetRect.top + padding}px`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-        };
-      } else if (spaceBelow >= tooltipHeight && step.position === 'bottom') {
-        return {
-          top: `${targetRect.bottom + padding}px`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-        };
-      } else if (spaceAbove > spaceBelow && spaceAbove >= tooltipHeight) {
-        // More space above, position there
-        return {
-          bottom: `${window.innerHeight - targetRect.top + padding}px`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-        };
-      } else if (spaceBelow >= tooltipHeight) {
-        // More space below or equal, position there
-        return {
-          top: `${targetRect.bottom + padding}px`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-        };
-      } else {
-        // Not enough space, center it but account for the spotlight
-        return {
-          top: '40%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        };
-      }
-    }
 
     // Desktop positioning
     switch (step.position) {
