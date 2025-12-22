@@ -252,6 +252,7 @@ interface RateModalProps {
 }
 
 function RateModal({ media, onClose, onRate }: RateModalProps) {
+  const { confirm } = useConfirm();
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
   const [isGeneratingReview, setIsGeneratingReview] = useState(false);
@@ -261,6 +262,21 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
   const [dateMode, setDateMode] = useState<DateMode>('full');
   const [watchedDate, setWatchedDate] = useState<string>(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
   const [watchedYear, setWatchedYear] = useState<string>(new Date().getFullYear().toString());
+
+  const handleClose = async () => {
+    // Check if user has made any changes (rating or review)
+    if (rating || review) {
+      const confirmed = await confirm({
+        title: 'Close without saving?',
+        message: 'You have unsaved changes. Are you sure you want to close?',
+        confirmText: 'Close',
+        cancelText: 'Cancel',
+        danger: true
+      });
+      if (!confirmed) return;
+    }
+    onClose();
+  };
 
   const handleGenerateReview = useCallback(async () => {
     if (!rating) return;
@@ -312,15 +328,24 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-      onClick={handleSkip}
+      onClick={handleClose}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-green-900/20 max-h-[90vh] overflow-y-auto"
+        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-green-900/20 max-h-[90vh] overflow-y-auto relative"
       >
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+          title="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         {/* Success Badge */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center border border-green-500/30">
