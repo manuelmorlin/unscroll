@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv, Plus } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, getAllGenres, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { StarRating } from '@/components/ui';
+import { useMediaItems } from '@/hooks/useMediaItems';
 import type { MediaItem } from '@/types/database';
 
 // ==============================================
@@ -95,6 +96,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [watchedMedia, setWatchedMedia] = useState<MediaItem | null>(null);
+
+  // Get media items to check if there are unwatched films
+  const { mediaItems } = useMediaItems();
+  const unwatchedCount = mediaItems.filter(item => item.status === 'unwatched').length;
+  const hasUnwatchedFilms = unwatchedCount > 0;
 
   // Load genres function
   const loadGenres = useCallback(async () => {
@@ -561,6 +567,16 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   <span>✅ Watched</span>
                 </motion.button>
               </>
+            ) : !hasUnwatchedFilms ? (
+              /* Empty Watchlist State */
+              <div className="text-center">
+                <div className="text-5xl mb-4">📋</div>
+                <p className="text-zinc-400 mb-4">Add something to your watchlist to spin!</p>
+                <div className="text-zinc-500 text-sm flex items-center justify-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  <span>Use the Add Film button below</span>
+                </div>
+              </div>
             ) : (
               /* Main Spin Button - Cinema Red */
               <motion.button
