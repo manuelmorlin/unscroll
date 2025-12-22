@@ -96,7 +96,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={`
-        fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-50
+        fixed bottom-0 sm:bottom-4 left-1/2 -translate-x-1/2 z-50
         floating-dock rounded-full
         p-0 sm:px-3 sm:py-3
         safe-bottom
