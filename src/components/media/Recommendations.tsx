@@ -198,7 +198,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
                 </div>
               </div>
             ) : movieDetails ? (
-              <div className="overflow-y-auto flex-1 scrollbar-yellow">
+              <div className="overflow-y-auto flex-1 scrollbar-hide">
                 {/* Hero Section with Poster */}
                 <div className="relative">
                   {/* Backdrop blur from poster */}

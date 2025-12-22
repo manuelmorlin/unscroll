@@ -130,7 +130,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto"
+        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto scrollbar-hide"
       >
         {/* Handle bar for mobile */}
         <div className="sm:hidden flex justify-center mb-4">
@@ -345,7 +345,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-md max-h-[90vh] overflow-y-auto relative"
+        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-md max-h-[90vh] overflow-y-auto scrollbar-hide relative"
       >
         {/* Handle bar for mobile */}
         <div className="sm:hidden flex justify-center mb-4">

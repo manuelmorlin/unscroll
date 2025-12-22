@@ -102,7 +102,7 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
         </button>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto flex-1 scrollbar-yellow">
+        <div className="overflow-y-auto flex-1 scrollbar-hide">
           {/* Hero Section with Poster */}
           <div className="relative">
             {/* Backdrop blur from poster */}

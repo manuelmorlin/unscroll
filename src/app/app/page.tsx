@@ -51,7 +51,7 @@ export default function AppPage() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-300">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20">
                 <User className="w-3.5 h-3.5 text-amber-400" />
@@ -70,6 +70,7 @@ export default function AppPage() {
                 <span className="hidden sm:inline">Sign Out</span>
               </button>
             </form>
+            <AddMediaForm />
           </div>
         </div>
       </header>
@@ -202,15 +203,6 @@ export default function AppPage() {
         onSelect={(id) => setActiveTab(id as Tab)}
       />
 
-      {/* Floating Add Button - positioned for thumb reach on mobile */}
-      <motion.div 
-        className="fixed bottom-20 sm:bottom-24 right-3 sm:right-4 z-40"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', delay: 0.3 }}
-      >
-        <AddMediaForm />
-      </motion.div>
     </div>
   );
 }

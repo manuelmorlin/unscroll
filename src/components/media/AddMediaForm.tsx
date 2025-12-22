@@ -286,7 +286,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '100%', opacity: 0 }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="pointer-events-auto w-full sm:max-w-lg max-h-[85vh] sm:max-h-[90vh] glass-heavy rounded-t-3xl sm:rounded-2xl overflow-hidden overflow-y-auto"
+                className="pointer-events-auto w-full sm:max-w-lg max-h-[85vh] sm:max-h-[90vh] glass-heavy rounded-t-3xl sm:rounded-2xl overflow-hidden overflow-y-auto scrollbar-hide"
               >
               {/* Handle bar for mobile */}
               <div className="sm:hidden flex justify-center pt-4">
@@ -348,7 +348,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute z-50 w-full mt-2 glass-heavy rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto"
+                            className="absolute z-50 w-full mt-2 glass-heavy rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto scrollbar-hide"
                           >
                             {suggestions.map((movie) => {
                               const movieYear = movie.release_date ? parseInt(movie.release_date.split('-')[0]) : undefined;
