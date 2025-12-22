@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
@@ -266,23 +267,26 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         <span className="sm:hidden">🎬 Add</span>
       </motion.button>
 
-      {/* Modal - iOS 26.2 Ethereal Style */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 modal-backdrop z-50"
-            />
-
-            {/* Modal Content - Bottom Sheet on Mobile */}
-            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
+      {/* Modal - iOS 26.2 Ethereal Style - Rendered via Portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              {/* Backdrop */}
               <motion.div
-                initial={{ y: '100%', opacity: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsOpen(false)}
+                className="fixed inset-0 modal-backdrop z-[100]"
+              />
+
+              {/* Modal Content - Bottom Sheet on Mobile */}
+              <div 
+                className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 pointer-events-none"
+              >
+                <motion.div
+                  initial={{ y: '100%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '100%', opacity: 0 }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
@@ -503,11 +507,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                   )}
                 </motion.button>
               </form>
-            </motion.div>
+              </motion.div>
             </div>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </>
   );
 }
