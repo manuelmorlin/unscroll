@@ -36,61 +36,61 @@ interface FallbackData {
 
 const GENRE_FALLBACKS: Record<string, FallbackData[]> = {
   horror: [
-    { phrase: "Sleep is overrated anyway.", mood: 'thrilling', emoji: '👻' },
-    { phrase: "Keep the lights on. Trust me.", mood: 'thrilling', emoji: '🔪' },
-    { phrase: "Your heart rate is about to spike.", mood: 'thrilling', emoji: '💀' },
+    { phrase: "Keep the lights on for this one.", mood: 'thrilling', emoji: '👻' },
+    { phrase: "Scary in the best way.", mood: 'thrilling', emoji: '🔪' },
+    { phrase: "You might lose some sleep.", mood: 'thrilling', emoji: '💀' },
   ],
   thriller: [
-    { phrase: "The twist? You won't see it coming.", mood: 'thrilling', emoji: '🔍' },
-    { phrase: "Edge of your seat doesn't cover it.", mood: 'thrilling', emoji: '😰' },
-    { phrase: "Your jaw will hit the floor.", mood: 'intriguing', emoji: '🎯' },
+    { phrase: "The ending will surprise you.", mood: 'thrilling', emoji: '🔍' },
+    { phrase: "You won't be able to look away.", mood: 'thrilling', emoji: '😰' },
+    { phrase: "Full of surprises.", mood: 'intriguing', emoji: '🎯' },
   ],
   comedy: [
-    { phrase: "Warning: may cause uncontrollable laughter.", mood: 'excited', emoji: '😂' },
-    { phrase: "Your cheeks will hurt from smiling.", mood: 'cozy', emoji: '🤣' },
-    { phrase: "Pure serotonin in film form.", mood: 'excited', emoji: '😄' },
+    { phrase: "Get ready to laugh a lot.", mood: 'excited', emoji: '😂' },
+    { phrase: "You'll smile the whole time.", mood: 'cozy', emoji: '🤣' },
+    { phrase: "Feel-good film alert!", mood: 'excited', emoji: '😄' },
   ],
   romance: [
-    { phrase: "Get the tissues ready.", mood: 'cozy', emoji: '💕' },
+    { phrase: "Have tissues ready.", mood: 'cozy', emoji: '💕' },
     { phrase: "Your heart will thank you.", mood: 'cozy', emoji: '❤️' },
-    { phrase: "Love stories don't get better than this.", mood: 'intriguing', emoji: '💝' },
+    { phrase: "A beautiful love story.", mood: 'intriguing', emoji: '💝' },
   ],
   action: [
-    { phrase: "Buckle up. It's a wild ride.", mood: 'excited', emoji: '💥' },
-    { phrase: "Adrenaline rush guaranteed.", mood: 'thrilling', emoji: '🔥' },
-    { phrase: "Non-stop from start to finish.", mood: 'excited', emoji: '⚡' },
+    { phrase: "Non-stop fun from start to end.", mood: 'excited', emoji: '💥' },
+    { phrase: "Action-packed and exciting.", mood: 'thrilling', emoji: '🔥' },
+    { phrase: "Hold on tight!", mood: 'excited', emoji: '⚡' },
   ],
   'sci-fi': [
-    { phrase: "Prepare to have your mind blown.", mood: 'intriguing', emoji: '🚀' },
-    { phrase: "The future never looked this good.", mood: 'excited', emoji: '🤖' },
-    { phrase: "Reality will never feel the same.", mood: 'intriguing', emoji: '🌌' },
+    { phrase: "Get ready to be amazed.", mood: 'intriguing', emoji: '🚀' },
+    { phrase: "The future looks cool.", mood: 'excited', emoji: '🤖' },
+    { phrase: "Mind-blowing stuff.", mood: 'intriguing', emoji: '🌌' },
   ],
   fantasy: [
-    { phrase: "Magic awaits. Dive in.", mood: 'excited', emoji: '🧙' },
-    { phrase: "A world you won't want to leave.", mood: 'cozy', emoji: '✨' },
-    { phrase: "Epic doesn't begin to describe it.", mood: 'excited', emoji: '🐉' },
+    { phrase: "Magic and adventure await.", mood: 'excited', emoji: '🧙' },
+    { phrase: "A world you'll love.", mood: 'cozy', emoji: '✨' },
+    { phrase: "Epic and amazing.", mood: 'excited', emoji: '🐉' },
   ],
   drama: [
-    { phrase: "Cinema at its finest.", mood: 'intriguing', emoji: '🎭' },
-    { phrase: "The kind of story that stays with you.", mood: 'intriguing', emoji: '💫' },
-    { phrase: "Prepare to feel everything.", mood: 'cozy', emoji: '🌟' },
+    { phrase: "A story that stays with you.", mood: 'intriguing', emoji: '🎭' },
+    { phrase: "Beautiful and moving.", mood: 'intriguing', emoji: '💫' },
+    { phrase: "You'll feel all the feelings.", mood: 'cozy', emoji: '🌟' },
   ],
   animation: [
-    { phrase: "Not just for kids. Pure art.", mood: 'excited', emoji: '🎨' },
-    { phrase: "Animation perfection.", mood: 'cozy', emoji: '✨' },
-    { phrase: "Visually stunning. Emotionally powerful.", mood: 'excited', emoji: '🌈' },
+    { phrase: "Beautiful animation, great story.", mood: 'excited', emoji: '🎨' },
+    { phrase: "Fun for everyone.", mood: 'cozy', emoji: '✨' },
+    { phrase: "Looks amazing.", mood: 'excited', emoji: '🌈' },
   ],
   christmas: [
-    { phrase: "Holiday spirit incoming.", mood: 'cozy', emoji: '🎄' },
-    { phrase: "Hot cocoa and blankets required.", mood: 'cozy', emoji: '☃️' },
-    { phrase: "The most wonderful time for this film.", mood: 'cozy', emoji: '🎅' },
+    { phrase: "Perfect for the holidays.", mood: 'cozy', emoji: '🎄' },
+    { phrase: "Grab some hot cocoa.", mood: 'cozy', emoji: '☃️' },
+    { phrase: "Holiday vibes!", mood: 'cozy', emoji: '🎅' },
   ],
   default: [
-    { phrase: "This one hits different.", mood: 'intriguing', emoji: '⭐' },
-    { phrase: "Cinema magic at its finest.", mood: 'excited', emoji: '🎬' },
-    { phrase: "A must-watch experience.", mood: 'excited', emoji: '🍿' },
-    { phrase: "You won't regret this choice.", mood: 'intriguing', emoji: '🎥' },
-    { phrase: "Trust the universe on this one.", mood: 'cozy', emoji: '✨' },
+    { phrase: "This one is special.", mood: 'intriguing', emoji: '⭐' },
+    { phrase: "A great watch.", mood: 'excited', emoji: '🎬' },
+    { phrase: "You should watch this.", mood: 'excited', emoji: '🍿' },
+    { phrase: "You won't regret it.", mood: 'intriguing', emoji: '🎥' },
+    { phrase: "Trust me on this one.", mood: 'cozy', emoji: '✨' },
   ],
 };
 
@@ -266,16 +266,16 @@ export async function actionPersuade(
       messages: [
         {
           role: 'system',
-          content: `You are a charismatic film critic with a gift for convincing people to watch something. Generate a short, punchy persuasive phrase that would make someone excited to watch immediately.
+          content: `You convince people to watch films. Write a short, fun phrase that makes them want to watch now.
 
 Return ONLY a JSON object:
 {
-  "phrase": "string - A compelling 1-2 sentence persuasive pitch (max 100 chars). Be creative, witty, enthusiastic, and VARIED. Never repeat the same phrase. Examples: 'Trust me, you'll forget to breathe during the last 20 minutes.' or 'The kind of story that stays with you for weeks.' or 'Grab the tissues. You'll thank me later.' or 'This one hits different at 2am.' or 'The twist? You won't see it coming.' or 'Pure cinema magic from start to finish.'",
-  "mood": "excited" | "intriguing" | "cozy" | "thrilling" - The vibe of the content,
-  "emoji": "string - A single emoji that best represents this specific film based on its genre, mood, and plot. Examples: 🔪 for horror/thriller, 💕 for romance, 🚀 for sci-fi, 🦸 for superhero, 😂 for comedy, 🎄 for Christmas films, 🏎️ for action/racing, 🧙 for fantasy, 🎭 for drama, 👻 for supernatural, 🔫 for crime, 🌊 for adventure, 🤖 for robots/AI, 🦖 for dinosaurs, 🧟 for zombies, etc."
+  "phrase": "string - A short sentence (max 80 chars). Use simple words. Be fun and direct. Examples: 'You will love every minute of this.' or 'Get ready for a wild ride.' or 'This one will make you cry (in a good way).' or 'Perfect for a cozy night in.' or 'The ending will surprise you.'",
+  "mood": "excited" | "intriguing" | "cozy" | "thrilling",
+  "emoji": "string - One emoji for the film. Examples: 🔪 horror, 💕 romance, 🚀 sci-fi, 😂 comedy, 🎄 Christmas, 🧙 fantasy, 🎭 drama, 👻 scary"
 }
 
-IMPORTANT: Be creative and never repeat the same phrase. Match the tone to the genre - thrillers should be intense, comedies light, dramas emotional. The emoji should be specific to the film's theme, not generic.`,
+Use simple English. Keep it short. Match the mood to the genre.`,
         },
         {
           role: 'user',
@@ -347,11 +347,11 @@ export async function actionGenerateReview(
   if (!openai) {
     // Fallback reviews based on rating
     const fallbacks: Record<number, string[]> = {
-      5: ["An absolute masterpiece. One of the best films I've ever seen.", "Perfection. This is why I love cinema."],
-      4: ["Really enjoyed this one. Highly recommended.", "Great film with memorable moments."],
-      3: ["Decent watch. Has its moments but nothing special.", "It was okay. Worth a watch if you're into the genre."],
-      2: ["Not my cup of tea. Had potential but fell flat.", "Disappointing. Expected more from this one."],
-      1: ["Struggled to finish. Not recommended.", "Save your time. This one misses the mark completely."],
+      5: ["Loved every minute. One of my favorites now.", "Amazing film. Everyone should see this."],
+      4: ["Really liked this one. Would watch again.", "Great film with some really good moments."],
+      3: ["It was okay. Some good parts, some slow.", "Worth watching once if you like this type."],
+      2: ["Not for me. Had some good ideas but missed.", "Expected more. Kind of boring."],
+      1: ["Hard to finish. Would not recommend.", "Not good. Save your time."],
     };
     const ratingKey = Math.round(rating) as 1 | 2 | 3 | 4 | 5;
     const options = fallbacks[ratingKey] || fallbacks[3];
@@ -368,21 +368,21 @@ export async function actionGenerateReview(
       messages: [
         {
           role: 'system',
-          content: `You are a film reviewer. Generate a short, personal movie review (2-3 sentences, max 200 characters) based on the user's rating and optional keywords.
+          content: `You write short film reviews. Write 1-2 simple sentences (max 150 characters).
 
 Writing styles:
-- casual: Friendly, conversational, like texting a friend
-- critic: Professional, analytical, uses film terminology
-- poetic: Lyrical, metaphorical, emotionally evocative
-- humorous: Witty, playful, uses clever wordplay
+- casual: Like talking to a friend
+- critic: More serious, about the film quality
+- poetic: Beautiful words, emotional
+- humorous: Funny and playful
 
 Return ONLY a JSON object:
 {
-  "review": "string - the review text",
+  "review": "string - the review",
   "style": "string - the style used"
 }
 
-Match the tone to the rating: 5★ = enthusiastic, 4★ = positive, 3★ = balanced, 2★ = disappointed, 1★ = critical.`,
+Use simple English words. Match tone to rating: 5★ = loved it, 4★ = liked it, 3★ = it was okay, 2★ = didn't like it, 1★ = bad.`,
         },
         {
           role: 'user',
@@ -474,7 +474,7 @@ export async function actionGetRecommendations(
       messages: [
         {
           role: 'system',
-          content: `You are a film recommendation expert. Based on the user's watched and rated films, suggest 5 films they would likely enjoy that they haven't seen yet.
+          content: `You suggest films to watch. Based on what the user liked, suggest 5 films they might enjoy.
 
 Return ONLY a JSON object:
 {
@@ -482,19 +482,18 @@ Return ONLY a JSON object:
     {
       "title": "Film Title",
       "year": 2020,
-      "reason": "Why they'll love it (1 sentence)",
+      "reason": "Why they might like it (short, simple sentence)",
       "matchScore": 85
     }
   ],
-  "analysis": "Brief analysis of their taste (1-2 sentences)"
+  "analysis": "What kind of films they seem to like (1 simple sentence)"
 }
 
 Rules:
-- Recommend REAL films only
-- Don't recommend films from the exclude list
-- Match recommendations to their apparent taste patterns
-- Higher matchScore = better fit (50-100 range)
-- Vary recommendations: mix popular and hidden gems`,
+- Only suggest real films
+- Don't suggest films from the exclude list
+- Mix popular films and hidden gems
+- Use simple English`,
         },
         {
           role: 'user',
@@ -576,14 +575,14 @@ export async function actionGetWrappedInsights(
     return {
       success: true,
       data: {
-        personality: `A dedicated cinephile who watched ${data.totalFilms} films this year. Your taste is uniquely yours!`,
+        personality: `You watched ${data.totalFilms} films this year. That's a lot of movie nights! Your taste is special.`,
         spiritAnimal: {
           director: 'Christopher Nolan',
-          reason: 'You appreciate complex storytelling and visual spectacle',
+          reason: 'You like films that make you think and look amazing',
         },
-        prediction2026: "You'll discover a new favorite director and rewatch at least one classic.",
-        roast: "Your watchlist is longer than your attention span. But hey, at least you have goals!",
-        compliment: "Your commitment to cinema is inspiring. Keep exploring!",
+        prediction2026: "You'll find a new favorite director and watch some old classics again.",
+        roast: "Your watchlist is longer than your free time. But hey, dreams are free!",
+        compliment: "You really love films and it shows. Keep watching!",
       },
     };
   }
@@ -595,18 +594,18 @@ export async function actionGetWrappedInsights(
       messages: [
         {
           role: 'system',
-          content: `You are a witty film analyst creating personalized Wrapped insights. Be creative, fun, and slightly playful.
+          content: `You create fun film year summaries. Be friendly and playful. Use simple English.
 
 Return ONLY a JSON object:
 {
-  "personality": "A 2-sentence personality description based on their film taste",
+  "personality": "2 simple sentences about what kind of film fan they are",
   "spiritAnimal": {
-    "director": "Name of a director that matches their vibe",
-    "reason": "Why this director matches them (1 sentence)"
+    "director": "A director that fits their taste",
+    "reason": "Why this director fits them (simple sentence)"
   },
-  "prediction2026": "A fun prediction for their 2026 film journey (1 sentence)",
-  "roast": "A playful, friendly roast about their film habits (1 sentence, keep it light!)",
-  "compliment": "A genuine compliment about their film taste (1 sentence)"
+  "prediction2026": "A fun guess about their 2026 film watching (simple sentence)",
+  "roast": "A friendly joke about their film habits (keep it nice and simple!)",
+  "compliment": "Something nice about their film taste (simple sentence)"
 }`,
         },
         {
@@ -723,23 +722,23 @@ export async function actionAnalyzeTaste(
       messages: [
         {
           role: 'system',
-          content: `You are a film taste analyst. Analyze the user's viewing history and provide deep insights.
+          content: `You analyze someone's film taste and talk directly to them. Use "you" and "your". Use simple English.
 
 Return ONLY a JSON object:
 {
-  "dna": "2-3 sentence description of their 'Cinematic DNA' - their unique taste profile",
-  "patterns": ["Pattern 1", "Pattern 2", ...], // Up to 5 hidden patterns in their viewing
+  "dna": "2-3 simple sentences about what makes YOUR film taste special (talk to the user directly)",
+  "patterns": ["Pattern 1", "Pattern 2", ...], // Up to 5 things you notice about what YOU watch
   "filmSoulmate": {
     "director": "Director name",
-    "reason": "Why this director matches their taste"
+    "reason": "Why this director fits YOUR taste (simple sentence, talk to user)"
   },
-  "blindSpots": ["Blind spot 1", ...], // Genres/types they're missing, up to 3
-  "quirks": ["Quirk 1", ...], // Unique/interesting aspects of their taste, up to 3
-  "criticScore": 75, // 1-100, how critical they are (100 = very harsh rater)
-  "mainstreamScore": 50 // 1-100, how mainstream vs niche their taste is
+  "blindSpots": ["Thing you might be missing", ...], // Types of films YOU don't watch, up to 3
+  "quirks": ["Interesting thing about you", ...], // Fun things about YOUR taste, up to 3
+  "criticScore": 75, // 1-100, how hard YOU rate films (100 = very strict)
+  "mainstreamScore": 50 // 1-100, popular films vs rare films
 }
 
-Be specific, insightful, and occasionally witty.`,
+Always use "you" and "your". Be friendly and use simple words.`,
         },
         {
           role: 'user',
