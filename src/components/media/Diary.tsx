@@ -251,14 +251,14 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                       <ChevronDown className="w-3 h-3 text-zinc-500" />
                     </motion.button>
                     
-                    {/* Watch history dropdown with add rewatch option - Glass style */}
+                    {/* Watch history dropdown with add rewatch option - Solid style */}
                     <AnimatePresence>
                       {showRewatchDates && (
                         <motion.div
                           initial={{ opacity: 0, y: -5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
-                          className="absolute right-0 top-full mt-2 z-20 glass-heavy rounded-xl shadow-xl w-[300px] overflow-hidden"
+                          className="absolute right-0 top-full mt-2 z-20 rounded-xl shadow-xl w-[300px] overflow-hidden bg-zinc-900 border border-white/10"
                         >
                           {/* Add new watch section */}
                           <div className="p-3 border-b border-white/[0.06]">
