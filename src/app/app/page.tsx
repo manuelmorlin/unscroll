@@ -130,7 +130,7 @@ export default function AppPage() {
             <div className="flex gap-2 mb-5 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
               {[
                 { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
-                { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '🎯' },
+                { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '�️' },
                 { id: 'watching' as ListFilter, label: 'Watching', emoji: '👀' },
                 { id: 'watched' as ListFilter, label: 'Watched', emoji: '✅' },
               ].map(({ id, label, emoji }) => (
