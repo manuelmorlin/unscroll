@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCw, Film, ChevronRight, AlertCircle, Plus, X, Loader2, Check, Clock, Clapperboard, Globe, FileText, Users } from 'lucide-react';
+import { Sparkles, RefreshCw, Film, ChevronRight, AlertCircle, Plus, X, Loader2, Check, Clock, Clapperboard, Globe, FileText, Users, Tv } from 'lucide-react';
 import Image from 'next/image';
 import { actionGetRecommendations } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails } from '@/lib/actions/tmdb';
@@ -16,6 +16,12 @@ interface Recommendation {
   matchScore: number;
 }
 
+interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
 interface MovieDetails {
   title: string;
   year: number;
@@ -26,6 +32,7 @@ interface MovieDetails {
   duration: string;
   poster_url: string | null;
   original_language: string;
+  watch_providers: WatchProvider[];
 }
 
 interface RecommendationsProps {
@@ -105,6 +112,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
             duration: detailsResult.data.duration,
             poster_url: detailsResult.data.poster_url,
             original_language: detailsResult.data.original_language,
+            watch_providers: detailsResult.data.watch_providers,
           });
         }
       }
@@ -131,6 +139,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
       year: movieDetails.year,
       poster_url: movieDetails.poster_url,
       original_language: movieDetails.original_language,
+      watch_providers: movieDetails.watch_providers,
       status: 'unwatched',
     });
 
@@ -313,7 +322,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
                         Cast
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {movieDetails.cast.slice(0, 6).map((actor, i) => (
+                        {movieDetails.cast.map((actor, i) => (
                           <span
                             key={i}
                             className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 transition-colors"
@@ -322,6 +331,38 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Watch Providers */}
+                  {movieDetails.watch_providers && movieDetails.watch_providers.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-zinc-300 mb-3 flex items-center gap-2">
+                        <Tv className="w-4 h-4 text-zinc-500" />
+                        Where to Watch
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {movieDetails.watch_providers.map((provider) => (
+                          <div
+                            key={provider.provider_id}
+                            className="flex items-center gap-2 px-3 py-2 bg-zinc-800 rounded-lg"
+                            title={provider.provider_name}
+                          >
+                            {provider.logo_path && (
+                              <Image
+                                src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
+                                alt={provider.provider_name}
+                                width={24}
+                                height={24}
+                                className="rounded"
+                                unoptimized
+                              />
+                            )}
+                            <span className="text-sm text-zinc-300">{provider.provider_name}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2">Streaming availability for Italy</p>
                     </div>
                   )}
 

@@ -482,7 +482,7 @@ Return ONLY a JSON object:
     {
       "title": "Film Title",
       "year": 2020,
-      "reason": "Why they might like it (short, simple sentence)",
+      "reason": "Because you liked [Film Name] - short reason why it's similar",
       "matchScore": 85
     }
   ],
@@ -493,7 +493,8 @@ Rules:
 - Only suggest real films
 - Don't suggest films from the exclude list
 - Mix popular films and hidden gems
-- Use simple English`,
+- Use simple English
+- IMPORTANT: Always start reason with "Because you liked [Film Name]" or "Because you watched [Film Name]" - reference a specific film from their list that connects to your suggestion`,
         },
         {
           role: 'user',
