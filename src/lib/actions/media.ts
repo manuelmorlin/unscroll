@@ -278,19 +278,23 @@ export async function updateMediaStatus(
   status: MediaStatus,
   watchedAt?: string | null // Optional: full date ISO string, year-only string like "2024", or null/undefined for no date
 ): Promise<MediaActionResult> {
-  // If marking as watched, set watched_at date
+  // If marking as watched, set watched_at date and reset rewatch counters
   if (status === 'watched') {
     return updateMediaItem(id, { 
       status, 
-      watched_at: watchedAt !== undefined ? watchedAt : new Date().toISOString() 
+      watched_at: watchedAt !== undefined ? watchedAt : new Date().toISOString(),
+      rewatch_count: 0,
+      rewatch_dates: [],
     });
   }
-  // If moving away from watched, clear watched_at, rating and review
+  // If moving away from watched, clear watched_at, rating, review and rewatch data
   return updateMediaItem(id, { 
     status,
     watched_at: null,
     user_rating: null,
     user_review: null,
+    rewatch_count: 0,
+    rewatch_dates: [],
   });
 }
 
