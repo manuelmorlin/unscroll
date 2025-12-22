@@ -212,7 +212,7 @@ export function Stats() {
         className="text-center mb-8"
       >
         <h2 className="text-xl font-bold text-white mb-1">Your Film Stats</h2>
-        <p className="text-sm text-zinc-500">Letterboxd-style statistics</p>
+        <p className="text-sm text-zinc-500">Numbers and insights about your watching habits</p>
       </motion.div>
 
       {/* Main Stats Grid */}
