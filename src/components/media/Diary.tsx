@@ -63,6 +63,28 @@ function formatMonth(dateString: string): string {
   });
 }
 
+// Get the most recent watch date (either watched_at or latest rewatch_date)
+function getMostRecentWatchDate(media: MediaItem): string | null {
+  const dates: Date[] = [];
+  
+  if (media.watched_at) {
+    dates.push(new Date(media.watched_at));
+  }
+  
+  if (media.rewatch_dates && media.rewatch_dates.length > 0) {
+    media.rewatch_dates.forEach(d => dates.push(new Date(d)));
+  }
+  
+  if (dates.length === 0) return null;
+  
+  // Find the most recent date
+  const mostRecent = dates.reduce((latest, current) => 
+    current > latest ? current : latest
+  );
+  
+  return mostRecent.toISOString();
+}
+
 interface DiaryCardProps {
   media: MediaItem;
   onRatingChange: (id: string, rating: number) => void;
@@ -234,9 +256,9 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                       title="Click to edit"
                     >
                       <Calendar className="w-3 h-3" />
-                      <span className="hidden sm:inline">{formatDate(media.watched_at)}</span>
+                      <span className="hidden sm:inline">{formatDate(getMostRecentWatchDate(media))}</span>
                       <span className="sm:hidden">
-                        {media.watched_at ? new Date(media.watched_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                        {getMostRecentWatchDate(media) ? new Date(getMostRecentWatchDate(media)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                       </span>
                       <Pencil className="w-2.5 h-2.5 opacity-50" />
                     </button>
@@ -440,13 +462,14 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
   );
 }
 
-// Group items by month
+// Group items by month (using most recent watch date)
 function groupByMonth(items: MediaItem[]): Record<string, MediaItem[]> {
   const groups: Record<string, MediaItem[]> = {};
   
   items.forEach((item) => {
-    const dateKey = item.watched_at 
-      ? formatMonth(item.watched_at)
+    const mostRecentDate = getMostRecentWatchDate(item);
+    const dateKey = mostRecentDate 
+      ? formatMonth(mostRecentDate)
       : 'Unknown';
     
     if (!groups[dateKey]) {
@@ -462,13 +485,15 @@ export function Diary() {
   const { mediaItems, isLoading, error } = useMediaItems();
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
-  // Filter only watched items and sort by watched_at (newest first)
+  // Filter only watched items and sort by most recent watch date (newest first)
   const watchedItems = mediaItems
     .filter((item) => item.status === 'watched')
     .sort((a, b) => {
-      const dateA = a.watched_at ? new Date(a.watched_at).getTime() : 0;
-      const dateB = b.watched_at ? new Date(b.watched_at).getTime() : 0;
-      return dateB - dateA;
+      const dateA = getMostRecentWatchDate(a);
+      const dateB = getMostRecentWatchDate(b);
+      const timeA = dateA ? new Date(dateA).getTime() : 0;
+      const timeB = dateB ? new Date(dateB).getTime() : 0;
+      return timeB - timeA;
     });
 
   const groupedItems = groupByMonth(watchedItems);
