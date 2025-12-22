@@ -376,7 +376,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       type="text"
                       value={genre}
                       onChange={(e) => setGenre(e.target.value)}
-                      placeholder="e.g., Sci-Fi, Thriller"
+                      placeholder="e.g., Sci-Fi/Thriller"
                       className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                     />
                   </div>
