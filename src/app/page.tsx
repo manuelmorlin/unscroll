@@ -125,7 +125,7 @@ export default async function HomePage() {
               <div className="relative">
                 {/* Mock Slot Machine Reels */}
                 <div className="flex justify-center gap-4 mb-8">
-                  {['🎬', '🍿', '🎭'].map((emoji, i) => (
+                  {['💤', '⏳', '🏛️'].map((emoji, i) => (
                     <div 
                       key={i}
                       className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center text-4xl md:text-5xl border border-zinc-700 shadow-2xl shadow-black/50"
@@ -146,7 +146,6 @@ export default async function HomePage() {
                     <span className="inline-block w-8 h-px bg-zinc-700" />
                   </p>
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">✨ Inception ✨</h3>
-                  <p className="text-yellow-400 italic text-lg">&ldquo;Trust me, you&apos;ll forget to breathe during the last 20 minutes.&rdquo;</p>
                 </div>
               </div>
             </div>
@@ -176,19 +175,19 @@ export default async function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
-                �
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
+                🎥
               </div>
               <h3 className="text-xl font-semibold mb-3">Smart Watchlist</h3>
               <p className="text-zinc-400 leading-relaxed">
-                Add films you want to watch. Our AI auto-fills genres, cast, plot, and more from TMDB.
+                Add films you want to watch. Our AI auto-fills genres, cast, plot, and more.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
                 🎰
               </div>
               <h3 className="text-xl font-semibold mb-3">Decision Slot Machine</h3>
@@ -198,8 +197,8 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
                 📖
               </div>
               <h3 className="text-xl font-semibold mb-3">Personal Film Diary</h3>
@@ -209,8 +208,8 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
                 ✨
               </div>
               <h3 className="text-xl font-semibold mb-3">AI-Powered Insights</h3>
@@ -220,8 +219,8 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 5 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
                 🎁
               </div>
               <h3 className="text-xl font-semibold mb-3">Year Wrapped</h3>
@@ -231,13 +230,13 @@ export default async function HomePage() {
             </div>
 
             {/* Feature 6 */}
-            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl">
                 🎬
               </div>
               <h3 className="text-xl font-semibold mb-3">Rich Film Details</h3>
               <p className="text-zinc-400 leading-relaxed">
-                Complete info from TMDB: posters, cast, runtime, genres, and plot summaries for every film.
+                Complete info for every film: posters, cast, runtime, genres, and plot summaries.
               </p>
             </div>
           </div>
