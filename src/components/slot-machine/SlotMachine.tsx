@@ -124,11 +124,24 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   });
 
   // Calculate available genres from unwatched films (reactive)
+  // Split comma-separated genres into individual genres
   const availableGenres = [...new Set(
     unwatchedItems
-      .map(item => item.genre)
-      .filter((genre): genre is string => genre !== null && genre !== undefined)
+      .flatMap(item => {
+        if (!item.genre) return [];
+        // Split by comma and trim each genre
+        return item.genre.split(',').map(g => g.trim()).filter(g => g.length > 0);
+      })
   )].sort();
+
+  // Helper to get emoji for a genre (case-insensitive matching)
+  const getGenreEmoji = (genre: string): string => {
+    // Direct match
+    if (GENRE_EMOJIS[genre]) return GENRE_EMOJIS[genre];
+    // Case-insensitive match
+    const key = Object.keys(GENRE_EMOJIS).find(k => k.toLowerCase() === genre.toLowerCase());
+    return key ? GENRE_EMOJIS[key] : '🎬';
+  };
 
   // Reset selected genre if it's no longer available
   useEffect(() => {
@@ -501,7 +514,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                               : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                           } disabled:opacity-50`}
                         >
-                          {GENRE_EMOJIS[genre] || '🎬'} {genre}
+                          {getGenreEmoji(genre)} {genre}
                         </button>
                       ))}
                       </div>
