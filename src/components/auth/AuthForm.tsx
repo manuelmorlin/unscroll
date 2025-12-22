@@ -279,38 +279,38 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto relative z-10">
+    <div className="w-full max-w-md mx-auto relative z-10 max-h-screen sm:max-h-none overflow-y-auto sm:overflow-visible scrollbar-hide">
       {/* Back to Home - Glass style */}
       <Link 
         href="/"
-        className="inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors mb-4 sm:mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
       </Link>
 
       {/* Logo & Title - Ethereal */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-4 sm:mb-10">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', duration: 0.5 }}
-          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] border border-red-500/30"
+          className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl mb-3 sm:mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] border border-red-500/30"
         >
           <svg
             viewBox="0 0 24 24"
             fill="none"
-            className="w-10 h-10 text-amber-400"
+            className="w-7 h-7 sm:w-10 sm:h-10 text-amber-400"
             stroke="currentColor"
             strokeWidth="1.5"
           >
             <path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
           </svg>
         </motion.div>
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-1 sm:mb-2">
           <span className="gold-shimmer">Unscroll</span>
         </h1>
-        <p className="text-zinc-400 font-light">
+        <p className="text-zinc-400 font-light text-sm sm:text-base">
           🍿 Your cinema experience awaits
         </p>
       </div>
@@ -321,7 +321,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           whileTap={{ scale: 0.98 }}
           onClick={handleDemoLogin}
           disabled={isDemoLoading}
-          className="w-full mb-6 py-4 bg-gradient-to-b from-violet-500 to-purple-700 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_25px_rgba(139,92,246,0.25)]"
+          className="w-full mb-4 sm:mb-6 py-3 sm:py-4 bg-gradient-to-b from-violet-500 to-purple-700 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_25px_rgba(139,92,246,0.25)]"
         >
           {isDemoLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -337,7 +337,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
       {/* Divider - Subtle */}
       {mode !== 'forgot' && (
-        <div className="relative mb-6">
+        <div className="relative mb-4 sm:mb-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-white/[0.06]" />
           </div>
@@ -349,7 +349,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
       {/* Mode Toggle - Glass style */}
       {mode !== 'forgot' && (
-        <div className="flex glass rounded-xl p-1 mb-6">
+        <div className="flex glass rounded-xl p-1 mb-4 sm:mb-6">
           {(['login', 'register'] as const).map((m) => (
             <motion.button
               key={m}
@@ -369,7 +369,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
       {/* Forgot Password Header */}
       {mode === 'forgot' && (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <h2 className="text-xl font-semibold text-white mb-2">🔑 Reset Password</h2>
           <p className="text-sm text-zinc-400">
             Enter your email and we&apos;ll send you a link to reset your password.
