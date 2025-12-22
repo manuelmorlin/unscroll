@@ -152,7 +152,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
       animate={{ opacity: 1, y: 0 }}
       className="group"
     >
-      <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800/50 rounded-xl overflow-hidden hover:border-yellow-600/30 transition-colors">
+      <div className="glass-card rounded-2xl overflow-hidden transition-all duration-300 hover:border-amber-500/20">
         {/* Main Row */}
         <div className="p-3 sm:p-4">
           <div className="flex items-start gap-3 sm:gap-4">
@@ -160,7 +160,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
             {media.poster_url ? (
               <button
                 onClick={() => onViewDetails(media)}
-                className="relative flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg hover:border-yellow-500/50 transition-colors cursor-pointer"
+                className="relative flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-xl overflow-hidden border border-white/[0.08] shadow-lg transition-transform hover:scale-105 cursor-pointer"
               >
                 <Image
                   src={media.poster_url}
@@ -173,7 +173,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
             ) : (
               <button
                 onClick={() => onViewDetails(media)}
-                className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl hover:border-yellow-500/50 transition-colors cursor-pointer"
+                className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.06] flex items-center justify-center text-xl sm:text-2xl transition-transform hover:scale-105 cursor-pointer"
               >
                 {genreEmoji}
               </button>
@@ -187,7 +187,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     onClick={() => onViewDetails(media)}
                     className="text-left"
                   >
-                    <h3 className="text-base sm:text-lg font-semibold text-white truncate hover:text-yellow-400 transition-colors">
+                    <h3 className="text-base sm:text-lg font-semibold text-white truncate hover:text-amber-400 transition-colors">
                       {media.title}
                     </h3>
                   </button>
@@ -195,19 +195,19 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     {media.year && <span>{media.year}</span>}
                     {media.duration && (
                       <>
-                        <span className="text-zinc-600">•</span>
+                        <span className="text-white/20">•</span>
                         <span>{media.duration}</span>
                       </>
                     )}
                     {media.genre && (
                       <>
-                        <span className="text-zinc-600">•</span>
+                        <span className="text-white/20">•</span>
                         <span className="truncate max-w-[100px] sm:max-w-[150px]">{formatGenre(media.genre)}</span>
                       </>
                     )}
-                    {/* Views badge - shows total watch count */}
-                    <span className="text-zinc-600">•</span>
-                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${rewatchCount > 0 ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700/50 text-zinc-400'}`}>
+                    {/* Views badge - Glass style */}
+                    <span className="text-white/20">•</span>
+                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${rewatchCount > 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'glass text-zinc-400'}`}>
                       <Film className="w-3 h-3" />
                       {totalViews === 1 ? '1×' : `${totalViews}×`}
                     </span>
@@ -216,7 +216,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
                 {/* Watch Date - display only */}
                 <div className="flex-shrink-0 text-right">
-                  <div className="flex items-center gap-1 text-xs text-zinc-400">
+                  <div className="flex items-center gap-1 text-xs text-zinc-500">
                     <Calendar className="w-3 h-3" />
                     <span className="hidden sm:inline">{formatDate(getMostRecentWatchDate(media))}</span>
                     <span className="sm:hidden">
@@ -227,64 +227,66 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
               </div>
 
               {/* Rating Row */}
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800/50">
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06]">
                 <div className="flex items-center gap-2">
                   {media.user_rating ? (
                     <StarRatingCompact value={media.user_rating} />
                   ) : (
-                    <span className="text-xs text-zinc-500 italic">No rating yet</span>
+                    <span className="text-xs text-zinc-600 italic">No rating yet</span>
                   )}
                 </div>
                 
                 <div className="flex items-center gap-1.5">
                   {/* Watch count with history dropdown */}
                   <div className="relative">
-                    <button
+                    <motion.button
                       onClick={() => setShowRewatchDates(!showRewatchDates)}
-                      className="flex items-center gap-1.5 px-2 py-1 bg-zinc-800/80 rounded-lg border border-zinc-700/50 text-sm text-white hover:bg-zinc-700/50 transition-colors"
+                      className="flex items-center gap-1.5 px-2 py-1 glass rounded-lg text-sm text-white transition-colors"
                       title="View watch history"
+                      whileTap={{ scale: 0.95 }}
                     >
                       <Film className="w-3.5 h-3.5 text-zinc-400" />
                       <span className="font-medium">{totalViews}</span>
-                      <span className="text-zinc-400 text-xs">{totalViews === 1 ? 'view' : 'views'}</span>
+                      <span className="text-zinc-500 text-xs">{totalViews === 1 ? 'view' : 'views'}</span>
                       <ChevronDown className="w-3 h-3 text-zinc-500" />
-                    </button>
+                    </motion.button>
                     
-                    {/* Watch history dropdown with add rewatch option */}
+                    {/* Watch history dropdown with add rewatch option - Glass style */}
                     <AnimatePresence>
                       {showRewatchDates && (
                         <motion.div
                           initial={{ opacity: 0, y: -5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
-                          className="absolute right-0 top-full mt-2 z-20 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl w-[300px]"
+                          className="absolute right-0 top-full mt-2 z-20 glass-heavy rounded-xl shadow-xl w-[300px] overflow-hidden"
                         >
                           {/* Add new watch section */}
-                          <div className="p-3 border-b border-zinc-700 bg-zinc-800/80">
+                          <div className="p-3 border-b border-white/[0.06]">
                             <p className="text-xs font-medium text-zinc-300 mb-2">➕ Add another view</p>
                             <div className="flex gap-2">
                               <input
                                 type="date"
                                 value={newRewatchDate}
                                 onChange={(e) => setNewRewatchDate(e.target.value)}
-                                className="flex-1 text-sm bg-zinc-900 border border-zinc-600 rounded px-2 py-1.5 text-white"
+                                className="input-ethereal flex-1 text-sm px-2 py-1.5 text-white [color-scheme:dark]"
                               />
-                              <button
+                              <motion.button
                                 onClick={handleRewatch}
                                 disabled={isRewatching}
-                                className="text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
+                                whileTap={{ scale: 0.95 }}
+                                className="text-xs bg-gradient-to-b from-emerald-400 to-emerald-600 text-black px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
                               >
                                 {isRewatching ? '...' : 'Add'}
-                              </button>
+                              </motion.button>
                             </div>
                           </div>
                           
                           {/* Watch history */}
                           <div className="p-3">
                             <p className="text-xs font-medium text-zinc-300 mb-2">📅 Watch history</p>
-                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto scrollbar-yellow">
+                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto scrollbar-hide">
                               {/* First watch (original) */}
-                              <div className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded">
+                              <div className="flex items-center text-sm h-8 px-2 bg-white/[0.03] rounded-lg">
                                 <span className="flex-1 text-zinc-300 truncate">
                                   {formatDate(media.watched_at)}
                                 </span>
@@ -293,18 +295,19 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                               </div>
                               {/* Rewatches */}
                               {rewatchDates.map((date, index) => (
-                                <div key={index} className="flex items-center text-sm h-8 px-2 bg-zinc-900/50 rounded group">
+                                <div key={index} className="flex items-center text-sm h-8 px-2 bg-white/[0.03] rounded-lg group">
                                   <span className="flex-1 text-zinc-300 truncate">
                                     {formatDate(date)}
                                   </span>
                                   <span className="text-xs text-zinc-500 w-10 text-right">{index + 2}{index === 0 ? 'nd' : index === 1 ? 'rd' : 'th'}</span>
-                                  <button
+                                  <motion.button
                                     onClick={() => handleRemoveRewatch(index)}
                                     className="w-6 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
                                     title="Remove this watch"
+                                    whileTap={{ scale: 0.9 }}
                                   >
                                     <Minus className="w-3 h-3" />
-                                  </button>
+                                  </motion.button>
                                 </div>
                               ))}
                             </div>
@@ -312,7 +315,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                           
                           <button
                             onClick={() => setShowRewatchDates(false)}
-                            className="w-full text-xs text-zinc-500 hover:text-white py-2 border-t border-zinc-700 transition-colors"
+                            className="w-full text-xs text-zinc-500 hover:text-white py-2 border-t border-white/[0.06] transition-colors"
                           >
                             Close
                           </button>
@@ -333,8 +336,8 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
               {/* Review Preview */}
               {!isExpanded && media.user_review && (
-                <div className="mt-2 pt-2 border-t border-zinc-800/30">
-                  <p className="text-xs text-zinc-400 italic line-clamp-2">
+                <div className="mt-2 pt-2 border-t border-white/[0.04]">
+                  <p className="text-xs text-zinc-500 italic line-clamp-2">
                     &quot;{media.user_review}&quot;
                   </p>
                 </div>
@@ -343,7 +346,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
           </div>
         </div>
 
-        {/* Expanded Rating Section */}
+        {/* Expanded Rating Section - Ethereal style */}
         <AnimatePresence>
           {isExpanded && (
             <motion.div
@@ -353,7 +356,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="px-4 pb-4 pt-2 border-t border-zinc-800/50 bg-zinc-900/50">
+              <div className="px-4 pb-4 pt-2 border-t border-white/[0.06] bg-white/[0.02]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
                     <p className="text-sm text-zinc-400 mb-2">How was it?</p>
@@ -370,17 +373,18 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                 </div>
                 
                 {/* Review textarea */}
-                <div className="mt-4 pt-3 border-t border-zinc-800/30">
+                <div className="mt-4 pt-3 border-t border-white/[0.04]">
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm text-zinc-400">✍️ Your thoughts</label>
                     {media.user_rating && (
-                      <button
+                      <motion.button
                         onClick={() => setShowReviewGenerator(true)}
-                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 bg-gradient-to-r from-purple-600/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-all"
+                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 bg-gradient-to-b from-purple-500/80 to-pink-500/80 text-white rounded-lg transition-all shadow-[0_0_10px_rgba(168,85,247,0.2)]"
+                        whileTap={{ scale: 0.95 }}
                       >
                         <Sparkles className="w-3 h-3" />
                         AI Generate
-                      </button>
+                      </motion.button>
                     )}
                   </div>
                   <textarea
@@ -389,14 +393,14 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     onBlur={handleReviewSave}
                     placeholder="Write your review..."
                     rows={3}
-                    className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 resize-none transition-all"
+                    className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600 resize-none"
                   />
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-zinc-600">
                       {review.length > 0 ? `${review.length} characters` : 'Auto-saves when you click away'}
                     </span>
                     {isSavingReview && (
-                      <span className="text-xs text-yellow-500">Saving...</span>
+                      <span className="text-xs text-amber-400">Saving...</span>
                     )}
                   </div>
                 </div>
@@ -505,7 +509,7 @@ export function Diary() {
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className="h-28 bg-zinc-900/50 border border-zinc-800/30 rounded-xl animate-pulse"
+            className="h-28 glass-card rounded-2xl animate-pulse"
           />
         ))}
       </div>
@@ -514,7 +518,7 @@ export function Diary() {
 
   if (error) {
     return (
-      <div className="text-center py-8">
+      <div className="glass-card rounded-2xl p-8 text-center">
         <p className="text-zinc-400">{error}</p>
       </div>
     );
@@ -522,32 +526,36 @@ export function Diary() {
 
   if (watchedItems.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-5xl mb-4">📔</div>
-        <p className="text-zinc-400 mb-2">Your diary is empty</p>
+      <motion.div 
+        className="glass-card rounded-2xl p-12 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="text-6xl mb-4">📔</div>
+        <p className="text-white text-lg mb-2">Your diary is empty</p>
         <p className="text-zinc-500 text-sm">
           Watch some movies and they&apos;ll appear here
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <div>
-      {/* Stats Header */}
-      <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-6 p-4 bg-zinc-900/50 border border-zinc-800/50 rounded-xl">
+      {/* Stats Header - Glass style */}
+      <div className="glass rounded-2xl flex flex-wrap items-center gap-3 sm:gap-6 mb-6 p-4">
         <div className="flex items-center gap-2">
-          <Film className="w-5 h-5 text-yellow-500" />
+          <Film className="w-5 h-5 text-amber-400" />
           <div>
             <p className="text-2xl font-bold text-white">{totalWatched}</p>
             <p className="text-xs text-zinc-500">Films watched</p>
           </div>
         </div>
         
-        <div className="w-px h-10 bg-zinc-800 hidden sm:block" />
+        <div className="w-px h-10 bg-white/[0.06] hidden sm:block" />
         
         <div className="flex items-center gap-2">
-          <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+          <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
           <div>
             <p className="text-2xl font-bold text-white">{ratedItems.length}</p>
             <p className="text-xs text-zinc-500">Rated</p>
@@ -556,7 +564,7 @@ export function Diary() {
         
         {avgRating && (
           <>
-            <div className="w-px h-10 bg-zinc-800 hidden sm:block" />
+            <div className="w-px h-10 bg-white/[0.06] hidden sm:block" />
             <div className="flex items-center gap-2">
               <span className="text-xl">⭐</span>
               <div>
@@ -572,20 +580,20 @@ export function Diary() {
       <div className="space-y-8">
         {monthKeys.map((month) => (
           <div key={month}>
-            {/* Month Header */}
+            {/* Month Header - Glass pill */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full">
-                <Calendar className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm font-medium text-yellow-400">{month}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                <Calendar className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-medium text-amber-400">{month}</span>
               </div>
-              <div className="flex-1 h-px bg-gradient-to-r from-yellow-500/20 to-transparent" />
+              <div className="flex-1 h-px bg-gradient-to-r from-amber-500/20 to-transparent" />
               <span className="text-xs text-zinc-500">
                 {groupedItems[month].length} film{groupedItems[month].length !== 1 ? 's' : ''}
               </span>
             </div>
 
             {/* Month Items */}
-            <div className="space-y-3 pl-2 border-l-2 border-zinc-800/50 ml-4">
+            <div className="space-y-3 pl-2 border-l-2 border-white/[0.06] ml-4">
               {groupedItems[month].map((media) => (
                 <DiaryCard
                   key={media.id}

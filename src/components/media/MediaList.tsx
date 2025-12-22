@@ -79,7 +79,7 @@ const statusColors = {
 };
 
 // ==============================================
-// EDIT MODAL
+// EDIT MODAL - iOS 26.2 ETHEREAL STYLE
 // ==============================================
 
 interface EditModalProps {
@@ -121,37 +121,44 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center modal-backdrop"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-red-900/30 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl shadow-red-900/20"
+        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto"
       >
+        {/* Handle bar for mobile */}
+        <div className="sm:hidden flex justify-center mb-4">
+          <div className="w-10 h-1 bg-white/20 rounded-full" />
+        </div>
+
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
             <span>✏️</span> Edit Movie
           </h2>
-          <button
+          <motion.button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-white hover:bg-red-900/30 rounded-lg transition-colors"
+            className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+            whileTap={{ scale: 0.9 }}
           >
             <X className="w-5 h-5" />
-          </button>
+          </motion.button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">🎬 Title</label>
+            <label className="block text-sm text-zinc-400 mb-1.5">🎬 Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+              className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600"
               required
             />
           </div>
@@ -159,22 +166,22 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
           {/* Year & Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">📅 Year</label>
+              <label className="block text-sm text-zinc-400 mb-1.5">📅 Year</label>
               <input
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+                className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600"
                 placeholder="2024"
               />
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">⏱️ Duration</label>
+              <label className="block text-sm text-zinc-400 mb-1.5">⏱️ Duration</label>
               <input
                 type="text"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+                className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600"
                 placeholder="2h 30m"
               />
             </div>
@@ -182,56 +189,58 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 
           {/* Genre */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">🎭 Genre</label>
+            <label className="block text-sm text-zinc-400 mb-1.5">🎭 Genre</label>
             <input
               type="text"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+              className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600"
               placeholder="Drama, Thriller"
             />
           </div>
 
           {/* Cast */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">⭐ Cast</label>
+            <label className="block text-sm text-zinc-400 mb-1.5">⭐ Cast</label>
             <input
               type="text"
               value={cast}
               onChange={(e) => setCast(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+              className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600"
               placeholder="Actor 1, Actor 2, Actor 3"
             />
           </div>
 
           {/* Plot */}
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">📝 Plot</label>
+            <label className="block text-sm text-zinc-400 mb-1.5">📝 Plot</label>
             <textarea
               value={plot}
               onChange={(e) => setPlot(e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 resize-none transition-all"
+              className="input-ethereal w-full px-4 py-3 text-white placeholder:text-zinc-600 resize-none"
               placeholder="Brief plot description..."
             />
           </div>
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4">
-            <button
+            <motion.button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+              className="btn-glass px-5 py-2.5 text-zinc-400 rounded-xl"
+              whileTap={{ scale: 0.95 }}
             >
               Cancel
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
+              className="btn-primary px-6 py-2.5 text-white font-semibold rounded-xl disabled:opacity-50"
+              whileTap={{ scale: 0.95 }}
             >
               {isSaving ? 'Saving...' : '✅ Save Changes'}
-            </button>
+            </motion.button>
           </div>
         </form>
       </motion.div>
@@ -240,7 +249,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 }
 
 // ==============================================
-// RATE MODAL - Opens after marking as Watched
+// RATE MODAL - iOS 26.2 ETHEREAL STYLE
 // ==============================================
 
 type DateMode = 'full' | 'year' | 'none';
@@ -327,37 +336,49 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center modal-backdrop"
       onClick={handleClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-green-900/20 max-h-[90vh] overflow-y-auto relative"
+        className="glass-heavy rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-md max-h-[90vh] overflow-y-auto relative"
       >
+        {/* Handle bar for mobile */}
+        <div className="sm:hidden flex justify-center mb-4">
+          <div className="w-10 h-1 bg-white/20 rounded-full" />
+        </div>
+
         {/* Close Button */}
-        <button
+        <motion.button
           onClick={handleClose}
-          className="absolute top-4 right-4 p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+          className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+          whileTap={{ scale: 0.9 }}
           title="Close"
         >
           <X className="w-5 h-5" />
-        </button>
+        </motion.button>
 
         {/* Success Badge */}
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center border border-green-500/30">
-            <Check className="w-8 h-8 text-green-400" />
-          </div>
+          <motion.div 
+            className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-full flex items-center justify-center border border-emerald-500/20"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 0.1 }}
+          >
+            <Check className="w-8 h-8 text-emerald-400" />
+          </motion.div>
         </div>
 
         {/* Title */}
         <h2 className="text-xl font-semibold text-white text-center mb-2">
           🎬 {media.title}
         </h2>
-        <p className="text-sm text-green-400 text-center mb-6">
+        <p className="text-sm text-emerald-400 text-center mb-6">
           Mark as watched
         </p>
 
@@ -367,41 +388,23 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
             📅 When did you watch it?
           </p>
           
-          {/* Date Mode Toggle */}
+          {/* Date Mode Toggle - Pill style */}
           <div className="flex justify-center gap-2 mb-3">
-            <button
-              type="button"
-              onClick={() => setDateMode('full')}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
-                dateMode === 'full'
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-              }`}
-            >
-              Full Date
-            </button>
-            <button
-              type="button"
-              onClick={() => setDateMode('year')}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
-                dateMode === 'year'
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-              }`}
-            >
-              Year Only
-            </button>
-            <button
-              type="button"
-              onClick={() => setDateMode('none')}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
-                dateMode === 'none'
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-              }`}
-            >
-              No Date
-            </button>
+            {(['full', 'year', 'none'] as DateMode[]).map((mode) => (
+              <motion.button
+                key={mode}
+                type="button"
+                onClick={() => setDateMode(mode)}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
+                  dateMode === mode
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-white/[0.03] text-zinc-500 border border-white/[0.06] hover:bg-white/[0.06]'
+                }`}
+                whileTap={{ scale: 0.95 }}
+              >
+                {mode === 'full' ? 'Full Date' : mode === 'year' ? 'Year Only' : 'No Date'}
+              </motion.button>
+            ))}
           </div>
 
           {/* Date Input based on mode */}
@@ -411,7 +414,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
               value={watchedDate}
               onChange={(e) => setWatchedDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 [color-scheme:dark]"
+              className="input-ethereal w-full px-4 py-2.5 text-white text-sm [color-scheme:dark]"
             />
           )}
           {dateMode === 'year' && (
@@ -422,11 +425,11 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
               min="1900"
               max={new Date().getFullYear()}
               placeholder="e.g., 2024"
-              className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 text-center"
+              className="input-ethereal w-full px-4 py-2.5 text-white text-sm text-center"
             />
           )}
           {dateMode === 'none' && (
-            <p className="text-xs text-zinc-500 text-center py-2">
+            <p className="text-xs text-zinc-600 text-center py-2">
               No date will be saved
             </p>
           )}
@@ -435,7 +438,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
         {/* Rating Section */}
         <div className="mb-6">
           <p className="text-sm text-zinc-400 text-center mb-3 flex items-center justify-center gap-2">
-            <Star className="w-4 h-4 text-yellow-500" />
+            <Star className="w-4 h-4 text-amber-500" />
             Rate this film
           </p>
           <div className="flex justify-center">
@@ -457,10 +460,11 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
           >
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-zinc-400">Write a review (optional)</p>
-              <button
+              <motion.button
                 onClick={handleGenerateReview}
                 disabled={isGeneratingReview}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-yellow-500/10 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition-colors disabled:opacity-50 border border-amber-500/20"
+                whileTap={{ scale: 0.95 }}
               >
                 {isGeneratingReview ? (
                   <>
@@ -473,23 +477,24 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
                     AI Generate
                   </>
                 )}
-              </button>
+              </motion.button>
             </div>
             <textarea
               value={review}
               onChange={(e) => setReview(e.target.value)}
               placeholder="What did you think of this film?"
-              className="w-full h-24 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 resize-none"
+              className="input-ethereal w-full h-24 px-4 py-3 text-white text-sm placeholder:text-zinc-600 resize-none"
             />
           </motion.div>
         )}
 
         {/* Action Buttons */}
         <div className="space-y-2">
-          <button
+          <motion.button
             onClick={handleSave}
             disabled={!rating || isSaving}
-            className="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-semibold rounded-xl hover:from-yellow-400 hover:to-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-gradient-to-b from-amber-400 to-amber-600 text-black font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.2)]"
+            whileTap={{ scale: 0.98 }}
           >
             {isSaving ? (
               <>
@@ -502,15 +507,16 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
                 Save {review ? 'Rating & Review' : 'Rating'}
               </>
             )}
-          </button>
+          </motion.button>
           
-          <button
+          <motion.button
             onClick={handleSkip}
             disabled={isSaving}
-            className="w-full py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all text-sm"
+            className="w-full py-2.5 text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl transition-all text-sm"
+            whileTap={{ scale: 0.98 }}
           >
             Skip for now
-          </button>
+          </motion.button>
         </div>
       </motion.div>
     </motion.div>
@@ -518,7 +524,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
 }
 
 // ==============================================
-// MEDIA CARD
+// MEDIA CARD - iOS 26.2 ETHEREAL STYLE
 // ==============================================
 
 interface MediaCardProps {
@@ -538,110 +544,136 @@ function MediaCard({ media, onStatusChange, onDelete, onEdit, onViewDetails }: M
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="group relative overflow-hidden"
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      className="group relative"
     >
-      {/* Main Card */}
-      <div className={`relative bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border rounded-2xl p-3 sm:p-5 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/10 ${status.borderColor} hover:border-red-700/50`}>
-        {/* Decorative gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Main Card - Glass morphism */}
+      <div className="glass-card relative overflow-hidden rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:border-white/[0.1]">
+        {/* Ambient glow based on poster (subtle) */}
+        {media.poster_url && (
+          <div 
+            className="absolute inset-0 opacity-20 blur-3xl -z-10"
+            style={{
+              backgroundImage: `url(${media.poster_url})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        )}
         
         <div className="flex items-start gap-3 sm:gap-4">
-          {/* Poster or Emoji Fallback */}
+          {/* Poster or Emoji Fallback - Enhanced */}
           {media.poster_url ? (
-            <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg overflow-hidden border border-zinc-700/50 shadow-lg">
+            <button
+              onClick={() => onViewDetails(media)}
+              className="flex-shrink-0 w-14 h-20 sm:w-16 sm:h-24 rounded-xl overflow-hidden border border-white/[0.08] shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] transition-transform hover:scale-105"
+            >
               <img
                 src={media.poster_url}
                 alt={media.title}
                 className="w-full h-full object-cover"
               />
-            </div>
+            </button>
           ) : (
-            <div className="flex-shrink-0 w-12 h-16 sm:w-14 sm:h-20 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50 flex items-center justify-center text-xl sm:text-2xl shadow-inner">
+            <button
+              onClick={() => onViewDetails(media)}
+              className="flex-shrink-0 w-14 h-20 sm:w-16 sm:h-24 rounded-xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.06] flex items-center justify-center text-2xl sm:text-3xl transition-transform hover:scale-105"
+            >
               {genreEmoji}
-            </div>
+            </button>
           )}
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 py-0.5">
             {/* Title Row */}
-            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+            <div className="flex items-start justify-between gap-2 mb-2">
               <button
                 onClick={() => onViewDetails(media)}
-                className="text-base sm:text-lg font-semibold text-white truncate leading-tight text-left hover:text-yellow-400 transition-colors"
+                className="text-base sm:text-lg font-semibold text-white truncate leading-tight text-left hover:text-amber-400 transition-colors"
               >
                 {media.title}
               </button>
-              {/* Status Badge */}
-              <span className={`flex-shrink-0 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full ${status.bgColor} ${status.textColor} border ${status.borderColor}`}>
+              {/* Status Badge - Glass style */}
+              <span className={`
+                flex-shrink-0 px-2.5 py-1 text-[10px] sm:text-xs font-medium rounded-full
+                backdrop-blur-sm transition-all
+                ${media.status === 'unwatched' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : ''}
+                ${media.status === 'watching' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : ''}
+                ${media.status === 'watched' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ''}
+              `}>
                 {status.label}
               </span>
             </div>
 
-            {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-xs sm:text-sm text-zinc-400 mb-2 sm:mb-3">
+            {/* Meta Info - Minimal */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-zinc-500 mb-3">
               {media.year && (
-                <span className="flex items-center gap-1">
-                  <span className="text-zinc-600">📅</span>
-                  {media.year}
-                </span>
+                <span>{media.year}</span>
               )}
               {media.duration && (
-                <span className="flex items-center gap-1">
-                  <span className="text-zinc-600">⏱️</span>
-                  {media.duration}
-                </span>
+                <>
+                  <span className="text-zinc-700">•</span>
+                  <span>{media.duration}</span>
+                </>
               )}
               {media.genre && (
-                <span className="text-zinc-500 truncate max-w-[100px] sm:max-w-[150px]">
-                  {media.genre}
-                </span>
+                <>
+                  <span className="text-zinc-700">•</span>
+                  <span className="truncate max-w-[120px]">{media.genre}</span>
+                </>
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-1">
-              <button
+            {/* Action Buttons - Ethereal */}
+            <div className="flex items-center gap-1">
+              <motion.button
                 onClick={() => onEdit(media)}
-                className="p-1.5 sm:p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                 title="Edit"
+                whileTap={{ scale: 0.9 }}
               >
-                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
+                <Pencil className="w-4 h-4" />
+              </motion.button>
               {media.status !== 'unwatched' && (
-                <button
+                <motion.button
                   onClick={() => onStatusChange(media.id, 'unwatched')}
-                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   title="Move to To Watch"
+                  whileTap={{ scale: 0.9 }}
                 >
-                  <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
+                  <RotateCcw className="w-4 h-4" />
+                </motion.button>
               )}
               {media.status !== 'watching' && (
-                <button
+                <motion.button
                   onClick={() => onStatusChange(media.id, 'watching')}
-                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                  className="p-2 text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
                   title="Mark as Watching"
+                  whileTap={{ scale: 0.9 }}
                 >
-                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
+                  <Eye className="w-4 h-4" />
+                </motion.button>
               )}
               {media.status !== 'watched' && (
-                <button
+                <motion.button
                   onClick={() => onStatusChange(media.id, 'watched')}
-                  className="p-1.5 sm:p-2 text-zinc-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                  className="p-2 text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
                   title="Mark as Watched"
+                  whileTap={{ scale: 0.9 }}
                 >
-                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
+                  <Check className="w-4 h-4" />
+                </motion.button>
               )}
-              <button
+              <motion.button
                 onClick={() => onDelete(media.id)}
-                className="p-1.5 sm:p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto"
+                className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto"
                 title="Delete"
+                whileTap={{ scale: 0.9 }}
               >
-                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
+                <Trash2 className="w-4 h-4" />
+              </motion.button>
             </div>
           </div>
         </div>
@@ -737,7 +769,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className="h-24 bg-zinc-900/50 border border-red-900/20 rounded-xl animate-pulse"
+            className="h-28 glass-card rounded-2xl animate-pulse"
           />
         ))}
       </div>
@@ -746,7 +778,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   if (error) {
     return (
-      <div className="text-center py-8">
+      <div className="glass-card rounded-2xl p-8 text-center">
         <p className="text-zinc-400">{error}</p>
       </div>
     );
@@ -754,9 +786,13 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   if (filteredItems.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-5xl mb-4">🎬</div>
-        <p className="text-zinc-400 mb-2">
+      <motion.div 
+        className="glass-card rounded-2xl p-12 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="text-6xl mb-4">🎬</div>
+        <p className="text-white text-lg mb-2">
           {filter === 'all'
             ? "Your cinema is empty"
             : `No ${filter} films`}
@@ -764,7 +800,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         <p className="text-zinc-500 text-sm">
           🍿 Add some films to get started
         </p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -802,15 +838,15 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         )}
       </AnimatePresence>
 
-      {/* Stats - scrollable on mobile */}
-      <div className="flex items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-zinc-500 overflow-x-auto scrollbar-hide pb-1">
-        <span className="whitespace-nowrap">🎬 {filteredItems.length}</span>
-        <span className="text-zinc-700">•</span>
-        <span className="whitespace-nowrap">📋 {unwatchedCount}</span>
-        <span className="text-zinc-700">•</span>
-        <span className="whitespace-nowrap">👀 {watchingCount}</span>
-        <span className="text-zinc-700">•</span>
-        <span className="whitespace-nowrap">✅ {watchedCount}</span>
+      {/* Stats - Glass pill style */}
+      <div className="glass rounded-xl px-4 py-2.5 mb-4 flex items-center gap-3 sm:gap-4 text-xs sm:text-sm overflow-x-auto scrollbar-hide">
+        <span className="whitespace-nowrap text-white/80">🎬 {filteredItems.length}</span>
+        <span className="text-white/20">•</span>
+        <span className="whitespace-nowrap text-red-400/80">📋 {unwatchedCount}</span>
+        <span className="text-white/20">•</span>
+        <span className="whitespace-nowrap text-blue-400/80">👀 {watchingCount}</span>
+        <span className="text-white/20">•</span>
+        <span className="whitespace-nowrap text-emerald-400/80">✅ {watchedCount}</span>
       </div>
 
       {/* List */}

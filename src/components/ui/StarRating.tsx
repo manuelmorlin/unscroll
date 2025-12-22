@@ -107,23 +107,23 @@ export function StarRating({
                 readOnly ? 'cursor-default' : 'cursor-pointer'
               }`}
             >
-              {/* Background star (empty) */}
+              {/* Background star (empty) - Ethereal style */}
               <Star 
-                className={`${sizeClasses[size]} text-zinc-700`}
+                className={`${sizeClasses[size]} text-white/10`}
                 strokeWidth={1.5}
               />
               
-              {/* Half-filled star (left half) */}
+              {/* Half-filled star (left half) - Amber glow */}
               {fill === 'half' && (
                 <div className="absolute inset-0 overflow-hidden" style={{ width: '50%' }}>
                   <Star 
-                    className={`${sizeClasses[size]} text-yellow-500 fill-yellow-500`}
+                    className={`${sizeClasses[size]} text-amber-400 fill-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]`}
                     strokeWidth={1.5}
                   />
                 </div>
               )}
               
-              {/* Full-filled star */}
+              {/* Full-filled star - Amber glow */}
               {fill === 'full' && (
                 <motion.div
                   className="absolute inset-0"
@@ -134,8 +134,8 @@ export function StarRating({
                   <Star 
                     className={`${sizeClasses[size]} ${
                       hoverValue 
-                        ? 'text-yellow-400 fill-yellow-400' 
-                        : 'text-yellow-500 fill-yellow-500'
+                        ? 'text-amber-300 fill-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' 
+                        : 'text-amber-400 fill-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]'
                     }`}
                     strokeWidth={1.5}
                   />
@@ -162,12 +162,12 @@ export function StarRating({
         </AnimatePresence>
       </div>
       
-      {/* Label */}
+      {/* Label - Ethereal style */}
       {showLabel && displayValue > 0 && (
         <motion.span
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`text-zinc-400 ${size === 'sm' ? 'text-xs' : 'text-sm'}`}
+          className={`text-zinc-500 ${size === 'sm' ? 'text-xs' : 'text-sm'}`}
         >
           {ratingLabels[displayValue]}
         </motion.span>
@@ -198,25 +198,25 @@ export function StarRatingCompact({ value, size = 'sm' }: { value: number | null
           const fill = getStarFill(star);
           return (
             <div key={star} className="relative">
-              {/* Empty star background */}
+              {/* Empty star background - Ethereal */}
               <Star
-                className={`${sizeClasses[size]} text-zinc-700`}
+                className={`${sizeClasses[size]} text-white/10`}
                 strokeWidth={1.5}
               />
-              {/* Half star */}
+              {/* Half star - Amber glow */}
               {fill === 'half' && (
                 <div className="absolute inset-0 overflow-hidden" style={{ width: '50%' }}>
                   <Star
-                    className={`${sizeClasses[size]} text-yellow-500 fill-yellow-500`}
+                    className={`${sizeClasses[size]} text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.4)]`}
                     strokeWidth={1.5}
                   />
                 </div>
               )}
-              {/* Full star */}
+              {/* Full star - Amber glow */}
               {fill === 'full' && (
                 <div className="absolute inset-0">
                   <Star
-                    className={`${sizeClasses[size]} text-yellow-500 fill-yellow-500`}
+                    className={`${sizeClasses[size]} text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.4)]`}
                     strokeWidth={1.5}
                   />
                 </div>
@@ -225,7 +225,7 @@ export function StarRatingCompact({ value, size = 'sm' }: { value: number | null
           );
         })}
       </div>
-      <span className={`${size === 'sm' ? 'text-xs' : 'text-sm'} text-zinc-400`}>
+      <span className={`${size === 'sm' ? 'text-xs' : 'text-sm'} text-zinc-500`}>
         {ratingEmojis[value]}
       </span>
     </div>

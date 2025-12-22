@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { LogOut, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LogOut, User, Plus } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
 import { AddMediaForm, MediaList, Diary, Stats, Wrapped } from '@/components/media';
+import { FloatingDockMinimal } from '@/components/ui';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
 import type { MediaStatus } from '@/types/database';
@@ -17,30 +18,44 @@ export default function AppPage() {
   const [listFilter, setListFilter] = useState<ListFilter>('all');
   const { user, isDemo } = useAuth();
 
+  // Navigation items for floating dock
+  const navItems = [
+    { id: 'decide' as Tab, label: 'Decide', emoji: '🎰' },
+    { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
+    { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
+    { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
+    // Wrapped tab only visible in December
+    ...(new Date().getMonth() === 11 ? [{ id: 'wrapped' as Tab, label: 'Wrapped', emoji: '🎁' }] : []),
+  ];
+
   return (
-    <div className="min-h-screen cinema-bg flex flex-col">
-      {/* Subtle curtain effects - hide on small screens for performance */}
-      <div className="hidden sm:block fixed left-0 top-0 bottom-0 w-16 curtain-left pointer-events-none opacity-50" />
-      <div className="hidden sm:block fixed right-0 top-0 bottom-0 w-16 curtain-right pointer-events-none opacity-50" />
+    <div className="min-h-screen liquid-animated">
+      {/* Ambient light orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-red-500/[0.03] rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-500/[0.02] rounded-full blur-[80px]" />
+      </div>
       
-      {/* Header - with safe area */}
-      <header className="border-b border-red-900/30 bg-black/80 backdrop-blur-md sticky top-0 z-40 safe-top">
+      {/* Header - Minimal glass */}
+      <header className="glass-heavy sticky top-0 z-40 safe-top">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="text-xl">🎬</span>
             <span className="text-base font-semibold gold-shimmer">Unscroll</span>
             {isDemo && (
-              <span className="px-1.5 py-0.5 text-[10px] bg-violet-500/20 text-violet-400 rounded-full">
+              <span className="px-2 py-0.5 text-[10px] bg-violet-500/20 text-violet-400 rounded-full border border-violet-500/20">
                 Demo
               </span>
             )}
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-200">
-              <User className="w-4 h-4 text-yellow-500" />
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-300">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20">
+                <User className="w-3.5 h-3.5 text-amber-400" />
+              </div>
               <span className="font-medium">
                 {user?.displayName || 'User'}
               </span>
@@ -48,7 +63,7 @@ export default function AppPage() {
             <form action={async () => { await logoutAction(); }}>
               <button
                 type="submit"
-                className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 active:bg-zinc-700 rounded-xl transition-colors font-medium min-w-[44px]"
+                className="btn-glass flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-zinc-400 hover:text-white rounded-xl transition-all font-medium"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
@@ -59,159 +74,143 @@ export default function AppPage() {
         </div>
       </header>
 
-      {/* Tab Navigation - larger touch targets */}
-      <div className="border-b border-red-900/30 bg-black/40">
-        <div className="max-w-4xl mx-auto px-2">
-          <nav className="flex">
-            {[
-              { id: 'decide' as Tab, label: 'Decide', emoji: '🎰' },
-              { id: 'list' as Tab, label: 'Watchlist', emoji: '📋' },
-              { id: 'diary' as Tab, label: 'Diary', emoji: '📔' },
-              { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
-              // Wrapped tab only visible in December
-              ...(new Date().getMonth() === 11 ? [{ id: 'wrapped' as Tab, label: 'Wrapped', emoji: '🎁' }] : []),
-            ].map(({ id, label, emoji }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-3.5 text-sm font-medium border-b-2 transition-colors active:bg-white/5 ${
-                  activeTab === id
-                    ? 'border-yellow-500 text-yellow-400'
-                    : 'border-transparent text-zinc-400'
-                }`}
-              >
-                <span className="text-base">{emoji}</span>
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {/* Main Content - flex-1 to push footer down */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
-        {activeTab === 'decide' && (
-          <motion.div
-            key="decide"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="text-center mb-6">
-              <div className="text-3xl mb-3">🎬</div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                Tonight&apos;s <span className="gold-shimmer">Feature</span>
-              </h1>
-              <p className="text-zinc-400 text-sm font-light max-w-xs mx-auto">
-                Let fate choose your next cinematic experience.
-              </p>
-            </div>
-
-            <SlotMachine />
-          </motion.div>
-        )}
-        
-        {activeTab === 'list' && (
-          <motion.div
-            key="list"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Header */}
-            <div className="mb-5">
-              <h1 className="text-xl font-bold text-white mb-0.5">Your Watchlist</h1>
-              <p className="text-zinc-400 text-sm">
-                Everything you want to watch
-              </p>
-            </div>
-
-            {/* Filter Pills - horizontal scroll on mobile */}
-            <div className="flex gap-2 mb-5 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-              {[
-                { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
-                { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '📋' },
-                { id: 'watching' as ListFilter, label: 'Watching', emoji: '👀' },
-                { id: 'watched' as ListFilter, label: 'Watched', emoji: '✅' },
-              ].map(({ id, label, emoji }) => (
-                <button
-                  key={id}
-                  onClick={() => setListFilter(id)}
-                  className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full transition-all duration-200 active:scale-95 ${
-                    listFilter === id
-                      ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
-                      : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
-                  }`}
+      {/* Main Content - with bottom padding for floating dock */}
+      <main className="max-w-4xl mx-auto w-full px-4 py-6 pb-28">
+        <AnimatePresence mode="wait">
+          {activeTab === 'decide' && (
+            <motion.div
+              key="decide"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <div className="text-center mb-8">
+                <motion.div 
+                  className="text-4xl mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', delay: 0.1 }}
                 >
-                  {emoji} {label}
-                </button>
-              ))}
-            </div>
+                  🎬
+                </motion.div>
+                <h1 className="headline-display text-white mb-2">
+                  Tonight&apos;s <span className="gold-shimmer">Feature</span>
+                </h1>
+                <p className="text-zinc-500 text-sm font-light max-w-xs mx-auto">
+                  Let fate choose your next cinematic experience
+                </p>
+              </div>
 
-            <MediaList filter={listFilter} />
-          </motion.div>
-        )}
-        
-        {activeTab === 'diary' && (
-          <motion.div
-            key="diary"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Header */}
-            <div className="mb-5">
-              <h1 className="text-xl font-bold text-white mb-0.5 flex items-center gap-2">
-                <span>📔</span> Your Film Diary
-              </h1>
-              <p className="text-zinc-400 text-sm">
-                A timeline of everything you&apos;ve watched
-              </p>
-            </div>
+              <SlotMachine />
+            </motion.div>
+          )}
+          
+          {activeTab === 'list' && (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              {/* Header */}
+              <div className="mb-6">
+                <h1 className="headline-display text-white mb-1">Your Watchlist</h1>
+                <p className="text-zinc-500 text-sm">
+                  Everything you want to watch
+                </p>
+              </div>
 
-            <Diary />
-          </motion.div>
-        )}
+              {/* Filter Pills - Ethereal style */}
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                {[
+                  { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
+                  { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '📋' },
+                  { id: 'watching' as ListFilter, label: 'Watching', emoji: '👀' },
+                  { id: 'watched' as ListFilter, label: 'Watched', emoji: '✅' },
+                ].map(({ id, label, emoji }) => (
+                  <motion.button
+                    key={id}
+                    onClick={() => setListFilter(id)}
+                    className={`
+                      flex-shrink-0 px-4 py-2.5 text-sm rounded-xl transition-all
+                      ${listFilter === id ? 'pill-active' : 'pill-inactive'}
+                    `}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {emoji} {label}
+                  </motion.button>
+                ))}
+              </div>
 
-        {activeTab === 'stats' && (
-          <motion.div
-            key="stats"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Stats />
-          </motion.div>
-        )}
+              <MediaList filter={listFilter} />
+            </motion.div>
+          )}
+          
+          {activeTab === 'diary' && (
+            <motion.div
+              key="diary"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <div className="mb-6">
+                <h1 className="headline-display text-white mb-1 flex items-center gap-3">
+                  <span>📔</span> Your Film Diary
+                </h1>
+                <p className="text-zinc-500 text-sm">
+                  A timeline of everything you&apos;ve watched
+                </p>
+              </div>
 
-        {activeTab === 'wrapped' && (
-          <motion.div
-            key="wrapped"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Wrapped />
-          </motion.div>
-        )}
+              <Diary />
+            </motion.div>
+          )}
+
+          {activeTab === 'stats' && (
+            <motion.div
+              key="stats"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <Stats />
+            </motion.div>
+          )}
+
+          {activeTab === 'wrapped' && (
+            <motion.div
+              key="wrapped"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <Wrapped />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* Footer - with safe area */}
-      <footer className="border-t border-red-900/30 bg-black/40 safe-bottom">
-        <div className="max-w-4xl mx-auto px-4 py-4 text-center text-xs text-zinc-500 whitespace-nowrap">
-          Made with 🍿 for movie lovers · <a
-            href="https://github.com/manuelmorlin/unscroll"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-yellow-500/70 hover:text-yellow-400 transition-colors"
-          >View Source</a>
-        </div>
-      </footer>
+      {/* Floating Dock Navigation */}
+      <FloatingDockMinimal
+        items={navItems}
+        activeId={activeTab}
+        onSelect={(id) => setActiveTab(id as Tab)}
+      />
 
-      {/* Floating Add Button */}
-      <div className="fixed bottom-20 right-4 z-40">
+      {/* Floating Add Button - positioned above dock */}
+      <motion.div 
+        className="fixed bottom-24 right-4 z-40"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', delay: 0.3 }}
+      >
         <AddMediaForm />
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -280,27 +280,27 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
   return (
     <div className="w-full max-w-md mx-auto relative z-10">
-      {/* Back to Home */}
+      {/* Back to Home - Glass style */}
       <Link 
         href="/"
-        className="inline-flex items-center gap-2 text-zinc-400 hover:text-yellow-400 transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
       </Link>
 
-      {/* Logo & Title */}
+      {/* Logo & Title - Ethereal */}
       <div className="text-center mb-10">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', duration: 0.5 }}
-          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-700 to-red-600 rounded-2xl mb-6 shadow-xl shadow-red-900/30 border border-red-500/30"
+          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] border border-red-500/30"
         >
           <svg
             viewBox="0 0 24 24"
             fill="none"
-            className="w-10 h-10 text-yellow-400"
+            className="w-10 h-10 text-amber-400"
             stroke="currentColor"
             strokeWidth="1.5"
           >
@@ -315,14 +315,13 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         </p>
       </div>
 
-      {/* Demo Button - For Recruiters */}
+      {/* Demo Button - Glass style */}
       {mode !== 'forgot' && (
         <motion.button
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleDemoLogin}
           disabled={isDemoLoading}
-          className="w-full mb-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-violet-900/30"
+          className="w-full mb-6 py-4 bg-gradient-to-b from-violet-500 to-purple-700 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_25px_rgba(139,92,246,0.25)]"
         >
           {isDemoLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -336,33 +335,34 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         </motion.button>
       )}
 
-      {/* Divider */}
+      {/* Divider - Subtle */}
       {mode !== 'forgot' && (
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-red-900/30" />
+            <div className="w-full border-t border-white/[0.06]" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-transparent text-zinc-500">or continue with email</span>
+            <span className="px-4 bg-transparent text-zinc-600">or continue with email</span>
           </div>
         </div>
       )}
 
-      {/* Mode Toggle */}
+      {/* Mode Toggle - Glass style */}
       {mode !== 'forgot' && (
-        <div className="flex bg-zinc-900/80 border border-red-900/30 rounded-xl p-1 mb-6">
+        <div className="flex glass rounded-xl p-1 mb-6">
           {(['login', 'register'] as const).map((m) => (
-            <button
+            <motion.button
               key={m}
               onClick={() => setMode(m)}
+              whileTap={{ scale: 0.98 }}
               className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 mode === m
-                  ? 'bg-red-700 text-white shadow-lg'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-gradient-to-b from-red-500 to-red-700 text-white shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                  : 'text-zinc-500 hover:text-white'
               }`}
             >
               {m === 'login' ? '🎬 Sign In' : '🎟️ Create Account'}
-            </button>
+            </motion.button>
           ))}
         </div>
       )}
@@ -377,21 +377,21 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         </div>
       )}
 
-      {/* Success Message */}
+      {/* Success Message - Ethereal */}
       <AnimatePresence>
         {successMessage && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg"
+            className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"
           >
-            <p className="text-green-400 text-sm">{successMessage}</p>
+            <p className="text-emerald-400 text-sm">{successMessage}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Error Message */}
+      {/* Error Message - Ethereal */}
       <AnimatePresence>
         {error && (
           <motion.div
@@ -403,11 +403,12 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             <p className="text-red-400 text-sm">{error}</p>
             {/* Resend Verification Button */}
             {unverifiedEmail && (
-              <button
+              <motion.button
                 type="button"
                 onClick={handleResendVerification}
                 disabled={isResendingVerification}
-                className="mt-3 w-full py-2.5 px-4 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-400 text-sm font-medium rounded-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                whileTap={{ scale: 0.98 }}
+                className="mt-3 w-full py-2.5 px-4 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium rounded-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isResendingVerification ? (
                   <>
@@ -420,7 +421,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                     Send verification email again
                   </>
                 )}
-              </button>
+              </motion.button>
             )}
           </motion.div>
         )}
@@ -438,16 +439,15 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
               onChange={(e) => setResetEmail(e.target.value)}
               placeholder="Email address"
               required
-              className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+              className="input-ethereal w-full pl-12 pr-4 py-3.5 text-white placeholder:text-zinc-600"
             />
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
+            className="w-full py-3.5 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(239,68,68,0.2)] glow-red"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -466,7 +466,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
               setError(null);
               setSuccessMessage(null);
             }}
-            className="w-full text-center text-sm text-zinc-400 hover:text-yellow-400 transition-colors mt-4"
+            className="w-full text-center text-sm text-zinc-500 hover:text-amber-400 transition-colors mt-4"
           >
             ← Back to Sign In
           </button>
@@ -489,7 +489,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                     name="username"
                     placeholder="Username"
                     required={mode === 'register'}
-                    className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+                    className="input-ethereal w-full pl-12 pr-4 py-3.5 text-white placeholder:text-zinc-600"
                   />
                 </div>
               </motion.div>
@@ -503,7 +503,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
               name="email"
             placeholder="Email address"
             required
-            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+            className="input-ethereal w-full pl-12 pr-4 py-3.5 text-white placeholder:text-zinc-600"
           />
         </div>
 
@@ -517,31 +517,31 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             minLength={mode === 'register' ? 8 : 6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
+            className="input-ethereal w-full pl-12 pr-4 py-3.5 text-white placeholder:text-zinc-600"
           />
         </div>
 
-        {/* Password Requirements - Only show during registration */}
+        {/* Password Requirements - Glass style */}
         {mode === 'register' && password.length > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="grid grid-cols-2 gap-2 text-xs"
+            className="grid grid-cols-2 gap-2 text-xs glass rounded-xl p-3"
           >
-            <div className={`flex items-center gap-1.5 ${passwordRequirements.minLength ? 'text-green-400' : 'text-zinc-500'}`}>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.minLength ? 'text-emerald-400' : 'text-zinc-600'}`}>
               {passwordRequirements.minLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
               8+ characters
             </div>
-            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasUppercase ? 'text-green-400' : 'text-zinc-500'}`}>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasUppercase ? 'text-emerald-400' : 'text-zinc-600'}`}>
               {passwordRequirements.hasUppercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
               Uppercase letter
             </div>
-            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasLowercase ? 'text-green-400' : 'text-zinc-500'}`}>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasLowercase ? 'text-emerald-400' : 'text-zinc-600'}`}>
               {passwordRequirements.hasLowercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
               Lowercase letter
             </div>
-            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasNumber ? 'text-green-400' : 'text-zinc-500'}`}>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasNumber ? 'text-emerald-400' : 'text-zinc-600'}`}>
               {passwordRequirements.hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
               Number
             </div>
@@ -558,7 +558,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                 setError(null);
                 setSuccessMessage(null);
               }}
-              className="text-sm text-zinc-400 hover:text-yellow-400 transition-colors"
+              className="text-sm text-zinc-500 hover:text-amber-400 transition-colors"
             >
               Forgot password?
             </button>
@@ -566,11 +566,10 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         )}
 
         <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
+          whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={isLoading}
-          className="w-full py-3.5 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-xl shadow-red-900/30 border border-red-500/30"
+          className="w-full py-3.5 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(239,68,68,0.2)] glow-red"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
