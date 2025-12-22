@@ -175,7 +175,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     setIsSpinning(true);
     setError(null);
     setSelectedMedia(null);
-    setSpinCount(prev => prev + 1);
 
     // Start phrase animation
     const phraseAnimation = animatePhrases();
@@ -195,8 +194,12 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     if (!result.success || !result.data) {
       setError(result.error || 'No media found');
       setIsSpinning(false);
+      // Don't consume a spin if no film was found
       return;
     }
+
+    // Only increment spin count on successful result
+    setSpinCount(prev => prev + 1);
 
     const media = result.data as MediaItem;
     setSelectedMedia(media);
