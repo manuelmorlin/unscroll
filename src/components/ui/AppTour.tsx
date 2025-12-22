@@ -24,15 +24,14 @@ const tourSteps: TourStep[] = [
   {
     id: 'slot-machine',
     title: 'Can\'t Decide What to Watch?',
-    description: 'Spin the slot machine and let fate choose your next film from your watchlist!',
+    description: 'Use the 🎰 Decide tab to spin and let fate choose your next film from your watchlist!',
     emoji: '🎰',
-    target: '[data-tour="slot-machine"]',
-    position: 'bottom',
+    position: 'center',
   },
   {
     id: 'add-film',
     title: 'Add Films to Your List',
-    description: 'Tap here to search and add movies. We\'ll auto-fill all the details for you!',
+    description: 'Tap the red "Add Film" button in the header to search and add movies. We\'ll auto-fill all the details!',
     emoji: '➕',
     target: '[data-tour="add-button"]',
     position: 'bottom',
@@ -40,7 +39,7 @@ const tourSteps: TourStep[] = [
   {
     id: 'watchlist',
     title: 'Your Watchlist',
-    description: 'Browse all your saved films. Filter by status: To Watch, Watching, or Watched.',
+    description: 'Browse all your saved films in the 📋 tab. Filter by status: To Watch, Watching, or Watched.',
     emoji: '📋',
     target: '[data-tour="nav-list"]',
     position: 'top',
@@ -48,7 +47,7 @@ const tourSteps: TourStep[] = [
   {
     id: 'diary',
     title: 'Film Diary',
-    description: 'Keep track of everything you\'ve watched with ratings and reviews.',
+    description: 'Keep track of everything you\'ve watched with ratings and reviews in the 📔 tab.',
     emoji: '📔',
     target: '[data-tour="nav-diary"]',
     position: 'top',
@@ -56,7 +55,7 @@ const tourSteps: TourStep[] = [
   {
     id: 'stats',
     title: 'Your Statistics',
-    description: 'See your viewing habits, favorite genres, and total watch time.',
+    description: 'See your viewing habits, favorite genres, and total watch time in the 📊 tab.',
     emoji: '📊',
     target: '[data-tour="nav-stats"]',
     position: 'top',
