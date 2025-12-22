@@ -17,7 +17,7 @@ export default async function AuthPage({
   const posters = postersResult.success ? postersResult.posters || [] : [];
 
   return (
-    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4" style={{ overflow: 'hidden' }}>
+    <main className="min-h-screen sm:min-h-screen cinema-bg flex items-center justify-center px-4 py-8 sm:py-12 overflow-hidden sm:overflow-auto relative">
       {/* Back to Home - Fixed top left */}
       <Link 
         href="/"
