@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Loader2, Check, X } from 'lucide-react';
 import {
@@ -34,6 +34,18 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isResendingVerification, setIsResendingVerification] = useState(false);
   const router = useRouter();
+
+  // Control body overflow based on mode - only register allows scroll on desktop
+  useEffect(() => {
+    if (mode === 'register') {
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mode]);
 
   // Handle resending verification email
   const handleResendVerification = async () => {
