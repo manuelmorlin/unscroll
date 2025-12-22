@@ -35,17 +35,13 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [isResendingVerification, setIsResendingVerification] = useState(false);
   const router = useRouter();
 
-  // Control body overflow based on mode - only register allows scroll on desktop
+  // Control body overflow - always hidden on auth page
   useEffect(() => {
-    if (mode === 'register') {
-      document.body.style.overflow = '';
-    } else {
-      document.body.style.overflow = 'hidden';
-    }
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mode]);
+  }, []);
 
   // Handle resending verification email
   const handleResendVerification = async () => {
