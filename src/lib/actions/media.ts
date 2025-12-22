@@ -265,8 +265,8 @@ export async function removeRewatch(id: string, index?: number): Promise<MediaAc
 // UPDATE WATCH DATE
 // ==============================================
 
-export async function updateWatchDate(id: string, date: string | null): Promise<MediaActionResult> {
-  return updateMediaItem(id, { watched_at: date || null });
+export async function updateWatchDate(id: string, date: string): Promise<MediaActionResult> {
+  return updateMediaItem(id, { watched_at: date });
 }
 
 // ==============================================
