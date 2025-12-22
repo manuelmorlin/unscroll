@@ -259,10 +259,11 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-b from-red-500 to-red-700 text-white rounded-full transition-colors shadow-[0_0_20px_rgba(239,68,68,0.25)] glow-red font-medium"
+        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-b from-red-500 to-red-700 text-white rounded-full transition-colors shadow-[0_0_20px_rgba(239,68,68,0.25)] glow-red font-medium text-sm sm:text-base"
       >
         <Plus className="w-4 h-4" />
-        <span>🎬 Add Film</span>
+        <span className="hidden sm:inline">🎬 Add Film</span>
+        <span className="sm:hidden">🎬 Add</span>
       </motion.button>
 
       {/* Modal - iOS 26.2 Ethereal Style */}
@@ -285,7 +286,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '100%', opacity: 0 }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="pointer-events-auto w-full sm:max-w-lg max-h-[90vh] glass-heavy rounded-t-3xl sm:rounded-2xl overflow-hidden overflow-y-auto"
+                className="pointer-events-auto w-full sm:max-w-lg max-h-[85vh] sm:max-h-[90vh] glass-heavy rounded-t-3xl sm:rounded-2xl overflow-hidden overflow-y-auto"
               >
               {/* Handle bar for mobile */}
               <div className="sm:hidden flex justify-center pt-4">
@@ -293,8 +294,8 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
               </div>
 
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/[0.06]">
+                <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center gap-2">
                   <span>🎟️</span> Add to Watchlist
                 </h2>
                 <motion.button
@@ -307,7 +308,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                 {/* Error */}
                 {error && (
                   <motion.div 

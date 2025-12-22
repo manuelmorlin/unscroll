@@ -255,7 +255,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       <div className="relative">
         {/* Screen - Ethereal Glass Container */}
         <motion.div 
-          className="relative glass-heavy rounded-3xl p-4 sm:p-6 md:p-8 overflow-hidden"
+          className="relative glass-heavy rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-8 overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -270,9 +270,9 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
         {/* Content */}
           <div className="relative z-10">
             {/* Title - Ethereal */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-4 sm:mb-8">
               <motion.h2 
-                className="text-xl sm:text-2xl font-light tracking-wide text-white/90"
+                className="text-base sm:text-xl md:text-2xl font-light tracking-wide text-white/90"
                 animate={{ opacity: isSpinning ? 0.6 : 1 }}
               >
                 {isSpinning ? '🎬 Rolling the reels...' : '🎟️ Ready for showtime?'}
@@ -280,7 +280,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
             </div>
 
           {/* Slot Display */}
-            <div className="min-h-[200px] flex items-center justify-center">
+            <div className="min-h-[160px] sm:min-h-[200px] flex items-center justify-center">
               <AnimatePresence mode="wait">
                 {isSpinning ? (
                   // Loading State - Ethereal Animation
@@ -294,7 +294,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                      className="text-6xl mb-6"
+                      className="text-4xl sm:text-6xl mb-4 sm:mb-6"
                     >
                       🎥
                     </motion.div>
@@ -302,7 +302,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       key={currentPhrase}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-lg text-amber-400/80 font-light italic"
+                      className="text-sm sm:text-lg text-amber-400/80 font-light italic px-2"
                     >
                       {currentPhrase}
                     </motion.p>
@@ -331,7 +331,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05, type: 'spring' }}
-                        className="flex justify-center mb-4 relative"
+                        className="flex justify-center mb-3 sm:mb-4 relative"
                       >
                         {/* Ambient glow behind poster */}
                         <div 
@@ -345,7 +345,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                         <img
                           src={selectedMedia.poster_url}
                           alt={selectedMedia.title}
-                          className="w-32 sm:w-40 md:w-48 rounded-2xl shadow-2xl shadow-black/50 border border-white/10"
+                          className="w-24 sm:w-32 md:w-40 lg:w-48 rounded-xl sm:rounded-2xl shadow-2xl shadow-black/50 border border-white/10"
                         />
                       </motion.div>
                     )}
@@ -355,7 +355,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
-                      className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight px-2"
+                      className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 tracking-tight px-1 sm:px-2"
                     >
                       {(() => {
                         const genreEmoji = selectedMedia.genre 
@@ -547,7 +547,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                             }}
                             disabled={isSpinning}
                             whileTap={{ scale: 0.95 }}
-                            className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 snap-start ${
+                            className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-full transition-all duration-200 snap-start ${
                               isSelected
                                 ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black font-medium shadow-[0_0_15px_rgba(251,191,36,0.2)]'
                                 : 'glass text-zinc-400'
@@ -574,7 +574,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           onClick={() => setSelectedDuration(selectedDuration === option.value ? '' : option.value)}
                           disabled={isSpinning}
                           whileTap={{ scale: 0.95 }}
-                          className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 ${
+                          className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-full transition-all duration-200 ${
                             selectedDuration === option.value
                               ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black font-medium shadow-[0_0_15px_rgba(251,191,36,0.2)]'
                               : 'glass text-zinc-400'
@@ -622,7 +622,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 </div>
               )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
               {spinCount >= MAX_SPINS && selectedMedia ? (
                 <>
                   {/* No more spins - Glass style message */}
@@ -684,11 +684,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSpin}
                   disabled={isSpinning}
-                  className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-[0_0_25px_rgba(239,68,68,0.3)] glow-red"
+                  className="w-full sm:w-auto group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-[0_0_25px_rgba(239,68,68,0.3)] glow-red"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    <span className="text-xl">🎬</span>
-                    <span className="text-base">Roll the Film!</span>
+                    <span className="text-lg sm:text-xl">🎬</span>
+                    <span className="text-sm sm:text-base">Roll the Film!</span>
                   </span>
                 </motion.button>
               )}
