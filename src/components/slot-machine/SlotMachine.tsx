@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv, Plus } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
-import { StarRating } from '@/components/ui';
+import { StarRating, useToast } from '@/components/ui';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import type { MediaItem } from '@/types/database';
 
@@ -85,6 +85,7 @@ interface SlotMachineProps {
 const MAX_SPINS = 3;
 
 export function SlotMachine({ onWatched }: SlotMachineProps) {
+  const { showToast } = useToast();
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
@@ -210,6 +211,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     const result = await markAsWatched(selectedMedia.id);
 
     if (result.success) {
+      showToast('Film marked as watched! 🎬', 'success');
       // Store the media for rating modal
       setWatchedMedia(selectedMedia);
       setShowRatingModal(true);
@@ -221,15 +223,16 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setSelectedDuration(''); // Reset duration filter
       onWatched?.();
     }
-  }, [selectedMedia, onWatched]);
+  }, [selectedMedia, onWatched, showToast]);
 
   // Handle rating from modal
   const handleRate = useCallback(async (rating: number) => {
     if (!watchedMedia) return;
     await updateMediaItem(watchedMedia.id, { user_rating: rating });
+    showToast('Rating saved! ⭐', 'success');
     setShowRatingModal(false);
     setWatchedMedia(null);
-  }, [watchedMedia]);
+  }, [watchedMedia, showToast]);
 
   // Handle skip rating
   const handleSkipRating = useCallback(() => {

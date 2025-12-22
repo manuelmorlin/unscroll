@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { actionGetRecommendations } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails } from '@/lib/actions/tmdb';
 import { addMediaItem } from '@/lib/actions/media';
+import { useToast } from '@/components/ui';
 import type { MediaItem } from '@/types/database';
 
 interface Recommendation {
@@ -51,8 +52,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [addedToWatchlist, setAddedToWatchlist] = useState<Set<string>>(new Set());
-
+  const [addedToWatchlist, setAddedToWatchlist] = useState<Set<string>>(new Set());  const { showToast } = useToast();
   const fetchRecommendations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -145,6 +145,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
 
     if (result.success) {
       setAddedToWatchlist(prev => new Set([...prev, movieDetails.title]));
+      showToast('Film added to watchlist');
       // Close modal after short delay to show success
       setTimeout(() => {
         setSelectedRec(null);

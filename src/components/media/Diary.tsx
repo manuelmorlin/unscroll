@@ -6,7 +6,7 @@ import { Calendar, Star, Film, ChevronDown, ChevronUp, Minus, Sparkles } from 'l
 import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaItem, markAsRewatched, removeRewatch } from '@/lib/actions/media';
-import { StarRating, StarRatingCompact } from '@/components/ui';
+import { StarRating, StarRatingCompact, useToast, useConfirm } from '@/components/ui';
 import { FilmDetailModal, SmartReviewGenerator } from '@/components/media';
 import type { MediaItem } from '@/types/database';
 
@@ -443,6 +443,8 @@ function groupByMonth(items: MediaItem[]): Record<string, MediaItem[]> {
 export function Diary() {
   const { mediaItems, isLoading, error } = useMediaItems();
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   // Filter only watched items and sort by most recent watch date (newest first)
   const watchedItems = mediaItems
@@ -467,18 +469,33 @@ export function Diary() {
 
   const handleRatingChange = async (id: string, rating: number) => {
     await updateMediaItem(id, { user_rating: rating });
+    showToast('Rating saved');
   };
 
   const handleReviewChange = async (id: string, review: string) => {
     await updateMediaItem(id, { user_review: review || null });
+    showToast('Review saved');
   };
 
   const handleRewatch = async (id: string, date?: string) => {
     await markAsRewatched(id, date);
+    showToast('Rewatch added');
   };
 
   const handleRemoveRewatch = async (id: string, index?: number) => {
-    await removeRewatch(id, index);
+    const media = mediaItems.find(item => item.id === id);
+    const confirmed = await confirm({
+      title: 'Remove Rewatch',
+      message: `Remove this rewatch from "${media?.title || 'this film'}"?`,
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      danger: true,
+    });
+    
+    if (confirmed) {
+      await removeRewatch(id, index);
+      showToast('Rewatch removed');
+    }
   };
 
   if (isLoading) {

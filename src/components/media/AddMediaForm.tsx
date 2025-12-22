@@ -6,6 +6,7 @@ import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails, type TMDBMovie, type WatchProvider } from '@/lib/actions/tmdb';
+import { useToast } from '@/components/ui';
 import type { MediaItemInsert } from '@/types/database';
 
 interface AddMediaFormProps {
@@ -17,6 +18,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [isAutofilling, setIsAutofilling] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -218,6 +220,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       if (result.success) {
         resetForm();
         setIsOpen(false);
+        showToast('Film added to watchlist');
         onSuccess?.();
       } else {
         setError(result.error || 'Failed to add media');
@@ -225,7 +228,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
       setIsSubmitting(false);
     },
-    [title, genre, plot, cast, duration, year, originalLanguage, resetForm, onSuccess]
+    [title, genre, plot, cast, duration, year, originalLanguage, resetForm, onSuccess, showToast]
   );
 
   return (

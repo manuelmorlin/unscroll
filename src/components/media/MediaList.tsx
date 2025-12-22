@@ -6,7 +6,7 @@ import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star, Sparkles, Refresh
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
 import { actionGenerateReview } from '@/lib/actions/ai';
-import { StarRating } from '@/components/ui';
+import { StarRating, useToast, useConfirm } from '@/components/ui';
 import { FilmDetailModal } from './FilmDetailModal';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
@@ -635,6 +635,8 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
   const [editingMedia, setEditingMedia] = useState<MediaItem | null>(null);
   const [ratingMedia, setRatingMedia] = useState<MediaItem | null>(null);
   const [viewingMedia, setViewingMedia] = useState<MediaItem | null>(null);
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const filteredItems =
     filter === 'all'
@@ -654,10 +656,24 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
     
     // For other status changes, update immediately
     await updateMediaStatus(id, status);
+    const statusLabels = { unwatched: 'To Watch', watching: 'Watching', watched: 'Watched' };
+    showToast(`Moved to ${statusLabels[status]}`);
   };
 
   const handleDelete = async (id: string) => {
-    await deleteMediaItem(id);
+    const media = mediaItems.find(item => item.id === id);
+    const confirmed = await confirm({
+      title: 'Delete Film',
+      message: `Are you sure you want to remove "${media?.title || 'this film'}" from your watchlist?`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      danger: true,
+    });
+    
+    if (confirmed) {
+      await deleteMediaItem(id);
+      showToast('Film removed from watchlist');
+    }
   };
 
   const handleEdit = (media: MediaItem) => {
@@ -670,6 +686,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
 
   const handleSaveEdit = async (id: string, updates: Partial<MediaItem>) => {
     await updateMediaItem(id, updates);
+    showToast('Changes saved successfully');
   };
 
   const handleRate = async (id: string, rating: number, review?: string, watchedAt?: string | null) => {
@@ -683,6 +700,9 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
         updates.user_review = review;
       }
       await updateMediaItem(id, updates);
+      showToast('Film marked as watched with rating');
+    } else {
+      showToast('Film marked as watched');
     }
   };
 
@@ -761,7 +781,7 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
       <div className="flex items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-zinc-500 overflow-x-auto scrollbar-hide pb-1">
         <span className="whitespace-nowrap">🎬 {filteredItems.length}</span>
         <span className="text-zinc-700">•</span>
-        <span className="whitespace-nowrap">🎟️ {unwatchedCount}</span>
+        <span className="whitespace-nowrap">📋 {unwatchedCount}</span>
         <span className="text-zinc-700">•</span>
         <span className="whitespace-nowrap">👀 {watchingCount}</span>
         <span className="text-zinc-700">•</span>
