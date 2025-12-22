@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Star, Film, ChevronDown, ChevronUp, Minus, Pencil } from 'lucide-react';
+import { Calendar, Star, Film, ChevronDown, ChevronUp, Minus, Pencil, Sparkles, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaItem, markAsRewatched, removeRewatch, updateWatchDate } from '@/lib/actions/media';
+import { actionGenerateReview } from '@/lib/actions/ai';
 import { StarRating, StarRatingCompact } from '@/components/ui';
 import { FilmDetailModal } from '@/components/media';
 import type { MediaItem } from '@/types/database';
@@ -84,6 +85,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
   const [newRewatchDate, setNewRewatchDate] = useState(new Date().toISOString().split('T')[0]);
   const [review, setReview] = useState(media.user_review || '');
   const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : '');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const genreEmoji = getGenreEmoji(media.genre);
   const rewatchCount = media.rewatch_count || 0;
   const rewatchDates = media.rewatch_dates || [];
@@ -125,6 +127,28 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
     await onDateChange(media.id, newDate);
     setIsSavingDate(false);
     setIsEditingDate(false);
+  };
+
+  const handleGenerateAIReview = async () => {
+    if (!media.user_rating) return;
+    setIsGeneratingAI(true);
+    try {
+      const result = await actionGenerateReview(
+        media.title,
+        media.user_rating,
+        [], // no keywords for quick generation
+        'casual'
+      );
+      if (result.success && result.data?.review) {
+        setReview(result.data.review);
+        // Auto-save the generated review
+        await onReviewChange(media.id, result.data.review);
+      }
+    } catch (error) {
+      console.error('Failed to generate AI review:', error);
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   return (
@@ -382,7 +406,28 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                 
                 {/* Review textarea */}
                 <div className="mt-4 pt-3 border-t border-zinc-800/30">
-                  <label className="block text-sm text-zinc-400 mb-2">✍️ Your thoughts</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm text-zinc-400">✍️ Your thoughts</label>
+                    {media.user_rating && (
+                      <button
+                        onClick={handleGenerateAIReview}
+                        disabled={isGeneratingAI}
+                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 bg-gradient-to-r from-purple-600/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-all disabled:opacity-50"
+                      >
+                        {isGeneratingAI ? (
+                          <>
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3 h-3" />
+                            AI Generate
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <textarea
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
