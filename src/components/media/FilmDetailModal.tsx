@@ -205,17 +205,9 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-green-400" />
                   <span className="text-sm text-zinc-300">
-                    {totalViews} {totalViews === 1 ? 'view' : 'views'}
+                    Watched {totalViews === 1 ? 'once' : `${totalViews} times`}
                   </span>
                 </div>
-                {rewatchCount > 0 && (
-                  <div className="flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm text-zinc-300">
-                      {rewatchCount} {rewatchCount === 1 ? 'rewatch' : 'rewatches'}
-                    </span>
-                  </div>
-                )}
                 {media.watched_at && (
                   <div className="flex items-center gap-2 ml-auto">
                     <Calendar className="w-4 h-4 text-zinc-500" />

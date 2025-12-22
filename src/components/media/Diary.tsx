@@ -221,11 +221,11 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                         <span className="truncate max-w-[100px] sm:max-w-[150px]">{media.genre}</span>
                       </>
                     )}
-                    {/* Views badge - shows total views with clearer text */}
+                    {/* Views badge - shows total watch count */}
                     <span className="text-zinc-600">•</span>
                     <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${rewatchCount > 0 ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700/50 text-zinc-400'}`}>
                       <Film className="w-3 h-3" />
-                      {totalViews === 1 ? '1 view' : `${totalViews} views`}
+                      {totalViews === 1 ? '1×' : `${totalViews}×`}
                     </span>
                   </div>
                 </div>
