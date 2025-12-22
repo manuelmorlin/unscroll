@@ -356,7 +356,7 @@ export async function deleteMediaItem(id: string): Promise<MediaActionResult> {
 // ==============================================
 
 export interface SpinFilters {
-  genre?: string;
+  genres?: string[]; // Array of genres (film must match at least one)
   maxDuration?: number; // in minutes
   mood?: string;
   excludeIds?: string[]; // IDs of films to exclude (already shown in current spin session)
@@ -410,11 +410,13 @@ export async function getRandomUnwatched(filters?: SpinFilters): Promise<MediaAc
 
     let docs = snapshot.docs;
 
-    // Filter by genre if specified
-    if (filters?.genre) {
+    // Filter by genres if specified (film must match at least one)
+    if (filters?.genres && filters.genres.length > 0) {
       docs = docs.filter(doc => {
         const data = doc.data();
-        return data.genre?.toLowerCase().includes(filters.genre!.toLowerCase());
+        if (!data.genre) return false;
+        const filmGenres = data.genre.toLowerCase();
+        return filters.genres!.some(g => filmGenres.includes(g.toLowerCase()));
       });
     }
 
@@ -447,7 +449,7 @@ export async function getRandomUnwatched(filters?: SpinFilters): Promise<MediaAc
 
     if (docs.length === 0) {
       const filterParts = [];
-      if (filters?.genre) filterParts.push(filters.genre);
+      if (filters?.genres && filters.genres.length > 0) filterParts.push(filters.genres.join(', '));
       if (filters?.maxDuration) filterParts.push(`under ${filters.maxDuration} min`);
       if (filters?.mood) filterParts.push(`${filters.mood} mood`);
       

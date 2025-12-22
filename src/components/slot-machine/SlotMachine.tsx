@@ -90,7 +90,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedGenre, setSelectedGenre] = useState<string>('');
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
   const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
@@ -150,12 +150,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     return genre;
   };
 
-  // Reset selected genre if it's no longer available
+  // Reset selected genres if they're no longer available
   useEffect(() => {
-    if (selectedGenre && !availableGenres.includes(selectedGenre)) {
-      setSelectedGenre('');
+    const validGenres = selectedGenres.filter(g => availableGenres.includes(g));
+    if (validGenres.length !== selectedGenres.length) {
+      setSelectedGenres(validGenres);
     }
-  }, [availableGenres, selectedGenre]);
+  }, [availableGenres, selectedGenres]);
 
   // Animate through loading phrases
   const animatePhrases = useCallback(async () => {
@@ -181,7 +182,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
     // Build filters object
     const filters: SpinFilters = {};
-    if (selectedGenre) filters.genre = selectedGenre;
+    if (selectedGenres.length > 0) filters.genres = selectedGenres;
     if (selectedDuration) filters.maxDuration = parseInt(selectedDuration);
     if (shownFilmIds.length > 0) filters.excludeIds = shownFilmIds; // Exclude already shown films
 
@@ -202,7 +203,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     setShownFilmIds(prev => [...prev, media.id]); // Add to shown films
 
     setIsSpinning(false);
-  }, [animatePhrases, selectedGenre, selectedDuration, spinCount, shownFilmIds]);
+  }, [animatePhrases, selectedGenres, selectedDuration, spinCount, shownFilmIds]);
 
   // Handle mark as watched
   const handleMarkWatched = useCallback(async () => {
@@ -219,7 +220,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setSelectedMedia(null);
       setSpinCount(0); // Reset spin count after watching
       setShownFilmIds([]); // Reset shown films
-      setSelectedGenre(''); // Reset genre filter
+      setSelectedGenres([]); // Reset genre filter
       setSelectedDuration(''); // Reset duration filter
       onWatched?.();
     }
@@ -489,35 +490,43 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 {availableGenres.length > 0 && (
                   <div className="w-full">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
+                      <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre {selectedGenres.length > 0 && `(${selectedGenres.length})`}</span>
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-2 px-4 scrollbar-hide snap-x snap-mandatory">
                       <div className="flex gap-2 mx-auto">
                       <button
-                        onClick={() => setSelectedGenre('')}
+                        onClick={() => setSelectedGenres([])}
                         disabled={isSpinning}
                         className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 snap-start ${
-                          selectedGenre === ''
+                          selectedGenres.length === 0
                             ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
                             : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                         } disabled:opacity-50`}
                       >
                         🎬 All
                       </button>
-                      {availableGenres.map((genre) => (
+                      {availableGenres.map((genre) => {
+                        const isSelected = selectedGenres.includes(genre);
+                        return (
                         <button
                           key={genre}
-                          onClick={() => setSelectedGenre(selectedGenre === genre ? '' : genre)}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedGenres(selectedGenres.filter(g => g !== genre));
+                            } else {
+                              setSelectedGenres([...selectedGenres, genre]);
+                            }
+                          }}
                           disabled={isSpinning}
                           className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 active:scale-95 snap-start ${
-                            selectedGenre === genre
+                            isSelected
                               ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-medium shadow-lg shadow-yellow-500/20'
                               : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                           } disabled:opacity-50`}
                         >
                           {getGenreEmoji(genre)} {displayGenreName(genre)}
                         </button>
-                      ))}
+                      )})}
                       </div>
                     </div>
                   </div>
@@ -549,25 +558,29 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 )}
 
                 {/* Active Filters Summary */}
-                {(selectedGenre || selectedDuration) && (
+                {(selectedGenres.length > 0 || selectedDuration) && (
                   <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 text-xs text-zinc-500"
+                    className="flex flex-wrap items-center justify-center gap-2 text-xs text-zinc-500"
                   >
                     <span>Filtering by:</span>
-                    {selectedGenre && (
-                      <span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full border border-yellow-500/20">
-                        {selectedGenre}
+                    {selectedGenres.map(genre => (
+                      <span 
+                        key={genre}
+                        className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full border border-yellow-500/20 cursor-pointer hover:bg-yellow-500/20"
+                        onClick={() => setSelectedGenres(selectedGenres.filter(g => g !== genre))}
+                      >
+                        {genre} ×
                       </span>
-                    )}
+                    ))}
                     {selectedDuration && (
                       <span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full border border-yellow-500/20">
                         {DURATION_OPTIONS.find(d => d.value === selectedDuration)?.label}
                       </span>
                     )}
                     <button
-                      onClick={() => { setSelectedGenre(''); setSelectedDuration(''); }}
+                      onClick={() => { setSelectedGenres([]); setSelectedDuration(''); }}
                       className="text-zinc-600 hover:text-zinc-400 transition-colors"
                     >
                       <X className="w-3 h-3" />
