@@ -80,14 +80,14 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
 
-  // Check if we're on mobile
+  // Track window width for responsive behavior
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const updateWidth = () => setWindowWidth(window.innerWidth);
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
   // Check if tour should show
@@ -180,14 +180,28 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const isLastStep = currentStep === tourSteps.length - 1;
   const hasValidTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
   
+  // Mobile check - use windowWidth state (0 means not yet initialized, treat as mobile to be safe)
+  const isMobile = windowWidth === 0 || windowWidth < 640;
+  
   // On mobile, always center. On desktop, center if no valid target or position is 'center'
   const isCentered = isMobile || step.position === 'center' || !hasValidTarget;
 
   // Calculate tooltip position with mobile-safe positioning
-  const getTooltipStyle = () => {
-    // On mobile, ALWAYS center the tooltip for visibility
-    if (isMobile || isCentered || !targetRect) {
+  const getTooltipStyle = (): React.CSSProperties => {
+    // On mobile (or before hydration), ALWAYS center the tooltip for visibility
+    if (isMobile) {
       return {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+      };
+    }
+    
+    // Desktop: center if no target
+    if (isCentered || !targetRect) {
+      return {
+        position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -195,7 +209,7 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
     }
 
     const padding = 16;
-    const tooltipWidth = Math.min(320, window.innerWidth - 32);
+    const tooltipWidth = Math.min(320, windowWidth - 32);
     const tooltipHeight = 280; // Approximate max height of tooltip
 
     // Desktop positioning
