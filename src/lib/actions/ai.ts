@@ -2,7 +2,7 @@
 
 import { openai, AI_MODEL } from '@/lib/openai/client';
 import { z } from 'zod';
-import type { AutofillResponse, PersuadeResponse } from '@/types';
+import type { AutofillResponse } from '@/types';
 
 // ==============================================
 // VALIDATION SCHEMAS
@@ -18,100 +18,6 @@ const autofillResponseSchema = z.object({
   found: z.boolean().optional(),
 });
 
-const persuadeResponseSchema = z.object({
-  phrase: z.string(),
-  mood: z.enum(['excited', 'intriguing', 'cozy', 'thrilling']),
-  emoji: z.string(),
-});
-
-// ==============================================
-// GENRE-BASED FALLBACK SYSTEM
-// ==============================================
-
-interface FallbackData {
-  phrase: string;
-  mood: 'excited' | 'intriguing' | 'cozy' | 'thrilling';
-  emoji: string;
-}
-
-const GENRE_FALLBACKS: Record<string, FallbackData[]> = {
-  horror: [
-    { phrase: "Keep the lights on for this one.", mood: 'thrilling', emoji: '👻' },
-    { phrase: "Scary in the best way.", mood: 'thrilling', emoji: '🔪' },
-    { phrase: "You might lose some sleep.", mood: 'thrilling', emoji: '💀' },
-  ],
-  thriller: [
-    { phrase: "The ending will surprise you.", mood: 'thrilling', emoji: '🔍' },
-    { phrase: "You won't be able to look away.", mood: 'thrilling', emoji: '😰' },
-    { phrase: "Full of surprises.", mood: 'intriguing', emoji: '🎯' },
-  ],
-  comedy: [
-    { phrase: "Get ready to laugh a lot.", mood: 'excited', emoji: '😂' },
-    { phrase: "You'll smile the whole time.", mood: 'cozy', emoji: '🤣' },
-    { phrase: "Feel-good film alert!", mood: 'excited', emoji: '😄' },
-  ],
-  romance: [
-    { phrase: "Have tissues ready.", mood: 'cozy', emoji: '💕' },
-    { phrase: "Your heart will thank you.", mood: 'cozy', emoji: '❤️' },
-    { phrase: "A beautiful love story.", mood: 'intriguing', emoji: '💝' },
-  ],
-  action: [
-    { phrase: "Non-stop fun from start to end.", mood: 'excited', emoji: '💥' },
-    { phrase: "Action-packed and exciting.", mood: 'thrilling', emoji: '🔥' },
-    { phrase: "Hold on tight!", mood: 'excited', emoji: '⚡' },
-  ],
-  'sci-fi': [
-    { phrase: "Get ready to be amazed.", mood: 'intriguing', emoji: '🚀' },
-    { phrase: "The future looks cool.", mood: 'excited', emoji: '🤖' },
-    { phrase: "Mind-blowing stuff.", mood: 'intriguing', emoji: '🌌' },
-  ],
-  fantasy: [
-    { phrase: "Magic and adventure await.", mood: 'excited', emoji: '🧙' },
-    { phrase: "A world you'll love.", mood: 'cozy', emoji: '✨' },
-    { phrase: "Epic and amazing.", mood: 'excited', emoji: '🐉' },
-  ],
-  drama: [
-    { phrase: "A story that stays with you.", mood: 'intriguing', emoji: '🎭' },
-    { phrase: "Beautiful and moving.", mood: 'intriguing', emoji: '💫' },
-    { phrase: "You'll feel all the feelings.", mood: 'cozy', emoji: '🌟' },
-  ],
-  animation: [
-    { phrase: "Beautiful animation, great story.", mood: 'excited', emoji: '🎨' },
-    { phrase: "Fun for everyone.", mood: 'cozy', emoji: '✨' },
-    { phrase: "Looks amazing.", mood: 'excited', emoji: '🌈' },
-  ],
-  christmas: [
-    { phrase: "Perfect for the holidays.", mood: 'cozy', emoji: '🎄' },
-    { phrase: "Grab some hot cocoa.", mood: 'cozy', emoji: '☃️' },
-    { phrase: "Holiday vibes!", mood: 'cozy', emoji: '🎅' },
-  ],
-  default: [
-    { phrase: "This one is special.", mood: 'intriguing', emoji: '⭐' },
-    { phrase: "A great watch.", mood: 'excited', emoji: '🎬' },
-    { phrase: "You should watch this.", mood: 'excited', emoji: '🍿' },
-    { phrase: "You won't regret it.", mood: 'intriguing', emoji: '🎥' },
-    { phrase: "Trust me on this one.", mood: 'cozy', emoji: '✨' },
-  ],
-};
-
-function getGenreBasedFallback(genre: string, title: string): FallbackData {
-  const genreLower = genre?.toLowerCase() || '';
-  
-  // Find matching genre category
-  let fallbacks = GENRE_FALLBACKS.default;
-  
-  for (const [key, value] of Object.entries(GENRE_FALLBACKS)) {
-    if (genreLower.includes(key)) {
-      fallbacks = value;
-      break;
-    }
-  }
-  
-  // Use title length as a simple hash to pick a varied phrase
-  const index = (title?.length || 0) % fallbacks.length;
-  return fallbacks[index];
-}
-
 // ==============================================
 // ACTION RESULT TYPES
 // ==============================================
@@ -119,12 +25,6 @@ function getGenreBasedFallback(genre: string, title: string): FallbackData {
 export interface AutofillActionResult {
   success: boolean;
   data?: AutofillResponse;
-  error?: string;
-}
-
-export interface PersuadeActionResult {
-  success: boolean;
-  data?: PersuadeResponse;
   error?: string;
 }
 
@@ -225,93 +125,6 @@ If you don't recognize the film or it's too recent (after your knowledge cutoff)
     return {
       success: false,
       error: 'Failed to autofill. Please try again or enter details manually.',
-    };
-  }
-}
-
-// ==============================================
-// PERSUADE ACTION
-// ==============================================
-
-/**
- * Generate a persuasive phrase to convince the user to watch
- * @param title - The title of the media
- * @param genre - The genre(s) of the media
- * @param plot - Brief plot summary
- */
-export async function actionPersuade(
-  title: string,
-  genre: string,
-  plot: string
-): Promise<PersuadeActionResult> {
-  if (!title) {
-    return {
-      success: false,
-      error: 'Title is required',
-    };
-  }
-
-  if (!openai) {
-    // Return a fallback phrase if AI is not configured
-    return {
-      success: true,
-      data: getGenreBasedFallback(genre, title),
-    };
-  }
-
-  try {
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: `You convince people to watch films. Write a short, fun phrase that makes them want to watch now.
-
-Return ONLY a JSON object:
-{
-  "phrase": "string - A short sentence (max 80 chars). Use simple words. Be fun and direct. Examples: 'You will love every minute of this.' or 'Get ready for a wild ride.' or 'This one will make you cry (in a good way).' or 'Perfect for a cozy night in.' or 'The ending will surprise you.'",
-  "mood": "excited" | "intriguing" | "cozy" | "thrilling",
-  "emoji": "string - One emoji for the film. Examples: 🔪 horror, 💕 romance, 🚀 sci-fi, 😂 comedy, 🎄 Christmas, 🧙 fantasy, 🎭 drama, 👻 scary"
-}
-
-Use simple English. Keep it short. Match the mood to the genre.`,
-        },
-        {
-          role: 'user',
-          content: `Generate a persuasive phrase for:
-Title: "${title}"
-Genre: ${genre || 'Unknown'}
-Plot: ${plot || 'A captivating story'}`,
-        },
-      ],
-      temperature: 0.95,
-      max_tokens: 150,
-    });
-
-    const responseContent = completion.choices[0]?.message?.content;
-
-    if (!responseContent) {
-      return {
-        success: false,
-        error: 'No response received from AI',
-      };
-    }
-
-    const parsedResponse = JSON.parse(responseContent);
-    const validatedResponse = persuadeResponseSchema.parse(parsedResponse);
-
-    return {
-      success: true,
-      data: validatedResponse,
-    };
-  } catch (error) {
-    console.error('Persuade error:', error);
-
-    // Fallback phrase if AI fails - use genre-based fallback
-    return {
-      success: true,
-      data: getGenreBasedFallback(genre, title),
     };
   }
 }

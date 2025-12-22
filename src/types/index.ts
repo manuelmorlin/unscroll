@@ -11,12 +11,6 @@ export interface AutofillResponse {
   found?: boolean;
 }
 
-export interface PersuadeResponse {
-  phrase: string;
-  mood: 'excited' | 'intriguing' | 'cozy' | 'thrilling';
-  emoji: string;
-}
-
 // Auth state
 export interface AuthState {
   isAuthenticated: boolean;
