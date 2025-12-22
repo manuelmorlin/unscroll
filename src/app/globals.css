@@ -317,11 +317,12 @@ h1, h2, h3, h4, h5, h6 {
     0 0 60px rgba(0, 0, 0, 0.3);
 }
 
-/* Mobile-specific dock adjustments */
+/* Mobile-specific dock adjustments - ultra compact */
 @media (max-width: 639px) {
   .floating-dock {
-    /* Compact dock on mobile - no min-height constraint */
-    padding-bottom: var(--safe-area-inset-bottom, 0px);
+    /* Zero extra padding on mobile */
+    padding: 0 !important;
+    margin-bottom: var(--safe-area-inset-bottom, 0px);
   }
 }
 

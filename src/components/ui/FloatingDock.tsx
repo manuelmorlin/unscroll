@@ -98,12 +98,12 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
       className={`
         fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-50
         floating-dock rounded-full
-        px-1.5 py-1 sm:px-3 sm:py-3
+        p-0 sm:px-3 sm:py-3
         safe-bottom
         ${className}
       `}
     >
-      <div className="flex items-center gap-0.5 sm:gap-2">
+      <div className="flex items-center">
         {items.map((item) => {
           const isActive = item.id === activeId;
           
@@ -113,7 +113,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
               onClick={() => onSelect(item.id)}
               className={`
                 relative flex items-center justify-center
-                w-9 h-9 sm:w-12 sm:h-12 rounded-full
+                w-10 h-10 sm:w-12 sm:h-12
                 transition-colors duration-200
                 ${isActive 
                   ? 'text-amber-400' 
@@ -127,7 +127,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
               {isActive && (
                 <motion.div
                   layoutId="dock-active-minimal"
-                  className="absolute inset-0 bg-amber-400/15 rounded-full"
+                  className="absolute inset-1 bg-amber-400/15 rounded-full"
                   style={{
                     boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)',
                   }}
@@ -135,7 +135,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
                 />
               )}
               
-              <span className="relative z-10 text-base sm:text-2xl">
+              <span className="relative z-10 text-lg sm:text-2xl">
                 {item.emoji || item.icon}
               </span>
             </motion.button>
