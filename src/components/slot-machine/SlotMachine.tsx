@@ -143,6 +143,12 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     return key ? GENRE_EMOJIS[key] : '🎬';
   };
 
+  // Helper to display genre name (shorten "Science Fiction" to "Sci-Fi")
+  const displayGenreName = (genre: string): string => {
+    if (genre.toLowerCase() === 'science fiction') return 'Sci-Fi';
+    return genre;
+  };
+
   // Reset selected genre if it's no longer available
   useEffect(() => {
     if (selectedGenre && !availableGenres.includes(selectedGenre)) {
@@ -514,7 +520,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                               : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
                           } disabled:opacity-50`}
                         >
-                          {getGenreEmoji(genre)} {genre}
+                          {getGenreEmoji(genre)} {displayGenreName(genre)}
                         </button>
                       ))}
                       </div>
