@@ -279,16 +279,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto relative z-10 scrollbar-hide">
-      {/* Back to Home */}
-      <Link 
-        href="/"
-        className="inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors mb-3 sm:mb-8 text-sm"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Home</span>
-      </Link>
-
+    <div className="w-full max-w-md mx-auto relative z-10">
       {/* Logo & Title - Compact on mobile */}
       <div className="text-center mb-3 sm:mb-10">
         <motion.div

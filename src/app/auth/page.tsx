@@ -1,6 +1,8 @@
 import { AuthForm } from '@/components/auth';
 import { getPopularMoviePosters } from '@/lib/actions/tmdb';
 import { LandingPosters } from '@/components/ui';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 export default async function AuthPage({
   searchParams,
@@ -15,7 +17,16 @@ export default async function AuthPage({
   const posters = postersResult.success ? postersResult.posters || [] : [];
 
   return (
-    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4 overflow-hidden scrollbar-hide">
+    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4" style={{ overflow: 'hidden' }}>
+      {/* Back to Home - Fixed top left */}
+      <Link 
+        href="/"
+        className="fixed top-4 left-4 z-50 inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors text-sm"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Home</span>
+      </Link>
+
       {/* Floating Movie Posters Background */}
       <LandingPosters initialPosters={posters} />
 
