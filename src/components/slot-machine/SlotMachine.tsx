@@ -294,7 +294,12 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     transition={{ delay: 0.1 }}
                     className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight px-2"
                   >
-                    ✨ {selectedMedia.title} ✨
+                    {(() => {
+                      const genreEmoji = selectedMedia.genre 
+                        ? (GENRE_EMOJIS[selectedMedia.genre] || GENRE_EMOJIS[Object.keys(GENRE_EMOJIS).find(g => selectedMedia.genre?.toLowerCase().includes(g.toLowerCase())) || ''] || '🎬')
+                        : '🎬';
+                      return `${genreEmoji} ${selectedMedia.title} ${genreEmoji}`;
+                    })()}
                   </motion.h3>
 
                   {/* Meta Info */}
