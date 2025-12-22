@@ -140,8 +140,12 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       } else if (errorMessage === 'email_exists') {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
-      } else if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
-        setError('Invalid email or password');
+      } else if (
+        errorCode === 'auth/user-not-found' || 
+        errorCode === 'auth/wrong-password' ||
+        errorCode === 'auth/invalid-credential'
+      ) {
+        setError('Invalid email or password. Please check your credentials and try again.');
       } else if (errorCode === 'auth/email-already-in-use') {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
@@ -149,6 +153,8 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         setError('Password must be at least 6 characters');
       } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address');
+      } else if (errorCode === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later or reset your password.');
       } else {
         setError(firebaseError?.message || 'Authentication failed. Please try again.');
       }
