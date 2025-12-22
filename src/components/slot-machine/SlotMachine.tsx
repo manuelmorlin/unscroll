@@ -247,11 +247,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
         {/* Content */}
         <div className="relative z-10">
           {/* Title */}
+          {(isSpinning || selectedMedia || hasUnwatchedFilms) && (
           <div className="text-center mb-8">
             <h2 className="text-2xl font-light tracking-wide text-zinc-200">
-              {isSpinning ? '🎬 Rolling the reels...' : '🎟️ Ready for showtime?'}
+              {isSpinning ? '🎬 Rolling the reels...' : selectedMedia ? '🎬 Tonight\'s pick!' : '🎟️ Ready for showtime?'}
             </h2>
           </div>
+          )}
 
           {/* Slot Display */}
           <div className="min-h-[200px] flex items-center justify-center">
@@ -431,19 +433,32 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 >
                   <p className="text-zinc-400 mb-4">{error}</p>
                 </motion.div>
+              ) : !hasUnwatchedFilms ? (
+                // Empty Watchlist State
+                <motion.div
+                  key="empty-watchlist"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center"
+                >
+                  <div className="text-6xl mb-4">📋</div>
+                  <p className="text-zinc-400 text-lg font-light mb-2">
+                    Your watchlist is empty
+                  </p>
+                  <p className="text-zinc-500 text-sm flex items-center justify-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Add a film to get started
+                  </p>
+                </motion.div>
               ) : (
-                // Empty State
+                // Empty State - ready to spin
                 <motion.div
                   key="empty"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="text-center"
                 >
-                  <div className="text-6xl mb-4">🎬</div>
-                  <p className="text-zinc-400 text-lg font-light">
-                    Press the button to start the show
-                  </p>
-                  <p className="text-zinc-600 text-sm mt-2">🍿 Grab your popcorn!</p>
+                  <div className="text-6xl mb-4">🎰</div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -592,15 +607,9 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 </motion.button>
               </>
             ) : !hasUnwatchedFilms ? (
-              /* Empty Watchlist State */
-              <div className="text-center">
-                <div className="text-5xl mb-4">📋</div>
-                <p className="text-zinc-400 mb-4">Add something to your watchlist to spin!</p>
-                <div className="text-zinc-500 text-sm flex items-center justify-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  <span>Use the Add Film button below</span>
-                </div>
-              </div>
+              /* Empty Watchlist State - No button needed */
+              <div />
+            ) : (
             ) : (
               /* Main Spin Button - Cinema Red */
               <motion.button
