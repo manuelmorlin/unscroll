@@ -15,7 +15,7 @@ export default async function AuthPage({
   const posters = postersResult.success ? postersResult.posters || [] : [];
 
   return (
-    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4 overflow-hidden">
+    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4 overflow-hidden scrollbar-hide">
       {/* Floating Movie Posters Background */}
       <LandingPosters initialPosters={posters} />
 
