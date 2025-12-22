@@ -315,15 +315,20 @@ h1, h2, h3, h4, h5, h6 {
     0 0 0 1px rgba(255, 255, 255, 0.03) inset,
     0 -20px 40px -10px rgba(0, 0, 0, 0.5),
     0 0 60px rgba(0, 0, 0, 0.3);
-  /* Add safe area padding for iPhone notch/home indicator */
-  padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
 }
 
 /* Mobile-specific dock adjustments */
 @media (max-width: 639px) {
   .floating-dock {
-    /* Slightly larger touch targets on mobile */
-    min-height: 56px;
+    /* Compact dock on mobile - no min-height constraint */
+    padding-bottom: var(--safe-area-inset-bottom, 0px);
+  }
+}
+
+@media (min-width: 640px) {
+  .floating-dock {
+    /* Add safe area padding only on larger screens */
+    padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
   }
 }
 
