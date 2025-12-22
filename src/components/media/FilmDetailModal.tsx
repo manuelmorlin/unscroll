@@ -26,6 +26,23 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
   const rewatchCount = media.rewatch_count || 0;
   const totalViews = rewatchCount + 1;
 
+  // Format watched_at date - detect year-only dates (stored as YYYY-01-01)
+  const formatWatchedDate = (dateStr: string | null): string | null => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    // Check if it's a year-only date (Jan 1st at midnight UTC)
+    if (date.getMonth() === 0 && date.getDate() === 1 && date.getHours() === 0 && date.getMinutes() === 0) {
+      // Just show the year
+      return date.getFullYear().toString();
+    }
+    // Show full date
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
   const handleSaveReview = async (review: string) => {
     setCurrentReview(review);
     setShowReviewGenerator(false);
@@ -182,35 +199,33 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
 
           {/* Details Section */}
           <div className="px-5 sm:px-6 pb-6 space-y-5">
-            {/* Stats Bar */}
-            <div className="flex items-center gap-4 py-3 px-4 bg-zinc-800/50 rounded-xl">
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-green-400" />
-                <span className="text-sm text-zinc-300">
-                  {totalViews} {totalViews === 1 ? 'view' : 'views'}
-                </span>
-              </div>
-              {rewatchCount > 0 && (
+            {/* Stats Bar - only show if film has been watched */}
+            {media.status === 'watched' && (
+              <div className="flex items-center gap-4 py-3 px-4 bg-zinc-800/50 rounded-xl">
                 <div className="flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4 text-blue-400" />
+                  <Eye className="w-4 h-4 text-green-400" />
                   <span className="text-sm text-zinc-300">
-                    {rewatchCount} {rewatchCount === 1 ? 'rewatch' : 'rewatches'}
+                    {totalViews} {totalViews === 1 ? 'view' : 'views'}
                   </span>
                 </div>
-              )}
-              {media.watched_at && (
-                <div className="flex items-center gap-2 ml-auto">
-                  <Calendar className="w-4 h-4 text-zinc-500" />
-                  <span className="text-sm text-zinc-400">
-                    {new Date(media.watched_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
-                </div>
-              )}
-            </div>
+                {rewatchCount > 0 && (
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-zinc-300">
+                      {rewatchCount} {rewatchCount === 1 ? 'rewatch' : 'rewatches'}
+                    </span>
+                  </div>
+                )}
+                {media.watched_at && (
+                  <div className="flex items-center gap-2 ml-auto">
+                    <Calendar className="w-4 h-4 text-zinc-500" />
+                    <span className="text-sm text-zinc-400">
+                      {formatWatchedDate(media.watched_at)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Plot */}
             {media.plot && (

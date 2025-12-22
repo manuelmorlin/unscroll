@@ -275,13 +275,14 @@ export async function updateWatchDate(id: string, date: string): Promise<MediaAc
 
 export async function updateMediaStatus(
   id: string,
-  status: MediaStatus
+  status: MediaStatus,
+  watchedAt?: string | null // Optional: full date ISO string, year-only string like "2024", or null/undefined for no date
 ): Promise<MediaActionResult> {
   // If marking as watched, set watched_at date
   if (status === 'watched') {
     return updateMediaItem(id, { 
       status, 
-      watched_at: new Date().toISOString() 
+      watched_at: watchedAt !== undefined ? watchedAt : new Date().toISOString() 
     });
   }
   // If moving away from watched, clear watched_at, rating and review

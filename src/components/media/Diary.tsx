@@ -47,6 +47,11 @@ function getGenreEmoji(genre: string | null | undefined): string {
 function formatDate(dateString: string | null): string {
   if (!dateString) return 'Unknown date';
   const date = new Date(dateString);
+  // Check if it's a year-only date (Jan 1st at midnight UTC)
+  if (date.getMonth() === 0 && date.getDate() === 1 && date.getHours() === 0 && date.getMinutes() === 0) {
+    // Just show the year
+    return date.getFullYear().toString();
+  }
   return date.toLocaleDateString('en-US', {
     weekday: 'short',
     year: 'numeric',

@@ -243,10 +243,12 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 // RATE MODAL - Opens after marking as Watched
 // ==============================================
 
+type DateMode = 'full' | 'year' | 'none';
+
 interface RateModalProps {
   media: MediaItem;
   onClose: () => void;
-  onRate: (id: string, rating: number, review?: string) => Promise<void>;
+  onRate: (id: string, rating: number, review?: string, watchedAt?: string | null) => Promise<void>;
 }
 
 function RateModal({ media, onClose, onRate }: RateModalProps) {
@@ -254,6 +256,11 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
   const [review, setReview] = useState('');
   const [isGeneratingReview, setIsGeneratingReview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Date selection state
+  const [dateMode, setDateMode] = useState<DateMode>('full');
+  const [watchedDate, setWatchedDate] = useState<string>(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
+  const [watchedYear, setWatchedYear] = useState<string>(new Date().getFullYear().toString());
 
   const handleGenerateReview = useCallback(async () => {
     if (!rating) return;
@@ -271,12 +278,31 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
     if (!rating) return;
     
     setIsSaving(true);
-    await onRate(media.id, rating, review || undefined);
+    
+    // Determine the watched_at value based on date mode
+    let watchedAt: string | null = null;
+    if (dateMode === 'full') {
+      watchedAt = new Date(watchedDate).toISOString();
+    } else if (dateMode === 'year') {
+      // Store as ISO string for Jan 1 of that year (we'll display just the year)
+      watchedAt = `${watchedYear}-01-01T00:00:00.000Z`;
+    }
+    // If dateMode === 'none', watchedAt remains null
+    
+    await onRate(media.id, rating, review || undefined, watchedAt);
     setIsSaving(false);
     onClose();
   };
 
   const handleSkip = () => {
+    // Even when skipping rating, save the watched date
+    let watchedAt: string | null = null;
+    if (dateMode === 'full') {
+      watchedAt = new Date(watchedDate).toISOString();
+    } else if (dateMode === 'year') {
+      watchedAt = `${watchedYear}-01-01T00:00:00.000Z`;
+    }
+    onRate(media.id, 0, undefined, watchedAt); // rating 0 means skip rating but still set date
     onClose();
   };
 
@@ -307,8 +333,79 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
           🎬 {media.title}
         </h2>
         <p className="text-sm text-green-400 text-center mb-6">
-          Marked as watched!
+          Mark as watched
         </p>
+
+        {/* Watch Date Section */}
+        <div className="mb-6">
+          <p className="text-sm text-zinc-400 text-center mb-3 flex items-center justify-center gap-2">
+            📅 When did you watch it?
+          </p>
+          
+          {/* Date Mode Toggle */}
+          <div className="flex justify-center gap-2 mb-3">
+            <button
+              type="button"
+              onClick={() => setDateMode('full')}
+              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
+                dateMode === 'full'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              }`}
+            >
+              Full Date
+            </button>
+            <button
+              type="button"
+              onClick={() => setDateMode('year')}
+              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
+                dateMode === 'year'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              }`}
+            >
+              Year Only
+            </button>
+            <button
+              type="button"
+              onClick={() => setDateMode('none')}
+              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
+                dateMode === 'none'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              }`}
+            >
+              No Date
+            </button>
+          </div>
+
+          {/* Date Input based on mode */}
+          {dateMode === 'full' && (
+            <input
+              type="date"
+              value={watchedDate}
+              onChange={(e) => setWatchedDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+              className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 [color-scheme:dark]"
+            />
+          )}
+          {dateMode === 'year' && (
+            <input
+              type="number"
+              value={watchedYear}
+              onChange={(e) => setWatchedYear(e.target.value)}
+              min="1900"
+              max={new Date().getFullYear()}
+              placeholder="e.g., 2024"
+              className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 text-center"
+            />
+          )}
+          {dateMode === 'none' && (
+            <p className="text-xs text-zinc-500 text-center py-2">
+              No date will be saved
+            </p>
+          )}
+        </div>
 
         {/* Rating Section */}
         <div className="mb-6">
@@ -545,15 +642,18 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
       : mediaItems.filter((item) => item.status === filter);
 
   const handleStatusChange = async (id: string, status: MediaStatus) => {
-    await updateMediaStatus(id, status);
-    
-    // Open rating modal when marking as watched
+    // For marking as watched, open the rate modal first (which handles date selection)
+    // Don't update status immediately - the modal will handle it
     if (status === 'watched') {
       const media = mediaItems.find(item => item.id === id);
       if (media) {
         setRatingMedia(media);
       }
+      return;
     }
+    
+    // For other status changes, update immediately
+    await updateMediaStatus(id, status);
   };
 
   const handleDelete = async (id: string) => {
@@ -572,12 +672,18 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
     await updateMediaItem(id, updates);
   };
 
-  const handleRate = async (id: string, rating: number, review?: string) => {
-    const updates: Partial<MediaItem> = { user_rating: rating };
-    if (review) {
-      updates.user_review = review;
+  const handleRate = async (id: string, rating: number, review?: string, watchedAt?: string | null) => {
+    // First update status to watched with the selected date
+    await updateMediaStatus(id, 'watched', watchedAt);
+    
+    // If rating was provided (not skipped), save it
+    if (rating > 0) {
+      const updates: Partial<MediaItem> = { user_rating: rating };
+      if (review) {
+        updates.user_review = review;
+      }
+      await updateMediaItem(id, updates);
     }
-    await updateMediaItem(id, updates);
   };
 
   if (isLoading) {
