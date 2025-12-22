@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv, Plus } from 'lucide-react';
-import { getRandomUnwatched, markAsWatched, getAllGenres, updateMediaItem } from '@/lib/actions/media';
+import { getRandomUnwatched, markAsWatched, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
 import { StarRating } from '@/components/ui';
 import { useMediaItems } from '@/hooks/useMediaItems';
@@ -89,7 +89,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string>('');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [spinCount, setSpinCount] = useState(0);
@@ -124,23 +123,19 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     });
   });
 
-  // Load genres function
-  const loadGenres = useCallback(async () => {
-    const result = await getAllGenres();
-    if (result.success && result.data) {
-      setGenres(result.data as string[]);
-      // Reset selected genre if it's no longer available
-      const newGenres = result.data as string[];
-      if (selectedGenre && !newGenres.includes(selectedGenre)) {
-        setSelectedGenre('');
-      }
-    }
-  }, [selectedGenre]);
+  // Calculate available genres from unwatched films (reactive)
+  const availableGenres = [...new Set(
+    unwatchedItems
+      .map(item => item.genre)
+      .filter((genre): genre is string => genre !== null && genre !== undefined)
+  )].sort();
 
-  // Load genres on mount
+  // Reset selected genre if it's no longer available
   useEffect(() => {
-    loadGenres();
-  }, [loadGenres]);
+    if (selectedGenre && !availableGenres.includes(selectedGenre)) {
+      setSelectedGenre('');
+    }
+  }, [availableGenres, selectedGenre]);
 
   // Animate through loading phrases
   const animatePhrases = useCallback(async () => {
@@ -205,10 +200,9 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
       setShownFilmIds([]); // Reset shown films
       setSelectedGenre(''); // Reset genre filter
       setSelectedDuration(''); // Reset duration filter
-      await loadGenres(); // Reload genres to reflect updated watchlist
       onWatched?.();
     }
-  }, [selectedMedia, onWatched, loadGenres]);
+  }, [selectedMedia, onWatched]);
 
   // Handle rating from modal
   const handleRate = useCallback(async (rating: number) => {
@@ -478,7 +472,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
             {spinCount < MAX_SPINS && (
               <div className="flex flex-col items-center gap-3 w-full">
                 {/* Genre Pills - horizontal scroll on mobile, centered on desktop */}
-                {genres.length > 0 && (
+                {availableGenres.length > 0 && (
                   <div className="w-full">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre</span>
@@ -496,7 +490,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       >
                         🎬 All
                       </button>
-                      {genres.slice(0, 8).map((genre) => (
+                      {availableGenres.map((genre) => (
                         <button
                           key={genre}
                           onClick={() => setSelectedGenre(selectedGenre === genre ? '' : genre)}
