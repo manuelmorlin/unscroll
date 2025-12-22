@@ -408,6 +408,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                       )}
                       <span className="text-sm sm:text-base">Autofill</span>
                     </motion.button>
+                  </div>
                 </div>
 
                 {/* Genre & Year */}
@@ -501,7 +502,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                   )}
                 </motion.button>
               </form>
-              </motion.div>
+            </motion.div>
             </div>
           </>
         )}
