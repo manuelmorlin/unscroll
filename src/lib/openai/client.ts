@@ -10,7 +10,7 @@ export const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
 
-export const AI_MODEL = 'gpt-5-mini';
+export const AI_MODEL = 'gpt-4o-mini';
 
 // Fallback model for testing
 export const FALLBACK_MODEL = 'gpt-3.5-turbo';
