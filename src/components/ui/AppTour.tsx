@@ -225,26 +225,28 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200]"
+            className="fixed inset-0 z-[200] pointer-events-auto"
             onClick={handleSkip}
           >
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            {/* Dark overlay - only show when centered (no target) */}
+            {isCentered && (
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            )}
             
-            {/* Spotlight on target */}
+            {/* Spotlight on target - creates darkening around element */}
             {hasValidTarget && !isCentered && (
               <motion.div
                 key={`spotlight-${currentStep}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="absolute rounded-2xl"
+                className="absolute rounded-2xl pointer-events-none"
                 style={{
                   top: targetRect.top - 8,
                   left: targetRect.left - 8,
                   width: targetRect.width + 16,
                   height: targetRect.height + 16,
-                  boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
-                  border: '2px solid rgba(251, 191, 36, 0.5)',
+                  boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.85)',
+                  border: '2px solid rgba(251, 191, 36, 0.6)',
                   background: 'transparent',
                 }}
               />
