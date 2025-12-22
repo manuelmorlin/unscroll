@@ -610,7 +610,6 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
               /* Empty Watchlist State - No button needed */
               <div />
             ) : (
-            ) : (
               /* Main Spin Button - Cinema Red */
               <motion.button
                 whileTap={{ scale: 0.95 }}
