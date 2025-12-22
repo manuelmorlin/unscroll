@@ -635,7 +635,7 @@ export function Wrapped() {
     });
     const favoriteLanguage = Object.entries(languageCount).sort((a, b) => b[1] - a[1])[0];
 
-    // Top rated films - handle ties by rewatch count, show all if still tied
+    // Top rated films - handle ties by watches in the current year
     const ratedFilms = watchedThisYear.filter((item) => item.user_rating);
     let topRatedFilms: MediaItem[] = [];
     if (ratedFilms.length > 0) {
@@ -645,10 +645,33 @@ export function Wrapped() {
       if (topRated.length === 1) {
         topRatedFilms = topRated;
       } else {
-        // Tie-breaker: most rewatches
-        const maxRewatches = Math.max(...topRated.map((f) => f.rewatch_count || 0));
-        const topByRewatches = topRated.filter((f) => (f.rewatch_count || 0) === maxRewatches);
-        topRatedFilms = topByRewatches;
+        // Tie-breaker: count watches in this year (first watch + rewatches in year)
+        const getWatchesInYear = (item: MediaItem) => {
+          let count = 0;
+          // Count the first watch if it's in this year
+          if (item.watched_at) {
+            const watchedYear = new Date(item.watched_at).getFullYear();
+            if (watchedYear === year) count++;
+          }
+          // Count rewatches in this year
+          if (item.rewatch_dates) {
+            item.rewatch_dates.forEach((date) => {
+              const rewatchYear = new Date(date).getFullYear();
+              if (rewatchYear === year) count++;
+            });
+          }
+          return count;
+        };
+        
+        const topRatedWithYearCount = topRated.map((f) => ({
+          film: f,
+          yearWatches: getWatchesInYear(f),
+        }));
+        
+        const maxYearWatches = Math.max(...topRatedWithYearCount.map((f) => f.yearWatches));
+        topRatedFilms = topRatedWithYearCount
+          .filter((f) => f.yearWatches === maxYearWatches)
+          .map((f) => f.film);
       }
     }
 
@@ -667,8 +690,31 @@ export function Wrapped() {
     });
     const mostWatchedMonth = Object.entries(monthCount).sort((a, b) => b[1] - a[1])[0];
 
-    // Total rewatches
-    const totalRewatches = watchedThisYear.reduce((sum, item) => sum + (item.rewatch_count || 0), 0);
+    // Total rewatches in this year
+    let totalRewatches = 0;
+    watchedThisYear.forEach((item) => {
+      if (item.rewatch_dates) {
+        item.rewatch_dates.forEach((date) => {
+          if (new Date(date).getFullYear() === year) {
+            totalRewatches++;
+          }
+        });
+      }
+    });
+    // Also count rewatches for films first watched in previous years but rewatched this year
+    mediaItems.forEach((item) => {
+      if (item.status === 'watched' && item.watched_at) {
+        const firstWatchYear = new Date(item.watched_at).getFullYear();
+        // If first watch was not this year, count rewatches in this year
+        if (firstWatchYear !== year && item.rewatch_dates) {
+          item.rewatch_dates.forEach((date) => {
+            if (new Date(date).getFullYear() === year) {
+              totalRewatches++;
+            }
+          });
+        }
+      }
+    });
 
     // Longest and shortest films
     const filmsWithDuration = watchedThisYear.filter((item) => item.duration);
