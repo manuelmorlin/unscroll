@@ -109,7 +109,7 @@ async function updateAllGenres() {
     const mediaSnapshot = await db
       .collection('users')
       .doc(userId)
-      .collection('media')
+      .collection('mediaItems')
       .get();
     
     for (const mediaDoc of mediaSnapshot.docs) {
@@ -151,7 +151,7 @@ async function updateAllGenres() {
       await db
         .collection('users')
         .doc(userId)
-        .collection('media')
+        .collection('mediaItems')
         .doc(mediaDoc.id)
         .update({ genre: newGenre });
       
