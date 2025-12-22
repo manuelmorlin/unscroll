@@ -398,7 +398,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
+            className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl"
           >
             <p className="text-red-400 text-sm">{error}</p>
             {/* Resend Verification Button */}
@@ -407,15 +407,18 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                 type="button"
                 onClick={handleResendVerification}
                 disabled={isResendingVerification}
-                className="mt-2 text-sm text-yellow-400 hover:text-yellow-300 underline underline-offset-2 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="mt-3 w-full py-2.5 px-4 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-400 text-sm font-medium rounded-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isResendingVerification ? (
                   <>
-                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     Sending...
                   </>
                 ) : (
-                  '📧 Send verification email again'
+                  <>
+                    <Mail className="w-4 h-4" />
+                    Send verification email again
+                  </>
                 )}
               </button>
             )}
