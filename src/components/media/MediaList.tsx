@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star } from 'lucide-react';
+import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star, Sparkles, RefreshCw } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
+import { actionGenerateReview } from '@/lib/actions/ai';
 import { StarRating } from '@/components/ui';
 import { FilmDetailModal } from './FilmDetailModal';
 import type { MediaItem, MediaStatus } from '@/types/database';
@@ -245,17 +246,32 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
 interface RateModalProps {
   media: MediaItem;
   onClose: () => void;
-  onRate: (id: string, rating: number) => Promise<void>;
+  onRate: (id: string, rating: number, review?: string) => Promise<void>;
 }
 
 function RateModal({ media, onClose, onRate }: RateModalProps) {
   const [rating, setRating] = useState<number | null>(null);
+  const [review, setReview] = useState('');
+  const [isGeneratingReview, setIsGeneratingReview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleRate = async (newRating: number) => {
-    setRating(newRating);
+  const handleGenerateReview = useCallback(async () => {
+    if (!rating) return;
+    
+    setIsGeneratingReview(true);
+    const result = await actionGenerateReview(media.title, rating, [], 'casual');
+    
+    if (result.success && result.data) {
+      setReview(result.data.review);
+    }
+    setIsGeneratingReview(false);
+  }, [media.title, rating]);
+
+  const handleSave = async () => {
+    if (!rating) return;
+    
     setIsSaving(true);
-    await onRate(media.id, newRating);
+    await onRate(media.id, rating, review || undefined);
     setIsSaving(false);
     onClose();
   };
@@ -277,7 +293,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl shadow-green-900/20"
+        className="bg-zinc-900 border border-green-900/30 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-green-900/20 max-h-[90vh] overflow-y-auto"
       >
         {/* Success Badge */}
         <div className="flex justify-center mb-4">
@@ -294,32 +310,86 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
           Marked as watched!
         </p>
 
-        {/* Reminder */}
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
-          <p className="text-yellow-300 text-sm text-center flex items-center justify-center gap-2">
-            <Star className="w-4 h-4" />
-            Don&apos;t forget to rate this film!
+        {/* Rating Section */}
+        <div className="mb-6">
+          <p className="text-sm text-zinc-400 text-center mb-3 flex items-center justify-center gap-2">
+            <Star className="w-4 h-4 text-yellow-500" />
+            Rate this film
           </p>
+          <div className="flex justify-center">
+            <StarRating
+              value={rating}
+              onChange={setRating}
+              size="lg"
+              showLabel
+            />
+          </div>
         </div>
 
-        {/* Rating */}
-        <div className="flex justify-center mb-6">
-          <StarRating
-            value={rating}
-            onChange={handleRate}
-            size="lg"
-            showLabel
-          />
-        </div>
+        {/* Review Section - Only shows after rating */}
+        {rating && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mb-6"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-zinc-400">Write a review (optional)</p>
+              <button
+                onClick={handleGenerateReview}
+                disabled={isGeneratingReview}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-yellow-500/10 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-colors disabled:opacity-50"
+              >
+                {isGeneratingReview ? (
+                  <>
+                    <RefreshCw className="w-3 h-3 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3 h-3" />
+                    AI Generate
+                  </>
+                )}
+              </button>
+            </div>
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="What did you think of this film?"
+              className="w-full h-24 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 resize-none"
+            />
+          </motion.div>
+        )}
 
-        {/* Skip Button */}
-        <button
-          onClick={handleSkip}
-          disabled={isSaving}
-          className="w-full py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all text-sm"
-        >
-          {isSaving ? 'Saving...' : 'Skip for now'}
-        </button>
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          <button
+            onClick={handleSave}
+            disabled={!rating || isSaving}
+            className="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-semibold rounded-xl hover:from-yellow-400 hover:to-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          >
+            {isSaving ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                Save {review ? 'Rating & Review' : 'Rating'}
+              </>
+            )}
+          </button>
+          
+          <button
+            onClick={handleSkip}
+            disabled={isSaving}
+            className="w-full py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all text-sm"
+          >
+            Skip for now
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -502,8 +572,12 @@ export function MediaList({ filter = 'all' }: MediaListProps) {
     await updateMediaItem(id, updates);
   };
 
-  const handleRate = async (id: string, rating: number) => {
-    await updateMediaItem(id, { user_rating: rating });
+  const handleRate = async (id: string, rating: number, review?: string) => {
+    const updates: Partial<MediaItem> = { user_rating: rating };
+    if (review) {
+      updates.user_review = review;
+    }
+    await updateMediaItem(id, updates);
   };
 
   if (isLoading) {
