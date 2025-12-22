@@ -15,7 +15,7 @@ export default async function AuthPage({
   const posters = postersResult.success ? postersResult.posters || [] : [];
 
   return (
-    <main className="h-screen sm:min-h-screen cinema-bg flex items-center justify-center px-4 py-2 sm:py-12 relative overflow-hidden overflow-y-hidden">
+    <main className="fixed inset-0 cinema-bg flex items-center justify-center px-4 overflow-hidden">
       {/* Floating Movie Posters Background */}
       <LandingPosters initialPosters={posters} />
 
