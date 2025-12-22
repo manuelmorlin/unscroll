@@ -99,8 +99,30 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
 
   // Get media items to check if there are unwatched films
   const { mediaItems } = useMediaItems();
-  const unwatchedCount = mediaItems.filter(item => item.status === 'unwatched').length;
+  const unwatchedItems = mediaItems.filter(item => item.status === 'unwatched');
+  const unwatchedCount = unwatchedItems.length;
   const hasUnwatchedFilms = unwatchedCount > 0;
+
+  // Helper to parse duration string to minutes
+  const parseDurationToMinutes = (duration: string): number => {
+    const hoursMatch = duration.match(/(\d+)\s*h/);
+    const minutesMatch = duration.match(/(\d+)\s*m/);
+    const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+    const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+    return hours * 60 + minutes;
+  };
+
+  // Calculate available duration options based on unwatched films
+  const availableDurationOptions = DURATION_OPTIONS.filter(option => {
+    if (option.value === '') return true; // Always show "Any"
+    const maxMinutes = parseInt(option.value);
+    // Check if any unwatched film fits this duration
+    return unwatchedItems.some(item => {
+      if (!item.duration) return true; // Films without duration are considered available
+      const filmMinutes = parseDurationToMinutes(item.duration);
+      return filmMinutes <= maxMinutes;
+    });
+  });
 
   // Load genres function
   const loadGenres = useCallback(async () => {
@@ -479,12 +501,13 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 )}
 
                 {/* Duration Pills - horizontal scroll on mobile */}
+                {availableDurationOptions.length > 1 && (
                 <div className="w-full">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="text-xs text-zinc-500 uppercase tracking-wider">Duration</span>
                   </div>
                   <div className="flex gap-2 justify-center overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-                    {DURATION_OPTIONS.map((option) => (
+                    {availableDurationOptions.map((option) => (
                       <button
                         key={option.value}
                         onClick={() => setSelectedDuration(selectedDuration === option.value ? '' : option.value)}
@@ -500,6 +523,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     ))}
                   </div>
                 </div>
+                )}
 
                 {/* Active Filters Summary */}
                 {(selectedGenre || selectedDuration) && (
