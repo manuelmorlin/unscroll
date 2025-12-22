@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Check, X } from 'lucide-react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -87,7 +87,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const passwordValue = formData.get('password') as string;
     const username = formData.get('username') as string;
 
     // Validate email format
@@ -109,7 +109,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
 
       if (mode === 'register') {
         // Create new user
-        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        userCredential = await createUserWithEmailAndPassword(auth, email, passwordValue);
         
         // Update the user's display name on the client side
         await updateProfile(userCredential.user, {
@@ -142,25 +142,27 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         // Send email verification
         await sendEmailVerification(userCredential.user);
         
-        // Sign out after registration (user needs to verify email and login)
+        // Sign out after registration (user needs to verify email first)
         await auth.signOut();
         
         // Show success message and switch to login mode
-        setSuccessMessage('✉️ Account created! Please check your email to verify your account, then sign in.');
+        setSuccessMessage('Account created! Please check your email to verify your account before signing in.');
         setMode('login');
-        setPassword('');
+        setPassword(''); // Reset password field
         setIsLoading(false);
         return;
       } else {
         // Sign in existing user
-        userCredential = await signInWithEmailAndPassword(auth, email, password);
+        userCredential = await signInWithEmailAndPassword(auth, email, passwordValue);
         
         // Check if email is verified
         if (!userCredential.user.emailVerified) {
           // Resend verification email
           await sendEmailVerification(userCredential.user);
           await auth.signOut();
-          throw new Error('email_not_verified');
+          setError('Please verify your email before signing in. A new verification email has been sent.');
+          setIsLoading(false);
+          return;
         }
       }
 
@@ -183,8 +185,6 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       } else if (errorMessage === 'email_exists') {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
-      } else if (errorMessage === 'email_not_verified') {
-        setError('Please verify your email before signing in. We sent you a new verification link.');
       } else if (
         errorCode === 'auth/user-not-found' || 
         errorCode === 'auth/wrong-password' ||
@@ -195,7 +195,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         setError('An account with this email already exists. Please sign in.');
         setMode('login'); // Switch to login mode
       } else if (errorCode === 'auth/weak-password') {
-        setError('Password must be at least 8 characters with uppercase, lowercase and numbers');
+        setError('Password must be at least 6 characters');
       } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address');
       } else if (errorCode === 'auth/too-many-requests') {
@@ -458,34 +458,36 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             name="password"
             placeholder="Password"
             required
-            minLength={8}
+            minLength={mode === 'register' ? 8 : 6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 bg-zinc-900/80 border border-red-900/30 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 transition-all"
           />
         </div>
 
-        {/* Password Requirements - only show for register mode */}
+        {/* Password Requirements - Only show during registration */}
         {mode === 'register' && password.length > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="text-xs space-y-1 px-2"
+            exit={{ opacity: 0, height: 0 }}
+            className="grid grid-cols-2 gap-2 text-xs"
           >
-            <p className="text-zinc-500 mb-1">Password must have:</p>
-            <div className="grid grid-cols-2 gap-1">
-              <span className={passwordRequirements.minLength ? 'text-emerald-400' : 'text-zinc-500'}>
-                {passwordRequirements.minLength ? '✓' : '○'} 8+ characters
-              </span>
-              <span className={passwordRequirements.hasUppercase ? 'text-emerald-400' : 'text-zinc-500'}>
-                {passwordRequirements.hasUppercase ? '✓' : '○'} Uppercase letter
-              </span>
-              <span className={passwordRequirements.hasLowercase ? 'text-emerald-400' : 'text-zinc-500'}>
-                {passwordRequirements.hasLowercase ? '✓' : '○'} Lowercase letter
-              </span>
-              <span className={passwordRequirements.hasNumber ? 'text-emerald-400' : 'text-zinc-500'}>
-                {passwordRequirements.hasNumber ? '✓' : '○'} Number
-              </span>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.minLength ? 'text-green-400' : 'text-zinc-500'}`}>
+              {passwordRequirements.minLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+              8+ characters
+            </div>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasUppercase ? 'text-green-400' : 'text-zinc-500'}`}>
+              {passwordRequirements.hasUppercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+              Uppercase letter
+            </div>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasLowercase ? 'text-green-400' : 'text-zinc-500'}`}>
+              {passwordRequirements.hasLowercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+              Lowercase letter
+            </div>
+            <div className={`flex items-center gap-1.5 ${passwordRequirements.hasNumber ? 'text-green-400' : 'text-zinc-500'}`}>
+              {passwordRequirements.hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+              Number
             </div>
           </motion.div>
         )}
