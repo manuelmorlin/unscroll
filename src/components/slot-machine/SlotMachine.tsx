@@ -580,8 +580,12 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
             {spinCount >= MAX_SPINS && selectedMedia ? (
               <>
-                {/* No more spins - only show Mark as Watched */}
-                <div className="text-sm text-yellow-400 mb-2 sm:mb-0 sm:mr-2">🎟️ Final showing!</div>
+                {/* No more spins - prominent message */}
+                <div className="w-full sm:w-auto text-center mb-3 sm:mb-0">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/40 rounded-full">
+                    <span className="text-yellow-400 font-medium">🎟️ Out of tickets! Time to watch this one.</span>
+                  </div>
+                </div>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={handleMarkWatched}
