@@ -70,7 +70,7 @@ export default async function HomePage() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-900/30 border border-red-700/40 rounded-full text-red-300 text-sm mb-8">
             <span className="text-lg">🍿</span>
-            <span>Stop scrolling. Start watching.</span>
+            <span>Your personal film diary & decision maker</span>
           </div>
 
           {/* Main Headline */}
@@ -81,8 +81,8 @@ export default async function HomePage() {
 
           {/* Subheadline */}
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Tired of spending more time choosing than watching? 
-            Add your movies, spin the wheel, and let Unscroll pick your next film.
+            Track every film you watch, rate your favorites, and never spend hours deciding again. 
+            Your personal watchlist meets AI-powered recommendations and a slot machine that picks for you.
           </p>
 
           {/* CTA Buttons */}
@@ -169,20 +169,20 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="gold-shimmer">How it works</span> 🎥
+              <span className="gold-shimmer">Everything you need</span> 🎥
             </h2>
-            <p className="text-zinc-400 text-lg">Three simple steps to movie night bliss</p>
+            <p className="text-zinc-400 text-lg">A complete toolkit for film lovers</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
               <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
-                📝
+                �
               </div>
-              <h3 className="text-xl font-semibold mb-3">Build your list</h3>
+              <h3 className="text-xl font-semibold mb-3">Smart Watchlist</h3>
               <p className="text-zinc-400 leading-relaxed">
-                Add movies you want to watch. Our AI auto-fills all the details for you.
+                Add films you want to watch. Our AI auto-fills genres, cast, plot, and more from TMDB.
               </p>
             </div>
 
@@ -191,20 +191,53 @@ export default async function HomePage() {
               <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
                 🎰
               </div>
-              <h3 className="text-xl font-semibold mb-3">Spin the wheel</h3>
+              <h3 className="text-xl font-semibold mb-3">Decision Slot Machine</h3>
               <p className="text-zinc-400 leading-relaxed">
-                Can&apos;t decide? Let fate choose. Hit spin and watch the magic happen.
+                Can&apos;t decide? Filter by genre and spin. Let fate pick your next movie night.
               </p>
             </div>
 
             {/* Feature 3 */}
             <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
               <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                📖
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Personal Film Diary</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Rate every film with stars, write reviews, and keep track of everything you&apos;ve watched.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                ✨
+              </div>
+              <h3 className="text-xl font-semibold mb-3">AI-Powered Insights</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Get personalized recommendations, automatic reviews, and deep analysis of your taste.
+              </p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
+                🎁
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Year Wrapped</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Discover your yearly film stats, favorite genres, and personalized insights about your viewing habits.
+              </p>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-red-900/30 rounded-2xl p-8 hover:border-red-700/50 transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition-transform">
                 🎬
               </div>
-              <h3 className="text-xl font-semibold mb-3">Lights, camera, action!</h3>
+              <h3 className="text-xl font-semibold mb-3">Rich Film Details</h3>
               <p className="text-zinc-400 leading-relaxed">
-                Get a persuasive pitch that&apos;ll make you excited to press play.
+                Complete info from TMDB: posters, cast, runtime, genres, and plot summaries for every film.
               </p>
             </div>
           </div>
