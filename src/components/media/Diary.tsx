@@ -110,12 +110,28 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
   const [showRewatchDates, setShowRewatchDates] = useState(false);
   const [newRewatchDate, setNewRewatchDate] = useState(new Date().toISOString().split('T')[0]);
   const [review, setReview] = useState(media.user_review || '');
-  const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : '');
   const [showReviewGenerator, setShowReviewGenerator] = useState(false);
   const genreEmoji = getGenreEmoji(media.genre);
   const rewatchCount = media.rewatch_count || 0;
   const rewatchDates = media.rewatch_dates || [];
   const totalViews = rewatchCount + 1; // First watch + rewatches
+
+  // Date editing state
+  type DateMode = 'full' | 'year' | 'none';
+  const isYearOnlyDate = (dateStr: string | null): boolean => {
+    if (!dateStr) return false;
+    const date = new Date(dateStr);
+    return date.getMonth() === 0 && date.getDate() === 1 && date.getHours() === 0 && date.getMinutes() === 0;
+  };
+  
+  const getInitialDateMode = (): DateMode => {
+    if (!media.watched_at) return 'none';
+    return isYearOnlyDate(media.watched_at) ? 'year' : 'full';
+  };
+  
+  const [dateMode, setDateMode] = useState<DateMode>(getInitialDateMode());
+  const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : new Date().toISOString().split('T')[0]);
+  const [editedYear, setEditedYear] = useState(media.watched_at ? new Date(media.watched_at).getFullYear().toString() : new Date().getFullYear().toString());
 
   const handleRatingChange = async (rating: number) => {
     setIsRating(true);
@@ -143,14 +159,21 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
   };
 
   const handleDateSave = async () => {
-    if (!editedDate) return;
-    const newDate = new Date(editedDate).toISOString();
+    let newDate: string | null = null;
+    
+    if (dateMode === 'full' && editedDate) {
+      newDate = new Date(editedDate).toISOString();
+    } else if (dateMode === 'year' && editedYear) {
+      newDate = `${editedYear}-01-01T00:00:00.000Z`;
+    }
+    // If dateMode === 'none', newDate remains null
+    
     if (newDate === media.watched_at) {
       setIsEditingDate(false);
       return;
     }
     setIsSavingDate(true);
-    await onDateChange(media.id, newDate);
+    await onDateChange(media.id, newDate || '');
     setIsSavingDate(false);
     setIsEditingDate(false);
   };
@@ -233,26 +256,81 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                 {/* Watch Date - editable */}
                 <div className="flex-shrink-0 text-right">
                   {isEditingDate ? (
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="date"
-                        value={editedDate}
-                        onChange={(e) => setEditedDate(e.target.value)}
-                        className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-white"
-                      />
-                      <button
-                        onClick={handleDateSave}
-                        disabled={isSavingDate}
-                        className="text-xs text-green-500 hover:text-green-400 px-1"
-                      >
-                        {isSavingDate ? '...' : '✓'}
-                      </button>
-                      <button
-                        onClick={() => setIsEditingDate(false)}
-                        className="text-xs text-zinc-500 hover:text-zinc-400 px-1"
-                      >
-                        ✕
-                      </button>
+                    <div className="flex flex-col items-end gap-2">
+                      {/* Date Mode Toggle */}
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setDateMode('full')}
+                          className={`px-2 py-0.5 text-[10px] rounded transition-all ${
+                            dateMode === 'full'
+                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+                              : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300'
+                          }`}
+                        >
+                          Date
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDateMode('year')}
+                          className={`px-2 py-0.5 text-[10px] rounded transition-all ${
+                            dateMode === 'year'
+                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+                              : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300'
+                          }`}
+                        >
+                          Year
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDateMode('none')}
+                          className={`px-2 py-0.5 text-[10px] rounded transition-all ${
+                            dateMode === 'none'
+                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+                              : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300'
+                          }`}
+                        >
+                          None
+                        </button>
+                      </div>
+                      {/* Date Input */}
+                      <div className="flex items-center gap-1">
+                        {dateMode === 'full' && (
+                          <input
+                            type="date"
+                            value={editedDate}
+                            onChange={(e) => setEditedDate(e.target.value)}
+                            max={new Date().toISOString().split('T')[0]}
+                            className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-white [color-scheme:dark]"
+                          />
+                        )}
+                        {dateMode === 'year' && (
+                          <input
+                            type="number"
+                            value={editedYear}
+                            onChange={(e) => setEditedYear(e.target.value)}
+                            min="1900"
+                            max={new Date().getFullYear()}
+                            className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-white w-16 text-center"
+                          />
+                        )}
+                        {dateMode === 'none' && (
+                          <span className="text-[10px] text-zinc-500 px-2">No date</span>
+                        )}
+                        <button
+                          onClick={handleDateSave}
+                          disabled={isSavingDate}
+                          className="text-xs text-green-500 hover:text-green-400 px-1"
+                        >
+                          {isSavingDate ? '...' : '✓'}
+                        </button>
+                        <button
+                          onClick={() => setIsEditingDate(false)}
+                          className="text-xs text-zinc-500 hover:text-zinc-400 px-1"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <button
