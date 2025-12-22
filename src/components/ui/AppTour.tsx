@@ -80,6 +80,15 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Check if tour should show
   useEffect(() => {
@@ -170,14 +179,14 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tourSteps.length - 1;
   const hasValidTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
-  const isCentered = step.position === 'center' || !hasValidTarget;
+  
+  // On mobile, always center. On desktop, center if no valid target or position is 'center'
+  const isCentered = isMobile || step.position === 'center' || !hasValidTarget;
 
   // Calculate tooltip position with mobile-safe positioning
   const getTooltipStyle = () => {
-    // On mobile, always center the tooltip
-    const isMobile = window.innerWidth < 640;
-    
-    if (isCentered || !targetRect || isMobile) {
+    // On mobile, ALWAYS center the tooltip for visibility
+    if (isMobile || isCentered || !targetRect) {
       return {
         top: '50%',
         left: '50%',
@@ -232,13 +241,13 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
             className="fixed inset-0 z-[200] pointer-events-auto"
             onClick={handleSkip}
           >
-            {/* Dark overlay - only show when centered (no target) */}
-            {isCentered && (
+            {/* Dark overlay - always show on mobile for readability, or when centered on desktop */}
+            {(isMobile || isCentered) && (
               <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
             )}
             
-            {/* Spotlight on target - creates darkening around element */}
-            {hasValidTarget && !isCentered && (
+            {/* Spotlight on target - only on desktop when we have a valid target */}
+            {!isMobile && hasValidTarget && !isCentered && (
               <motion.div
                 key={`spotlight-${currentStep}`}
                 initial={{ opacity: 0, scale: 0.8 }}
