@@ -125,7 +125,7 @@ export default async function HomePage() {
               <div className="relative">
                 {/* Mock Slot Machine Reels */}
                 <div className="flex justify-center gap-4 mb-8">
-                  {['💤', '⏳', '🏛️'].map((emoji, i) => (
+                  {['🎬', '🍿', '🎭'].map((emoji, i) => (
                     <div 
                       key={i}
                       className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center text-4xl md:text-5xl border border-zinc-700 shadow-2xl shadow-black/50"
