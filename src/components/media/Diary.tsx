@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Star, Film, ChevronDown, ChevronUp, Minus, Pencil, Sparkles } from 'lucide-react';
+import { Calendar, Star, Film, ChevronDown, ChevronUp, Minus, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useMediaItems } from '@/hooks/useMediaItems';
-import { updateMediaItem, markAsRewatched, removeRewatch, updateWatchDate } from '@/lib/actions/media';
+import { updateMediaItem, markAsRewatched, removeRewatch } from '@/lib/actions/media';
 import { StarRating, StarRatingCompact } from '@/components/ui';
 import { FilmDetailModal, SmartReviewGenerator } from '@/components/media';
 import type { MediaItem } from '@/types/database';
@@ -96,21 +96,17 @@ interface DiaryCardProps {
   onReviewChange: (id: string, review: string) => void;
   onRewatch: (id: string, date?: string) => void;
   onRemoveRewatch: (id: string, index?: number) => void;
-  onDateChange: (id: string, date: string) => void;
   onViewDetails: (media: MediaItem) => void;
 }
 
-function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveRewatch, onDateChange, onViewDetails }: DiaryCardProps) {
+function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveRewatch, onViewDetails }: DiaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRating, setIsRating] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
   const [isRewatching, setIsRewatching] = useState(false);
-  const [isEditingDate, setIsEditingDate] = useState(false);
-  const [isSavingDate, setIsSavingDate] = useState(false);
   const [showRewatchDates, setShowRewatchDates] = useState(false);
   const [newRewatchDate, setNewRewatchDate] = useState(new Date().toISOString().split('T')[0]);
   const [review, setReview] = useState(media.user_review || '');
-  const [editedDate, setEditedDate] = useState(media.watched_at ? media.watched_at.split('T')[0] : '');
   const [showReviewGenerator, setShowReviewGenerator] = useState(false);
   const genreEmoji = getGenreEmoji(media.genre);
   const rewatchCount = media.rewatch_count || 0;
@@ -140,19 +136,6 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
 
   const handleRemoveRewatch = async (index?: number) => {
     await onRemoveRewatch(media.id, index);
-  };
-
-  const handleDateSave = async () => {
-    if (!editedDate) return;
-    const newDate = new Date(editedDate).toISOString();
-    if (newDate === media.watched_at) {
-      setIsEditingDate(false);
-      return;
-    }
-    setIsSavingDate(true);
-    await onDateChange(media.id, newDate);
-    setIsSavingDate(false);
-    setIsEditingDate(false);
   };
 
   const handleSaveGeneratedReview = async (generatedReview: string) => {
@@ -230,44 +213,15 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                   </div>
                 </div>
 
-                {/* Watch Date - editable */}
+                {/* Watch Date - display only */}
                 <div className="flex-shrink-0 text-right">
-                  {isEditingDate ? (
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="date"
-                        value={editedDate}
-                        onChange={(e) => setEditedDate(e.target.value)}
-                        className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-white"
-                      />
-                      <button
-                        onClick={handleDateSave}
-                        disabled={isSavingDate}
-                        className="text-xs text-green-500 hover:text-green-400 px-1"
-                      >
-                        {isSavingDate ? '...' : '✓'}
-                      </button>
-                      <button
-                        onClick={() => setIsEditingDate(false)}
-                        className="text-xs text-zinc-500 hover:text-zinc-400 px-1"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditingDate(true)}
-                      className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
-                      title="Click to edit"
-                    >
-                      <Calendar className="w-3 h-3" />
-                      <span className="hidden sm:inline">{formatDate(getMostRecentWatchDate(media))}</span>
-                      <span className="sm:hidden">
-                        {getMostRecentWatchDate(media) ? new Date(getMostRecentWatchDate(media)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
-                      </span>
-                      <Pencil className="w-2.5 h-2.5 opacity-50" />
-                    </button>
-                  )}
+                  <div className="flex items-center gap-1 text-xs text-zinc-400">
+                    <Calendar className="w-3 h-3" />
+                    <span className="hidden sm:inline">{formatDate(getMostRecentWatchDate(media))}</span>
+                    <span className="sm:hidden">
+                      {getMostRecentWatchDate(media) ? new Date(getMostRecentWatchDate(media)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -527,10 +481,6 @@ export function Diary() {
     await removeRewatch(id, index);
   };
 
-  const handleDateChange = async (id: string, date: string) => {
-    await updateWatchDate(id, date);
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -626,7 +576,6 @@ export function Diary() {
                   onReviewChange={handleReviewChange}
                   onRewatch={handleRewatch}
                   onRemoveRewatch={handleRemoveRewatch}
-                  onDateChange={handleDateChange}
                   onViewDetails={setSelectedMedia}
                 />
               ))}

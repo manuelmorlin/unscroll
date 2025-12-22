@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Users, Star, FileText, Eye, RefreshCw, Clapperboard, Globe, Tv, Sparkles } from 'lucide-react';
+import { X, Calendar, Clock, Users, Star, FileText, Eye, Clapperboard, Globe, Tv, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { StarRatingCompact } from '@/components/ui';
 import { SmartReviewGenerator } from './SmartReviewGenerator';
