@@ -100,7 +100,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessMessage('✉️ Password reset email sent! Check your inbox (and spam folder).');
+        setSuccessMessage('✉️ If an account exists with this email, a password reset link will be sent. Check your inbox (and spam folder).');
         setResetEmail('');
       } else {
         setError(data.error || 'Failed to send reset email');
