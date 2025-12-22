@@ -102,25 +102,40 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
     }
   }, [forceShow]);
 
-  // Update target element position
+  // Update target element position with retry logic
   useEffect(() => {
     if (!isOpen) return;
 
     const step = tourSteps[currentStep];
-    // Use requestAnimationFrame to batch all state updates
-    requestAnimationFrame(() => {
+    
+    const findElement = (retries = 0) => {
       if (step.target) {
         const element = document.querySelector(step.target);
         if (element) {
           const rect = element.getBoundingClientRect();
-          setTargetRect(rect);
+          // Only set rect if element has valid dimensions
+          if (rect.width > 0 && rect.height > 0) {
+            setTargetRect(rect);
+            return;
+          }
+        }
+        // Retry up to 5 times with 100ms delay
+        if (retries < 5) {
+          setTimeout(() => findElement(retries + 1), 100);
         } else {
           setTargetRect(null);
         }
       } else {
         setTargetRect(null);
       }
-    });
+    };
+
+    // Initial delay to let page render
+    const timer = setTimeout(() => {
+      requestAnimationFrame(() => findElement());
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [currentStep, isOpen]);
 
   const handleComplete = useCallback(() => {
@@ -154,7 +169,8 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
   const step = tourSteps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tourSteps.length - 1;
-  const isCentered = step.position === 'center' || !targetRect;
+  const hasValidTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
+  const isCentered = step.position === 'center' || !hasValidTarget;
 
   // Calculate tooltip position
   const getTooltipStyle = () => {
@@ -216,8 +232,9 @@ export function AppTour({ onComplete, forceShow = false }: AppTourProps) {
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
             
             {/* Spotlight on target */}
-            {targetRect && !isCentered && (
+            {hasValidTarget && !isCentered && (
               <motion.div
+                key={`spotlight-${currentStep}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute rounded-2xl"
