@@ -260,6 +260,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
+        data-tour="add-button"
         className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-b from-red-500 to-red-700 text-white rounded-full transition-colors shadow-[0_0_20px_rgba(239,68,68,0.25)] glow-red font-medium text-sm sm:text-base"
       >
         <Plus className="w-4 h-4" />

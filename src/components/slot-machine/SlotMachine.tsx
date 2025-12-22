@@ -250,7 +250,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     : Film;
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto" data-tour="slot-machine">
       {/* Main Card - iOS 26.2 Glass Design */}
       <div className="relative">
         {/* Screen - Ethereal Glass Container */}

@@ -111,6 +111,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
             <motion.button
               key={item.id}
               onClick={() => onSelect(item.id)}
+              data-tour={`nav-${item.id}`}
               className={`
                 relative flex items-center justify-center
                 w-10 h-10 sm:w-12 sm:h-12

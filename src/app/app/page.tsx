@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, User, Plus } from 'lucide-react';
+import { LogOut, User, Plus, HelpCircle } from 'lucide-react';
 import { SlotMachine } from '@/components/slot-machine';
 import { AddMediaForm, MediaList, Diary, Stats, Wrapped } from '@/components/media';
-import { FloatingDockMinimal } from '@/components/ui';
+import { FloatingDockMinimal, AppTour, useTour } from '@/components/ui';
 import { logoutAction } from '@/lib/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
 import type { MediaStatus } from '@/types/database';
@@ -17,6 +17,7 @@ export default function AppPage() {
   const [activeTab, setActiveTab] = useState<Tab>('decide');
   const [listFilter, setListFilter] = useState<ListFilter>('all');
   const { user, isDemo } = useAuth();
+  const { showTour, resetTour, setShowTour } = useTour();
 
   // Navigation items for floating dock
   const navItems = [
@@ -52,6 +53,16 @@ export default function AppPage() {
 
           {/* User Menu */}
           <div className="flex items-center gap-2">
+            {/* Help/Tour Button */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={resetTour}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-amber-400 hover:bg-amber-400/10 transition-all border border-transparent hover:border-amber-400/20"
+              title="Restart Tour"
+            >
+              <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            </motion.button>
+            
             <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-300">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20">
                 <User className="w-3.5 h-3.5 text-amber-400" />
@@ -202,6 +213,9 @@ export default function AppPage() {
         activeId={activeTab}
         onSelect={(id) => setActiveTab(id as Tab)}
       />
+
+      {/* App Tour */}
+      <AppTour forceShow={showTour} onComplete={() => setShowTour(false)} />
 
     </div>
   );
