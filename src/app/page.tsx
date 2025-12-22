@@ -145,7 +145,7 @@ export default async function HomePage() {
                     Tonight&apos;s Feature Presentation
                     <span className="inline-block w-8 h-px bg-zinc-700" />
                   </p>
-                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">✨ Inception ✨</h3>
+                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">💭 Inception 🌀</h3>
                 </div>
               </div>
             </div>
