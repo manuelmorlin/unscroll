@@ -7,6 +7,7 @@ import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails, type TMDBMovie, type WatchProvider } from '@/lib/actions/tmdb';
 import { useToast } from '@/components/ui';
+import { useMediaItems } from '@/hooks/useMediaItems';
 import type { MediaItemInsert } from '@/types/database';
 
 interface AddMediaFormProps {
@@ -19,6 +20,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { mediaItems } = useMediaItems();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -32,6 +34,19 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [originalLanguage, setOriginalLanguage] = useState('');
   const [watchProviders, setWatchProviders] = useState<WatchProvider[]>([]);
   const [selectedTmdbId, setSelectedTmdbId] = useState<number | null>(null);
+
+  // Check if film is already in watchlist
+  const isAlreadyInWatchlist = useCallback((filmTitle: string, filmYear?: number) => {
+    const normalizedTitle = filmTitle.toLowerCase().trim();
+    return mediaItems.some(item => {
+      const itemTitle = item.title.toLowerCase().trim();
+      // Match by title (and year if provided)
+      if (filmYear && item.year) {
+        return itemTitle === normalizedTitle && item.year === filmYear;
+      }
+      return itemTitle === normalizedTitle;
+    });
+  }, [mediaItems]);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<TMDBMovie[]>([]);
@@ -198,6 +213,13 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
         return;
       }
 
+      // Check if film is already in watchlist
+      const filmYear = year ? parseInt(year) : undefined;
+      if (isAlreadyInWatchlist(title, filmYear)) {
+        setError('This film is already in your watchlist');
+        return;
+      }
+
       setIsSubmitting(true);
       setError(null);
 
@@ -228,7 +250,7 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
 
       setIsSubmitting(false);
     },
-    [title, genre, plot, cast, duration, year, originalLanguage, resetForm, onSuccess, showToast]
+    [title, genre, plot, cast, duration, year, originalLanguage, resetForm, onSuccess, showToast, isAlreadyInWatchlist]
   );
 
   return (
@@ -317,15 +339,25 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                             exit={{ opacity: 0, y: -10 }}
                             className="absolute z-50 w-full mt-1 bg-zinc-900 border border-red-900/30 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto"
                           >
-                            {suggestions.map((movie) => (
+                            {suggestions.map((movie) => {
+                              const movieYear = movie.release_date ? parseInt(movie.release_date.split('-')[0]) : undefined;
+                              const alreadyAdded = isAlreadyInWatchlist(movie.title, movieYear);
+                              return (
                               <button
                                 key={movie.id}
                                 type="button"
                                 onMouseDown={(e) => {
                                   e.preventDefault();
-                                  handleSelectSuggestion(movie);
+                                  if (!alreadyAdded) {
+                                    handleSelectSuggestion(movie);
+                                  }
                                 }}
-                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-red-900/20 transition-colors text-left"
+                                disabled={alreadyAdded}
+                                className={`w-full px-4 py-3 flex items-center gap-3 transition-colors text-left ${
+                                  alreadyAdded 
+                                    ? 'opacity-60 cursor-not-allowed bg-zinc-800/50' 
+                                    : 'hover:bg-red-900/20'
+                                }`}
                               >
                                 {movie.poster_path ? (
                                   <img
@@ -342,10 +374,11 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                                   <p className="text-white font-medium truncate">{movie.title}</p>
                                   <p className="text-sm text-zinc-400">
                                     {movie.release_date ? movie.release_date.split('-')[0] : 'Unknown year'}
+                                    {alreadyAdded && <span className="ml-2 text-yellow-500">✓ In watchlist</span>}
                                   </p>
                                 </div>
                               </button>
-                            ))}
+                            )})}
                           </motion.div>
                         )}
                       </AnimatePresence>
