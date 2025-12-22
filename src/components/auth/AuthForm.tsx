@@ -31,7 +31,42 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [resetEmail, setResetEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
   const router = useRouter();
+
+  // Handle resending verification email
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail) return;
+    
+    setIsResendingVerification(true);
+    setError(null);
+    
+    try {
+      const formElement = document.querySelector('form') as HTMLFormElement;
+      const passwordInput = formElement?.querySelector('input[name="password"]') as HTMLInputElement;
+      const passwordValue = passwordInput?.value;
+      
+      if (!passwordValue) {
+        setError('Please enter your password to resend verification email.');
+        setIsResendingVerification(false);
+        return;
+      }
+      
+      // Sign in temporarily to resend verification
+      const userCredential = await signInWithEmailAndPassword(auth, unverifiedEmail, passwordValue);
+      await sendEmailVerification(userCredential.user);
+      await auth.signOut();
+      
+      setSuccessMessage('Verification email sent! Please check your inbox.');
+      setUnverifiedEmail(null);
+    } catch (err) {
+      console.error('Resend verification error:', err);
+      setError('Failed to resend verification email. Please check your password and try again.');
+    } finally {
+      setIsResendingVerification(false);
+    }
+  };
 
   // Password validation
   const passwordRequirements = {
@@ -83,6 +118,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setUnverifiedEmail(null);
     setSuccessMessage(null);
 
     const formData = new FormData(e.currentTarget);
@@ -157,10 +193,9 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         
         // Check if email is verified
         if (!userCredential.user.emailVerified) {
-          // Resend verification email
-          await sendEmailVerification(userCredential.user);
           await auth.signOut();
-          setError('Please verify your email before signing in. A new verification email has been sent.');
+          setUnverifiedEmail(email);
+          setError('Please verify your email before signing in.');
           setIsLoading(false);
           return;
         }
@@ -366,6 +401,24 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
             className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
           >
             <p className="text-red-400 text-sm">{error}</p>
+            {/* Resend Verification Button */}
+            {unverifiedEmail && (
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                disabled={isResendingVerification}
+                className="mt-2 text-sm text-yellow-400 hover:text-yellow-300 underline underline-offset-2 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isResendingVerification ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  '📧 Send verification email again'
+                )}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
