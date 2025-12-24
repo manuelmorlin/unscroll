@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw, Film, ChevronRight, AlertCircle, Plus, X, Loader2, Check, Clock, Clapperboard, Globe, FileText, Users, Tv } from 'lucide-react';
 import Image from 'next/image';
-import { actionGetRecommendations } from '@/lib/actions/ai';
+import { actionGetRecommendations, actionAutofill } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails } from '@/lib/actions/tmdb';
 import { addMediaItem } from '@/lib/actions/media';
 import { useToast, useModal } from '@/components/ui';
@@ -146,6 +146,23 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
             poster_url: detailsResult.data.poster_url,
             original_language: detailsResult.data.original_language,
             watch_providers: detailsResult.data.watch_providers,
+          });
+        }
+      } else {
+        // Fallback: Use AI to generate details if TMDB doesn't find anything
+        const aiResult = await actionAutofill(rec.title);
+        if (aiResult.success && aiResult.data) {
+          setMovieDetails({
+            title: rec.title,
+            year: aiResult.data.year || rec.year || 0,
+            genre: aiResult.data.genre,
+            plot: aiResult.data.plot,
+            cast: aiResult.data.cast,
+            director: null,
+            duration: aiResult.data.duration,
+            poster_url: null, // AI can't provide poster
+            original_language: '',
+            watch_providers: [],
           });
         }
       }
@@ -431,12 +448,77 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
                 </div>
               </div>
             ) : (
-              <div className="p-6 text-center py-20">
-                <AlertCircle className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
-                <p className="text-sm text-zinc-400">Could not find details for this film</p>
+              <div className="p-6 text-center py-12">
+                <AlertCircle className="w-10 h-10 text-amber-500/60 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-white mb-2">{selectedRec.title}</h3>
+                {selectedRec.year && (
+                  <p className="text-sm text-zinc-500 mb-3">{selectedRec.year}</p>
+                )}
+                <p className="text-sm text-zinc-400 mb-2">Details not available on TMDB</p>
+                <p className="text-xs text-zinc-500 mb-6 max-w-sm mx-auto">
+                  This film may have a different title in the database, or it&apos;s not listed yet.
+                </p>
+                
+                {/* AI Recommendation reason */}
+                <div className="glass rounded-xl p-4 mb-6 text-left">
+                  <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Why recommended</p>
+                  <p className="text-sm text-zinc-300">{selectedRec.reason}</p>
+                </div>
+
+                {/* Add anyway button */}
+                {addedToWatchlist.has(selectedRec.title) ? (
+                  <button
+                    disabled
+                    className="w-full py-3 bg-green-500/20 border border-green-500/30 text-green-400 font-medium rounded-xl flex items-center justify-center gap-2"
+                  >
+                    <Check className="w-5 h-5" />
+                    Added to Watchlist
+                  </button>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      setIsAdding(true);
+                      const result = await addMediaItem({
+                        title: selectedRec.title,
+                        year: selectedRec.year || null,
+                        format: 'movie',
+                        genre: null,
+                        plot: null,
+                        cast: null,
+                        director: null,
+                        duration: null,
+                        poster_url: null,
+                        original_language: null,
+                        watch_providers: null,
+                      });
+                      if (result.success) {
+                        showToast(`${selectedRec.title} added to watchlist!`, 'success');
+                        setAddedToWatchlist(prev => new Set([...prev, selectedRec.title]));
+                      } else {
+                        showToast(result.error || 'Failed to add to watchlist', 'error');
+                      }
+                      setIsAdding(false);
+                    }}
+                    disabled={isAdding}
+                    className="w-full py-3 bg-gradient-to-r from-amber-500/80 to-yellow-500/80 hover:from-amber-400 hover:to-yellow-400 text-black font-medium rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                  >
+                    {isAdding ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-5 h-5" />
+                        Add Anyway (without details)
+                      </>
+                    )}
+                  </button>
+                )}
+                
                 <button
                   onClick={closeModal}
-                  className="mt-4 px-4 py-2 bg-zinc-800 text-white rounded-lg text-sm"
+                  className="mt-3 w-full py-2.5 text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl transition-all text-sm"
                 >
                   Close
                 </button>
