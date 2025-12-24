@@ -686,9 +686,10 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                 /* Main Spin Button - Cinema Red with Glow */
                 <motion.button
                   whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(239,68,68,0.5)' }}
                   onClick={handleSpin}
                   disabled={isSpinning}
-                  className="w-full sm:w-auto group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 overflow-hidden shadow-[0_0_25px_rgba(239,68,68,0.3)] glow-red"
+                  className="w-full sm:w-auto group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-b from-red-500 to-red-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-50 overflow-hidden shadow-[0_0_25px_rgba(239,68,68,0.3)] hover:shadow-[0_0_45px_rgba(239,68,68,0.6)] glow-red"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     <span className="text-lg sm:text-xl">🎬</span>
