@@ -519,7 +519,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <span className="text-xs text-zinc-500 uppercase tracking-wider">Genre {selectedGenres.length > 0 && `(${selectedGenres.length})`}</span>
                       </div>
-                      <div className="flex gap-2 overflow-x-auto pb-2 px-4 scrollbar-hide snap-x snap-mandatory">
+                      <div className="flex gap-2 overflow-x-auto py-2 px-4 scrollbar-hide snap-x snap-mandatory">
                         <div className="flex gap-2 mx-auto">
                         <motion.button
                           onClick={() => setSelectedGenres([])}
