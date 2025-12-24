@@ -46,7 +46,7 @@ export default async function HomePage() {
           <div className="flex items-center gap-2 sm:gap-4">
             <Link 
               href="/auth?mode=login"
-              className="px-3 sm:px-4 py-2 text-sm sm:text-base text-zinc-400 hover:text-yellow-400 transition-colors"
+              className="px-3 sm:px-4 py-2 text-sm sm:text-base text-zinc-400 hover:text-yellow-400 transition-colors flex items-center"
             >
               Sign In
             </Link>
