@@ -73,16 +73,6 @@ export default function AppPage() {
               <HelpCircle className="w-4 h-4" />
             </motion.button>
             
-            {/* User Menu */}
-            <div className="hidden sm:flex items-center gap-2 pl-1">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20">
-                <User className="w-3.5 h-3.5 text-amber-400" />
-              </div>
-              <span className="text-sm font-medium text-zinc-300 max-w-[100px] truncate">
-                {user?.displayName || 'User'}
-              </span>
-            </div>
-            
             {/* Logout */}
             <form action={async () => { await logoutAction(); }}>
               <motion.button
