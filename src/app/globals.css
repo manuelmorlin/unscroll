@@ -518,7 +518,7 @@ h1, h2, h3, h4, h5, h6 {
   );
 }
 
-/* Curtain gradients - Subtler */
+/* Curtain gradients */
 .curtain-left {
   background: linear-gradient(to right, 
     rgba(139, 0, 0, 0.6) 0%,
@@ -533,6 +533,25 @@ h1, h2, h3, h4, h5, h6 {
     rgba(139, 0, 0, 0.3) 30%,
     transparent 100%
   );
+}
+
+/* Reduce curtain opacity on mobile */
+@media (max-width: 640px) {
+  .curtain-left {
+    background: linear-gradient(to right, 
+      rgba(139, 0, 0, 0.25) 0%,
+      rgba(139, 0, 0, 0.1) 30%,
+      transparent 100%
+    );
+  }
+  
+  .curtain-right {
+    background: linear-gradient(to left, 
+      rgba(139, 0, 0, 0.25) 0%,
+      rgba(139, 0, 0, 0.1) 30%,
+      transparent 100%
+    );
+  }
 }
 
 /* Status colors */
