@@ -569,7 +569,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <span className="text-xs text-zinc-500 uppercase tracking-wider">Duration</span>
                     </div>
-                    <div className="flex gap-2 justify-center overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                    <div className="flex gap-2 justify-center overflow-x-auto py-2 -mx-4 px-4 scrollbar-hide">
                       {availableDurationOptions.map((option) => (
                         <motion.button
                           key={option.value}

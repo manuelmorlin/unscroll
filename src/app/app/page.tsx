@@ -144,7 +144,7 @@ export default function AppPage() {
               </div>
 
               {/* Filter Pills - Ethereal style */}
-              <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide">
+              <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto py-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide">
                 {[
                   { id: 'all' as ListFilter, label: 'All', emoji: '🎬' },
                   { id: 'unwatched' as ListFilter, label: 'To Watch', emoji: '📋' },
