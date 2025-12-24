@@ -344,7 +344,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center sm:justify-center sm:p-4"
           onClick={closeModal}
         >
           <motion.div
@@ -353,7 +353,7 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
             exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full h-[calc(100%-env(safe-area-inset-top,0px))] sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl rounded-none bg-zinc-900 border-t sm:border border-zinc-800 overflow-hidden flex flex-col"
+            className="relative w-full flex-1 sm:flex-initial sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl rounded-none bg-zinc-900 border-t sm:border border-zinc-800 overflow-hidden flex flex-col mt-[env(safe-area-inset-top,0px)]"
           >
             {/* Close Button */}
             <button
