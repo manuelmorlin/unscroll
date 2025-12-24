@@ -260,7 +260,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
     : Film;
 
   return (
-    <div className="w-full max-w-2xl mx-auto" data-tour="slot-machine">
+    <div className="w-full max-w-3xl mx-auto" data-tour="slot-machine">
       {/* Main Card - iOS 26.2 Glass Design */}
       <div className="relative">
         {/* Screen - Ethereal Glass Container */}
@@ -411,20 +411,33 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       </motion.p>
                     )}
 
+                    {/* Director */}
+                    {selectedMedia.director && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.45 }}
+                        className="text-xs text-zinc-500 mb-2"
+                      >
+                        <span className="text-zinc-600">Director: </span>
+                        {selectedMedia.director}
+                      </motion.div>
+                    )}
+
                     {/* Cast */}
                     {selectedMedia.cast && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="text-xs text-zinc-500"
-                    >
-                      <span className="text-zinc-600">Starring: </span>
-                      {Array.isArray(selectedMedia.cast) 
-                        ? selectedMedia.cast.join(', ')
-                        : selectedMedia.cast}
-                    </motion.div>
-                  )}
+                        transition={{ delay: 0.5 }}
+                        className="text-xs text-zinc-500"
+                      >
+                        <span className="text-zinc-600">Starring: </span>
+                        {Array.isArray(selectedMedia.cast) 
+                          ? selectedMedia.cast.join(', ')
+                          : selectedMedia.cast}
+                      </motion.div>
+                    )}
 
                   {/* Streaming Platforms - Glass style */}
                     {selectedMedia.watch_providers && selectedMedia.watch_providers.length > 0 && (

@@ -238,9 +238,9 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 z-20 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-2 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-5 h-5 text-red-500" />
             </button>
 
             {isLoadingDetails ? (

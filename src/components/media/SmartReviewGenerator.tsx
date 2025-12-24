@@ -83,7 +83,7 @@ export function SmartReviewGenerator({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden mt-safe sm:mt-0"
       >
         {/* Header */}
         <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
@@ -91,8 +91,8 @@ export function SmartReviewGenerator({
             <Sparkles className="w-5 h-5 text-yellow-500" />
             <h3 className="font-semibold text-white">AI Review Generator</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-zinc-800 rounded-lg">
-            <X className="w-5 h-5 text-zinc-400" />
+          <button onClick={onClose} className="p-1 hover:bg-red-900/50 rounded-lg">
+            <X className="w-5 h-5 text-red-500" />
           </button>
         </div>
 

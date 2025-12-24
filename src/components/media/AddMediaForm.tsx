@@ -316,10 +316,10 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
                 </h2>
                 <motion.button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 text-zinc-500 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+                  className="p-2 hover:bg-red-900/30 rounded-xl transition-colors"
                   whileTap={{ scale: 0.9 }}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5 text-red-500" />
                 </motion.button>
               </div>
 
