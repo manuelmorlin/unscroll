@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw, Film, ChevronRight, AlertCircle, Plus, X, Loader2, Check, Clock, Clapperboard, Globe, FileText, Users, Tv } from 'lucide-react';
 import Image from 'next/image';
 import { actionGetRecommendations } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails } from '@/lib/actions/tmdb';
 import { addMediaItem } from '@/lib/actions/media';
-import { useToast } from '@/components/ui';
+import { useToast, useModal } from '@/components/ui';
 import { formatGenre } from '@/lib/utils';
 import type { MediaItem } from '@/types/database';
 
@@ -53,7 +53,19 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [addedToWatchlist, setAddedToWatchlist] = useState<Set<string>>(new Set());  const { showToast } = useToast();
+  const [addedToWatchlist, setAddedToWatchlist] = useState<Set<string>>(new Set());
+  const { showToast } = useToast();
+  const { openModal: openDock, closeModal: closeDock } = useModal();
+
+  // Hide floating dock when modal is open
+  useEffect(() => {
+    if (selectedRec) {
+      openDock();
+    } else {
+      closeDock();
+    }
+  }, [selectedRec, openDock, closeDock]);
+
   const fetchRecommendations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
