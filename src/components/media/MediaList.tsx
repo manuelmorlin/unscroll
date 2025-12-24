@@ -105,7 +105,6 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
     openModal();
     return () => closeModal();
   }, [openModal, closeModal]);
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
