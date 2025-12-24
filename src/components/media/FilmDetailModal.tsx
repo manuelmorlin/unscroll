@@ -103,7 +103,7 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-1 right-1.5 sm:top-2 sm:right-2 z-20 p-1 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors"
+          className="absolute top-1 right-1.5 sm:top-2 sm:right-2 z-20 p-0.5 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors"
         >
           <X className="w-3.5 h-3.5 text-red-500" />
         </button>
