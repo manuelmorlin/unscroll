@@ -82,7 +82,11 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
     const result = await actionGetRecommendations(filmData, allTitles);
 
     if (result.success && result.data) {
-      setRecommendations(result.data.recommendations);
+      // Sort recommendations by match score (highest first)
+      const sortedRecommendations = [...result.data.recommendations].sort(
+        (a, b) => b.matchScore - a.matchScore
+      );
+      setRecommendations(sortedRecommendations);
       setAnalysis(result.data.analysis);
     } else {
       setError(result.error || 'Failed to get recommendations');
