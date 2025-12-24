@@ -91,7 +91,7 @@ className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overfl
             <Sparkles className="w-5 h-5 text-yellow-500" />
             <h3 className="font-semibold text-white">AI Review Generator</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-red-900/50 rounded-lg">
+          <button onClick={onClose} className="hover:opacity-70 transition-opacity">
             <X className="w-5 h-5 text-red-500" />
           </button>
         </div>

@@ -98,14 +98,14 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full h-full sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl rounded-t-3xl bg-zinc-900 border-t sm:border border-zinc-800 overflow-hidden flex flex-col mt-auto sm:mt-0"
+        className="relative w-full flex-1 sm:flex-initial sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl rounded-t-3xl bg-zinc-900 border-t sm:border border-zinc-800 overflow-hidden flex flex-col"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-1.5 right-2 sm:top-2 sm:right-2 z-20 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors flex items-center justify-center w-5 h-5"
+          className="absolute top-3 right-3 z-20 hover:opacity-70 transition-opacity"
         >
-          <X className="w-3.5 h-3.5 text-red-500" />
+          <X className="w-5 h-5 text-red-500" />
         </button>
 
         {/* Scrollable Content */}

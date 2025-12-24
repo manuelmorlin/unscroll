@@ -150,7 +150,7 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
           </h2>
           <motion.button
             onClick={onClose}
-            className="p-2 hover:bg-red-900/30 rounded-xl transition-colors"
+            className="hover:opacity-70 transition-opacity"
             whileTap={{ scale: 0.9 }}
           >
             <X className="w-5 h-5 text-red-500" />
@@ -369,7 +369,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
         {/* Close Button */}
         <motion.button
           onClick={handleClose}
-          className="absolute top-4 right-4 p-2 hover:bg-red-900/30 rounded-xl transition-colors"
+          className="absolute top-4 right-4 hover:opacity-70 transition-opacity"
           whileTap={{ scale: 0.9 }}
           title="Close"
         >
