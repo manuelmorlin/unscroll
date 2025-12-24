@@ -2,28 +2,31 @@
 
 > End the endless scrolling. Let fate decide what you watch next.
 
-A modern, minimalist web application that solves "decision paralysis" when choosing what to watch. Built with **Next.js 16**, **Firebase**, and **OpenAI**.
+A modern movie tracking app with an **iOS 26.2 Ethereal Cinema-inspired UI**. Track what you've watched, manage your watchlist, and let the slot machine decide your next film. Built with **Next.js 16**, **Firebase**, and **OpenAI**.
 
 🔗 **Live Demo:** [unscroll-app.vercel.app](https://unscroll-app.vercel.app)
 
 ## ✨ Features
 
-- **🎰 Slot Machine Picker** - Random selection from your watchlist with elegant animations
-- **🔍 Movie Autocomplete** - Search movies as you type with TMDB integration
+- **🎰 Slot Machine Picker** - Can't decide? Spin the slot machine to randomly pick from your watchlist
+- **📔 Diary** - Log films you've watched with ratings (1-5 stars), reviews, and rewatch tracking
+- **📋 Watchlist** - Save films you want to watch for later
+- **🔍 Movie Search** - Search movies as you type with TMDB integration
 - **🤖 AI Autofill** - Enter a title, click "✨ Autofill" and let AI populate all metadata
+- **💡 AI Recommendations** - Get personalized film recommendations based on your diary
 - **💬 Persuasive AI** - Get a compelling reason to watch your selection
 - **🔄 Real-time Sync** - Changes sync instantly across all connected devices
-- **🎭 Demo Mode** - Try the app instantly without registration
-- **🌙 Dark Mode** - Elegant, minimalist dark UI
+- **🎭 Demo Mode** - Try the app with pre-populated sample data (no registration needed)
+- **🌙 Ethereal Dark UI** - Glassmorphism design with subtle gradients and smooth animations
 
 ## 🛠️ Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| **Frontend** | Next.js 16 (App Router), TypeScript, React 19 |
+| **Frontend** | Next.js 16 (App Router + Turbopack), TypeScript, React 19 |
 | **Styling** | Tailwind CSS 4, Framer Motion |
 | **Backend** | Firebase (Auth, Firestore) |
-| **AI** | OpenAI API (GPT-5-mini) |
+| **AI** | OpenAI API (GPT-4o-mini) |
 | **Movie Data** | TMDB API |
 | **Validation** | Zod |
 | **Hosting** | Vercel |
@@ -94,20 +97,21 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── auth/              # Authentication page
 │   ├── app/               # Main application (protected)
-│   └── api/               # API routes
+│   └── api/               # API routes (auth, demo, logout)
 ├── components/            # React components
-│   ├── auth/              # Authentication components
-│   ├── media/             # Media list & forms
-│   ├── slot-machine/      # Slot machine picker
-│   └── ui/                # Reusable UI components
+│   ├── auth/              # Auth forms, Demo button
+│   ├── media/             # MediaList, Diary, AddMediaForm, Recommendations
+│   ├── slot-machine/      # Slot machine picker with animations
+│   └── ui/                # StarRating, reusable UI components
 ├── hooks/                 # Custom React hooks
 │   ├── useMediaItems.ts   # Firestore realtime subscription
 │   └── useAuth.ts         # Auth state management
 ├── lib/                   # Utilities & server code
-│   ├── actions/           # Server Actions
-│   ├── firebase/          # Firebase configuration
-│   └── openai/            # OpenAI configuration
-└── types/                 # TypeScript types
+│   ├── actions/           # Server Actions (AI, auth, media, TMDB)
+│   ├── firebase/          # Firebase client & admin config
+│   └── openai/            # OpenAI client configuration
+├── types/                 # TypeScript types
+└── scripts/               # Utility scripts (populate demo, etc.)
 ```
 
 ## 🔐 Firestore Security Rules
