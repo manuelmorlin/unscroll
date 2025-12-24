@@ -12,7 +12,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen cinema-bg text-white overflow-hidden">
+    <div className="min-h-screen cinema-bg text-white overflow-auto sm:overflow-hidden">
 
       {/* Animated Stars Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

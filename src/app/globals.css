@@ -529,16 +529,16 @@ h1, h2, h3, h4, h5, h6 {
 /* Curtain gradients - Subtler */
 .curtain-left {
   background: linear-gradient(to right, 
-    rgba(220, 38, 38, 0.15) 0%,
-    rgba(220, 38, 38, 0.05) 30%,
+    rgba(139, 0, 0, 0.6) 0%,
+    rgba(139, 0, 0, 0.3) 30%,
     transparent 100%
   );
 }
 
 .curtain-right {
   background: linear-gradient(to left, 
-    rgba(220, 38, 38, 0.15) 0%,
-    rgba(220, 38, 38, 0.05) 30%,
+    rgba(139, 0, 0, 0.6) 0%,
+    rgba(139, 0, 0, 0.3) 30%,
     transparent 100%
   );
 }
