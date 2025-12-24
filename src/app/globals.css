@@ -553,10 +553,11 @@ h1, h2, h3, h4, h5, h6 {
    ============================================== */
 
 .pill-active {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.1) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  color: #fbbf24;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+  background: linear-gradient(to bottom, #fbbf24, #d97706);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #000;
+  font-weight: 500;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
 }
 
 .pill-inactive {
