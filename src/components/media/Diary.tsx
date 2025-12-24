@@ -207,7 +207,7 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     )}
                     {/* Views badge - Glass style */}
                     <span className="text-white/20">•</span>
-                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${rewatchCount > 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'glass text-zinc-400'}`}>
+                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium transition-all duration-200 cursor-default ${rewatchCount > 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:shadow-[0_0_10px_rgba(52,211,153,0.2)]' : 'glass text-zinc-400 hover:text-amber-300 hover:bg-amber-500/10 hover:shadow-[0_0_10px_rgba(251,191,36,0.15)]'}`}>
                       <Film className="w-3 h-3" />
                       {totalViews === 1 ? '1×' : `${totalViews}×`}
                     </span>
@@ -241,9 +241,10 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                   <div className="relative">
                     <motion.button
                       onClick={() => setShowRewatchDates(!showRewatchDates)}
-                      className="flex items-center gap-1.5 px-2 py-1 glass rounded-lg text-sm text-white transition-colors"
+                      className="flex items-center gap-1.5 px-2 py-1 glass rounded-lg text-sm text-white transition-all duration-200 hover:bg-amber-500/10 hover:border-amber-500/25 hover:shadow-[0_0_15px_rgba(251,191,36,0.15)]"
                       title="View watch history"
                       whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
                     >
                       <Film className="w-3.5 h-3.5 text-zinc-400" />
                       <span className="font-medium">{totalViews}</span>
@@ -274,7 +275,8 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                                 onClick={handleRewatch}
                                 disabled={isRewatching}
                                 whileTap={{ scale: 0.95 }}
-                                className="text-xs bg-gradient-to-b from-emerald-400 to-emerald-600 text-black px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
+                                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(52,211,153,0.4)' }}
+                                className="text-xs bg-gradient-to-b from-emerald-400 to-emerald-600 text-black px-3 py-1.5 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 whitespace-nowrap hover:shadow-[0_0_25px_rgba(52,211,153,0.5)]"
                               >
                                 {isRewatching ? '...' : 'Add'}
                               </motion.button>
