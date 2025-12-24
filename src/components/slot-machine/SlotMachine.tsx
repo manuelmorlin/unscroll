@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RotateCcw, Check, Film, Clock, X, Star, Globe, Tv, Plus } from 'lucide-react';
 import { getRandomUnwatched, markAsWatched, updateMediaItem } from '@/lib/actions/media';
 import type { SpinFilters } from '@/lib/actions/media';
-import { StarRating, useToast } from '@/components/ui';
+import { StarRating, useToast, useModal } from '@/components/ui';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import type { MediaItem } from '@/types/database';
 
@@ -86,6 +86,7 @@ const MAX_SPINS = 3;
 
 export function SlotMachine({ onWatched }: SlotMachineProps) {
   const { showToast } = useToast();
+  const { openModal, closeModal } = useModal();
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
@@ -96,6 +97,15 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
   const [shownFilmIds, setShownFilmIds] = useState<string[]>([]); // Track films shown in current spin session
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [watchedMedia, setWatchedMedia] = useState<MediaItem | null>(null);
+
+  // Hide floating dock when rating modal is open
+  useEffect(() => {
+    if (showRatingModal) {
+      openModal();
+    } else {
+      closeModal();
+    }
+  }, [showRatingModal, openModal, closeModal]);
 
   // Get media items to check if there are unwatched films
   const { mediaItems } = useMediaItems();

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Film, Check, Eye, Trash2, RotateCcw, Pencil, X, Star, Sparkles, RefreshCw } from 'lucide-react';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import { updateMediaStatus, deleteMediaItem, updateMediaItem } from '@/lib/actions/media';
 import { actionGenerateReview } from '@/lib/actions/ai';
-import { StarRating, useToast, useConfirm } from '@/components/ui';
+import { StarRating, useToast, useConfirm, useModal } from '@/components/ui';
 import { FilmDetailModal } from './FilmDetailModal';
 import type { MediaItem, MediaStatus } from '@/types/database';
 
@@ -89,6 +89,7 @@ interface EditModalProps {
 }
 
 function EditModal({ media, onClose, onSave }: EditModalProps) {
+  const { openModal, closeModal } = useModal();
   const [title, setTitle] = useState(media.title);
   const [year, setYear] = useState(media.year?.toString() || '');
   const [genre, setGenre] = useState(media.genre || '');
@@ -97,6 +98,13 @@ function EditModal({ media, onClose, onSave }: EditModalProps) {
   const [cast, setCast] = useState(
     Array.isArray(media.cast) ? media.cast.join(', ') : media.cast || ''
   );
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Hide floating dock when modal is open
+  useEffect(() => {
+    openModal();
+    return () => closeModal();
+  }, [openModal, closeModal]);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -261,6 +269,7 @@ interface RateModalProps {
 }
 
 function RateModal({ media, onClose, onRate }: RateModalProps) {
+  const { openModal, closeModal } = useModal();
   const { confirm } = useConfirm();
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
@@ -271,6 +280,12 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
   const [dateMode, setDateMode] = useState<DateMode>('full');
   const [watchedDate, setWatchedDate] = useState<string>(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
   const [watchedYear, setWatchedYear] = useState<string>(new Date().getFullYear().toString());
+
+  // Hide floating dock when modal is open
+  useEffect(() => {
+    openModal();
+    return () => closeModal();
+  }, [openModal, closeModal]);
 
   const handleClose = async () => {
     // Check if user has made any changes (rating or review)

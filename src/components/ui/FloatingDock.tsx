@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useModal } from './ModalContext';
 
 type TabItem = {
   id: string;
@@ -21,19 +22,24 @@ interface FloatingDockProps {
  * A floating bottom navigation that feels like a liquid glass island
  */
 export function FloatingDock({ items, activeId, onSelect, className = '' }: FloatingDockProps) {
+  const { isModalOpen } = useModal();
+
   return (
-    <motion.nav
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className={`
-        fixed bottom-6 left-1/2 -translate-x-1/2 z-50
-        floating-dock rounded-2xl
-        px-2 py-2
-        safe-bottom
-        ${className}
-      `}
-    >
+    <AnimatePresence>
+      {!isModalOpen && (
+        <motion.nav
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className={`
+            fixed bottom-6 left-1/2 -translate-x-1/2 z-50
+            floating-dock rounded-2xl
+            px-2 py-2
+            safe-bottom
+            ${className}
+          `}
+        >
       <div className="flex items-center gap-1">
         {items.map((item) => {
           const isActive = item.id === activeId;
@@ -83,6 +89,8 @@ export function FloatingDock({ items, activeId, onSelect, className = '' }: Floa
         })}
       </div>
     </motion.nav>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -91,19 +99,24 @@ export function FloatingDock({ items, activeId, onSelect, className = '' }: Floa
  * Optimized for iPhone 17 with ultra-compact mobile design
  */
 export function FloatingDockMinimal({ items, activeId, onSelect, className = '' }: FloatingDockProps) {
+  const { isModalOpen } = useModal();
+
   return (
-    <motion.nav
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className={`
-        fixed -bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 z-50
-        floating-dock rounded-full
-        p-0 sm:px-3 sm:py-3
-        safe-bottom
-        ${className}
-      `}
-    >
+    <AnimatePresence>
+      {!isModalOpen && (
+        <motion.nav
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className={`
+            fixed -bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 z-50
+            floating-dock rounded-full
+            p-0 sm:px-3 sm:py-3
+            safe-bottom
+            ${className}
+          `}
+        >
       <div className="flex items-center">
         {items.map((item) => {
           const isActive = item.id === activeId;
@@ -146,5 +159,7 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
         })}
       </div>
     </motion.nav>
+      )}
+    </AnimatePresence>
   );
 }

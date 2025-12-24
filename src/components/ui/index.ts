@@ -5,6 +5,7 @@ export { LandingPosters } from './LandingPosters';
 export { ToastProvider, useToast } from './Toast';
 export { ConfirmProvider, useConfirm } from './ConfirmDialog';
 export { AppTour, useTour } from './AppTour';
+export { ModalProvider, useModal } from './ModalContext';
 
 // New Ethereal Cinema Components
 export { LiquidBackground } from './LiquidBackground';

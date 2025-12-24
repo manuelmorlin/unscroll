@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock, Users, Star, FileText, Eye, Clapperboard, Globe, Tv, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { StarRatingCompact } from '@/components/ui';
+import { StarRatingCompact, useModal } from '@/components/ui';
 import { SmartReviewGenerator } from './SmartReviewGenerator';
 import { updateMediaItem } from '@/lib/actions/media';
 import { formatGenre } from '@/lib/utils';
@@ -17,8 +17,15 @@ interface FilmDetailModalProps {
 }
 
 export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalProps) {
+  const { openModal, closeModal } = useModal();
   const [showReviewGenerator, setShowReviewGenerator] = useState(false);
   const [currentReview, setCurrentReview] = useState(media.user_review);
+  
+  // Hide floating dock when modal is open
+  useEffect(() => {
+    openModal();
+    return () => closeModal();
+  }, [openModal, closeModal]);
   
   const cast = Array.isArray(media.cast) 
     ? media.cast 

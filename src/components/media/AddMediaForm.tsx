@@ -7,7 +7,7 @@ import { Plus, Sparkles, X, Loader2, Film } from 'lucide-react';
 import { addMediaItem } from '@/lib/actions/media';
 import { actionAutofill } from '@/lib/actions/ai';
 import { searchMovies, getMovieDetails, type TMDBMovie, type WatchProvider } from '@/lib/actions/tmdb';
-import { useToast } from '@/components/ui';
+import { useToast, useModal } from '@/components/ui';
 import { useMediaItems } from '@/hooks/useMediaItems';
 import type { MediaItemInsert } from '@/types/database';
 
@@ -21,7 +21,17 @@ export function AddMediaForm({ onSuccess }: AddMediaFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { openModal, closeModal } = useModal();
   const { mediaItems } = useMediaItems();
+
+  // Hide floating dock when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      openModal();
+    } else {
+      closeModal();
+    }
+  }, [isOpen, openModal, closeModal]);
 
   // Form state
   const [title, setTitle] = useState('');
