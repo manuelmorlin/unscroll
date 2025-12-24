@@ -14,8 +14,6 @@ import {
 import { auth } from '@/lib/firebase/config';
 import { setSessionAction } from '@/lib/actions/auth';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
