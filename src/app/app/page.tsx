@@ -40,7 +40,7 @@ export default function AppPage() {
       {/* Header - Minimal glass */}
       <header className="glass-heavy sticky top-0 z-40 safe-top">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          {/* Logo */}
+          {/* Left: Logo */}
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🎬</span>
             <span className="text-base font-semibold gold-shimmer">Unscroll</span>
@@ -51,37 +51,46 @@ export default function AppPage() {
             )}
           </div>
 
-          {/* User Menu */}
-          <div className="flex items-center gap-2">
-            {/* Help/Tour Button */}
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Primary Action: Add Film */}
+            <AddMediaForm />
+            
+            {/* Divider */}
+            <div className="hidden sm:block w-px h-6 bg-white/10 mx-1" />
+            
+            {/* Secondary Actions: Help */}
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={resetTour}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-amber-400 hover:bg-amber-400/10 transition-all border border-transparent hover:border-amber-400/20"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-amber-400 hover:bg-white/5 transition-all"
               title="Restart Tour"
             >
-              <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+              <HelpCircle className="w-4 h-4" />
             </motion.button>
             
-            <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-300">
+            {/* User Menu */}
+            <div className="hidden sm:flex items-center gap-2 pl-1">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center border border-amber-400/20">
                 <User className="w-3.5 h-3.5 text-amber-400" />
               </div>
-              <span className="font-medium">
+              <span className="text-sm font-medium text-zinc-300 max-w-[100px] truncate">
                 {user?.displayName || 'User'}
               </span>
             </div>
+            
+            {/* Logout */}
             <form action={async () => { await logoutAction(); }}>
-              <button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 type="submit"
-                className="btn-glass flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-zinc-400 hover:text-white rounded-xl transition-all font-medium"
+                className="w-8 h-8 sm:w-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-xl flex items-center justify-center gap-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign Out</span>
-              </button>
+                <span className="hidden sm:inline text-sm font-medium">Logout</span>
+              </motion.button>
             </form>
-            <AddMediaForm />
           </div>
         </div>
       </header>
