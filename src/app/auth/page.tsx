@@ -21,7 +21,7 @@ export default async function AuthPage({
       {/* Back to Home - Fixed top left */}
       <Link 
         href="/"
-        className="fixed top-4 left-4 z-50 inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors text-sm"
+        className="fixed top-12 sm:top-4 left-4 z-50 inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
