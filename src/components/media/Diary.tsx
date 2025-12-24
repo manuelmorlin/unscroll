@@ -381,8 +381,9 @@ function DiaryCard({ media, onRatingChange, onReviewChange, onRewatch, onRemoveR
                     {media.user_rating && (
                       <motion.button
                         onClick={() => setShowReviewGenerator(true)}
-                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 bg-gradient-to-b from-purple-500/80 to-pink-500/80 text-white rounded-lg transition-all shadow-[0_0_10px_rgba(168,85,247,0.2)]"
+                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 bg-gradient-to-b from-purple-500/80 to-pink-500/80 text-white rounded-lg transition-all duration-200 shadow-[0_0_10px_rgba(168,85,247,0.2)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]"
                         whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.05 }}
                       >
                         <Sparkles className="w-3 h-3" />
                         AI Generate
