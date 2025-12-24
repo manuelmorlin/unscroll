@@ -369,7 +369,7 @@ function RateModal({ media, onClose, onRate }: RateModalProps) {
         {/* Close Button */}
         <motion.button
           onClick={handleClose}
-          className="absolute top-4 right-4 hover:opacity-70 transition-opacity"
+          className="absolute top-2 right-4 hover:opacity-70 transition-opacity"
           whileTap={{ scale: 0.9 }}
           title="Close"
         >
