@@ -213,7 +213,7 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
                   <div className="flex items-center gap-2 ml-auto">
                     <Calendar className="w-4 h-4 text-zinc-500" />
                     <span className="text-sm text-zinc-400">
-                      {formatWatchedDate(media.watched_at)}
+                      Last watched {formatWatchedDate(media.watched_at)}
                     </span>
                   </div>
                 )}
