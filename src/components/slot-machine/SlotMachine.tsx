@@ -525,10 +525,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           onClick={() => setSelectedGenres([])}
                           disabled={isSpinning}
                           whileTap={{ scale: 0.95 }}
+                          whileHover={selectedGenres.length !== 0 ? { scale: 1.05, backgroundColor: 'rgba(251,191,36,0.15)' } : {}}
                           className={`flex-shrink-0 px-3 py-2 text-sm rounded-full transition-all duration-200 snap-start ${
                             selectedGenres.length === 0
                               ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black font-medium shadow-[0_0_15px_rgba(251,191,36,0.2)]'
-                              : 'glass text-zinc-400'
+                              : 'glass text-zinc-400 hover:text-amber-300 hover:shadow-[0_0_15px_rgba(251,191,36,0.15)]'
                           } disabled:opacity-50`}
                         >
                           🎬 All
@@ -547,10 +548,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                             }}
                             disabled={isSpinning}
                             whileTap={{ scale: 0.95 }}
+                            whileHover={!isSelected ? { scale: 1.05, backgroundColor: 'rgba(251,191,36,0.15)' } : {}}
                             className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-full transition-all duration-200 snap-start ${
                               isSelected
                                 ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black font-medium shadow-[0_0_15px_rgba(251,191,36,0.2)]'
-                                : 'glass text-zinc-400'
+                                : 'glass text-zinc-400 hover:text-amber-300 hover:shadow-[0_0_15px_rgba(251,191,36,0.15)]'
                             } disabled:opacity-50`}
                           >
                             {getGenreEmoji(genre)} {displayGenreName(genre)}
@@ -574,10 +576,11 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                           onClick={() => setSelectedDuration(selectedDuration === option.value ? '' : option.value)}
                           disabled={isSpinning}
                           whileTap={{ scale: 0.95 }}
+                          whileHover={selectedDuration !== option.value ? { scale: 1.05, backgroundColor: 'rgba(251,191,36,0.15)' } : {}}
                           className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-full transition-all duration-200 ${
                             selectedDuration === option.value
                               ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-black font-medium shadow-[0_0_15px_rgba(251,191,36,0.2)]'
-                              : 'glass text-zinc-400'
+                              : 'glass text-zinc-400 hover:text-amber-300 hover:shadow-[0_0_15px_rgba(251,191,36,0.15)]'
                           } disabled:opacity-50`}
                         >
                           {option.emoji} {option.label}
@@ -598,22 +601,23 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       {selectedGenres.map(genre => (
                         <motion.span 
                           key={genre}
-                          className="px-2 py-1 bg-amber-500/10 text-amber-400 rounded-full border border-amber-500/20 cursor-pointer"
+                          className="px-2 py-1 bg-amber-500/10 text-amber-400 rounded-full border border-amber-500/20 cursor-pointer hover:bg-amber-500/25 hover:border-amber-500/40 hover:shadow-[0_0_10px_rgba(251,191,36,0.2)] transition-all duration-200"
                           onClick={() => setSelectedGenres(selectedGenres.filter(g => g !== genre))}
                           whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
                         >
                           {genre} ×
                         </motion.span>
-                      ))}
-                      {selectedDuration && (
+                      ))}n                      {selectedDuration && (
                         <span className="px-2 py-1 bg-amber-500/10 text-amber-400 rounded-full border border-amber-500/20">
                           {DURATION_OPTIONS.find(d => d.value === selectedDuration)?.label}
                         </span>
                       )}
                       <motion.button
                         onClick={() => { setSelectedGenres([]); setSelectedDuration(''); }}
-                        className="text-zinc-600 hover:text-zinc-400 transition-colors p-1"
+                        className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all p-1 rounded-full"
                         whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.1 }}
                       >
                         <X className="w-3 h-3" />
                       </motion.button>

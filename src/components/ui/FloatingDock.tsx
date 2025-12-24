@@ -45,14 +45,15 @@ export function FloatingDock({ items, activeId, onSelect, className = '' }: Floa
               className={`
                 relative flex items-center justify-center gap-2
                 px-4 py-3 rounded-xl
-                transition-colors duration-200
+                transition-all duration-200
                 min-w-[56px]
                 ${isActive 
                   ? 'text-amber-400' 
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  : 'text-zinc-500 hover:text-amber-300 hover:scale-105'
                 }
               `}
               whileTap={{ scale: 0.95 }}
+              whileHover={!isActive ? { scale: 1.08, filter: 'brightness(1.2)' } : {}}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
               {/* Active indicator glow */}
@@ -115,13 +116,14 @@ export function FloatingDockMinimal({ items, activeId, onSelect, className = '' 
               className={`
                 relative flex items-center justify-center
                 w-10 h-10 sm:w-12 sm:h-12
-                transition-colors duration-200
+                transition-all duration-200
                 ${isActive 
                   ? 'text-amber-400' 
-                  : 'text-zinc-500 hover:text-zinc-300 active:text-zinc-200'
+                  : 'text-zinc-500 hover:text-amber-300 hover:scale-110 active:text-amber-200'
                 }
               `}
               whileTap={{ scale: 0.9 }}
+              whileHover={!isActive ? { scale: 1.15, filter: 'brightness(1.3)' } : {}}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
               {/* Active indicator */}

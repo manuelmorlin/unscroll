@@ -156,9 +156,10 @@ export default function AppPage() {
                     onClick={() => setListFilter(id)}
                     className={`
                       flex-shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl transition-all
-                      ${listFilter === id ? 'pill-active' : 'pill-inactive'}
+                      ${listFilter === id ? 'pill-active' : 'pill-inactive hover:bg-white/10 hover:text-amber-300 hover:shadow-[0_0_15px_rgba(251,191,36,0.15)]'}
                     `}
                     whileTap={{ scale: 0.95 }}
+                    whileHover={listFilter !== id ? { scale: 1.05 } : {}}
                   >
                     {emoji} {label}
                   </motion.button>
