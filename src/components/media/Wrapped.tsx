@@ -886,11 +886,6 @@ export function Wrapped() {
         <div className="absolute inset-y-0 left-0 w-1/3 cursor-pointer z-5" onClick={(e) => { e.stopPropagation(); prevSlide(); }} />
         <div className="absolute inset-y-0 right-0 w-1/3 cursor-pointer z-5" onClick={(e) => { e.stopPropagation(); nextSlide(); }} />
       </div>
-
-      {/* Instructions */}
-      <p className="text-center text-zinc-500 text-sm mt-4">
-        Tap or use arrow keys to navigate
-      </p>
     </div>
   );
 }

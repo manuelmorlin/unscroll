@@ -718,33 +718,6 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.025em;
 }
 
-/* Custom Scrollbar - Cinema Red */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-/* Hide scrollbar on mobile for cleaner look */
-@media (max-width: 640px) {
-  ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-}
-
-::-webkit-scrollbar-track {
-  background: #1a0a0a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #8b0000;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a50000;
-}
-
 /* Selection - Gold */
 ::selection {
   background: rgba(255, 215, 0, 0.3);

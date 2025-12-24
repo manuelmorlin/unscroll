@@ -98,7 +98,7 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl bg-zinc-900 border border-zinc-800 overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col"
+        className="relative w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl bg-zinc-900 border border-zinc-800 overflow-hidden max-h-[85vh] sm:max-h-[90vh] flex flex-col mt-safe sm:mt-0"
       >
         {/* Close Button */}
         <button
