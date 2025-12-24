@@ -1,13 +1,13 @@
 /**
  * Script to populate demo account with sample films
- * Includes: watchlist, diary with ratings/reviews, rewatches
+ * Uses the correct media_items collection structure
  */
 
 import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { initializeApp, cert, type ServiceAccount } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const DEMO_UID = 'HUMNmKkJ7VcsCRNRbw0DD3yXdgq1';
 
@@ -321,37 +321,51 @@ const FILMS = [
 async function populateDemo() {
   try {
     console.log('🎬 Populating demo account with films...\n');
+    console.log(`Using user_id: ${DEMO_UID}\n`);
     
-    const userRef = db.collection('users').doc(DEMO_UID);
+    // First, clear existing demo data from media_items collection
+    console.log('Clearing existing demo data...');
+    const existingItems = await db.collection('media_items')
+      .where('user_id', '==', DEMO_UID)
+      .get();
     
-    // First, clear existing data
-    console.log('Clearing existing data...');
-    const watchlistSnapshot = await userRef.collection('watchlist').get();
-    const diarySnapshot = await userRef.collection('diary').get();
-    
-    const batch1 = db.batch();
-    watchlistSnapshot.docs.forEach(doc => batch1.delete(doc.ref));
-    if (watchlistSnapshot.docs.length > 0) {
-      await batch1.commit();
-      console.log(`  Deleted ${watchlistSnapshot.docs.length} from watchlist`);
+    if (existingItems.docs.length > 0) {
+      const batch = db.batch();
+      existingItems.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+      console.log(`  Deleted ${existingItems.docs.length} existing items from media_items`);
     }
     
-    const batch2 = db.batch();
-    diarySnapshot.docs.forEach(doc => batch2.delete(doc.ref));
-    if (diarySnapshot.docs.length > 0) {
-      await batch2.commit();
-      console.log(`  Deleted ${diarySnapshot.docs.length} from diary`);
+    // Also clear old subcollection data if any exists
+    const oldWatchlist = await db.collection('users').doc(DEMO_UID).collection('watchlist').get();
+    const oldDiary = await db.collection('users').doc(DEMO_UID).collection('diary').get();
+    
+    if (oldWatchlist.docs.length > 0) {
+      const batch = db.batch();
+      oldWatchlist.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+      console.log(`  Cleared ${oldWatchlist.docs.length} from old watchlist subcollection`);
     }
     
-    // Add films
-    console.log('\nAdding films...');
+    if (oldDiary.docs.length > 0) {
+      const batch = db.batch();
+      oldDiary.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+      console.log(`  Cleared ${oldDiary.docs.length} from old diary subcollection`);
+    }
+    
+    // Add films to media_items collection
+    console.log('\nAdding films to media_items collection...');
     let watchlistCount = 0;
     let diaryCount = 0;
     
     for (const film of FILMS) {
-      const collection = film.status === 'unwatched' ? 'watchlist' : 'diary';
+      const docRef = db.collection('media_items').doc();
+      const now = new Date().toISOString();
       
-      const filmData: Record<string, unknown> = {
+      const mediaItem: Record<string, unknown> = {
+        id: docRef.id,
+        user_id: DEMO_UID,
         title: film.title,
         year: film.year,
         genre: film.genre,
@@ -363,28 +377,29 @@ async function populateDemo() {
         original_language: film.original_language,
         format: 'movie',
         status: film.status,
-        created_at: FieldValue.serverTimestamp(),
-        updated_at: FieldValue.serverTimestamp(),
+        created_at: now,
+        updated_at: now,
       };
       
       if (film.status === 'watched') {
-        filmData.user_rating = film.user_rating;
+        mediaItem.user_rating = film.user_rating;
         if (film.user_review) {
-          filmData.user_review = film.user_review;
+          mediaItem.user_review = film.user_review;
         }
         if (film.watched_at) {
-          filmData.watched_at = film.watched_at;
+          mediaItem.watched_at = film.watched_at;
         }
         if (film.rewatch_count) {
-          filmData.rewatch_count = film.rewatch_count;
+          mediaItem.rewatch_count = film.rewatch_count;
         }
         diaryCount++;
+        console.log(`  ✓ ${film.title} (${film.year}) → diary`);
       } else {
         watchlistCount++;
+        console.log(`  ✓ ${film.title} (${film.year}) → watchlist`);
       }
       
-      await userRef.collection(collection).add(filmData);
-      console.log(`  ✓ ${film.title} (${film.year}) → ${collection}`);
+      await docRef.set(mediaItem);
     }
     
     console.log(`\n✅ Demo account populated!`);
