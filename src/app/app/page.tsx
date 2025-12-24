@@ -44,9 +44,13 @@ export default function AppPage() {
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🎬</span>
             <span className="text-base font-semibold gold-shimmer">Unscroll</span>
-            {isDemo && (
-              <span className="px-2 py-0.5 text-[10px] bg-violet-500/20 text-violet-400 rounded-full border border-violet-500/20">
-                Demo
+            {user && (
+              <span className={`px-2 py-0.5 text-[10px] rounded-full border ${
+                isDemo 
+                  ? 'bg-violet-500/20 text-violet-400 border-violet-500/20'
+                  : 'bg-amber-500/20 text-amber-400 border-amber-500/20'
+              }`}>
+                {isDemo ? 'Demo' : user.displayName || user.email?.split('@')[0] || 'User'}
               </span>
             )}
           </div>
