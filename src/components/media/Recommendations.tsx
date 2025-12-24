@@ -98,20 +98,40 @@ export function Recommendations({ watchedFilms, allTitles }: RecommendationsProp
     setIsLoadingDetails(true);
 
     try {
-      // Search for the movie on TMDB
-      const searchQuery = rec.year ? `${rec.title} ${rec.year}` : rec.title;
-      const searchResult = await searchMovies(searchQuery);
+      // Try multiple search strategies
+      let bestMatch = null;
       
-      if (searchResult.success && searchResult.movies && searchResult.movies.length > 0) {
-        // Get the first match (or best match by year)
-        let bestMatch = searchResult.movies[0];
-        if (rec.year) {
-          const exactMatch = searchResult.movies.find(m => 
+      // Strategy 1: Search with title + year
+      if (rec.year) {
+        const searchResult = await searchMovies(`${rec.title} ${rec.year}`);
+        if (searchResult.success && searchResult.movies && searchResult.movies.length > 0) {
+          // Try to find exact year match
+          bestMatch = searchResult.movies.find(m => 
             m.release_date && parseInt(m.release_date.split('-')[0]) === rec.year
-          );
-          if (exactMatch) bestMatch = exactMatch;
+          ) || searchResult.movies[0];
         }
+      }
+      
+      // Strategy 2: If no match, try title only
+      if (!bestMatch) {
+        const searchResult = await searchMovies(rec.title);
+        if (searchResult.success && searchResult.movies && searchResult.movies.length > 0) {
+          bestMatch = searchResult.movies[0];
+        }
+      }
+      
+      // Strategy 3: If still no match, try without special characters
+      if (!bestMatch) {
+        const cleanTitle = rec.title.replace(/[^\w\s]/gi, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanTitle !== rec.title) {
+          const searchResult = await searchMovies(cleanTitle);
+          if (searchResult.success && searchResult.movies && searchResult.movies.length > 0) {
+            bestMatch = searchResult.movies[0];
+          }
+        }
+      }
 
+      if (bestMatch) {
         // Get full details
         const detailsResult = await getMovieDetails(bestMatch.id);
         if (detailsResult.success && detailsResult.data) {
