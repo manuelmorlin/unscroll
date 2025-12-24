@@ -89,7 +89,7 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-sm p-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-sm p-0 sm:p-4 pt-safe"
       onClick={onClose}
     >
       <motion.div
@@ -98,12 +98,12 @@ export function FilmDetailModal({ media, onClose, onUpdate }: FilmDetailModalPro
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl bg-zinc-900 border border-zinc-800 overflow-hidden max-h-[calc(100vh-env(safe-area-inset-top))] sm:max-h-[90vh] flex flex-col mt-safe sm:mt-0"
+        className="relative w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl bg-zinc-900 border border-zinc-800 overflow-hidden max-h-full sm:max-h-[90vh] flex flex-col"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-1 right-1.5 sm:top-2 sm:right-2 z-20 p-0.5 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors"
+          className="absolute top-1.5 right-2 sm:top-2 sm:right-2 z-20 bg-black/60 hover:bg-red-900/50 rounded-full transition-colors flex items-center justify-center w-5 h-5"
         >
           <X className="w-3.5 h-3.5 text-red-500" />
         </button>
