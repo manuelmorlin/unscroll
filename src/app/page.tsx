@@ -35,7 +35,7 @@ export default async function HomePage() {
       <div className="fixed right-0 top-0 bottom-0 w-32 curtain-right pointer-events-none" />
 
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-lg border-b border-red-900/30">
+      <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-lg border-b border-red-900/30 pt-8 sm:pt-0">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
@@ -62,7 +62,7 @@ export default async function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 relative">
+      <section className="pt-40 sm:pt-32 pb-20 px-4 relative">
         {/* Spotlight Effect */}
         <div className="absolute inset-0 spotlight pointer-events-none" />
         
