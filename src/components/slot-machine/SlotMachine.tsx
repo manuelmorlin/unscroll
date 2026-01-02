@@ -367,12 +367,7 @@ export function SlotMachine({ onWatched }: SlotMachineProps) {
                       transition={{ delay: 0.1 }}
                       className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 tracking-tight px-1 sm:px-2"
                     >
-                      {(() => {
-                        const genreEmoji = selectedMedia.genre 
-                          ? (GENRE_EMOJIS[selectedMedia.genre] || GENRE_EMOJIS[Object.keys(GENRE_EMOJIS).find(g => selectedMedia.genre?.toLowerCase().includes(g.toLowerCase())) || ''] || '🎬')
-                          : '🎬';
-                        return `${genreEmoji} ${selectedMedia.title} ${genreEmoji}`;
-                      })()}
+                      {selectedMedia.title}
                     </motion.h3>
 
                     {/* Meta Info - Glass pills */}
